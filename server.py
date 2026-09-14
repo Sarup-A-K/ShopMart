@@ -3,7 +3,7 @@ import json
 import urllib.request
 import urllib.error
 import re
-from typing import Optional
+from typing import Optional, Any
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -76,8 +76,8 @@ class TagRequest(BaseModel):
     product_name: str
     category: Optional[str] = None
     user_context: str = "General Buyer"
-    competitor_price: Optional[float] = None
-    local_price: Optional[float] = None
+    competitor_price: Any = None
+    local_price: Any = None
 
 class ScrapeRequest(BaseModel):
     product_name: str

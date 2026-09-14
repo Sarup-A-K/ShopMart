@@ -435,7 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
     aiProviderBadgeMain.textContent = window.aiService.getProviderDisplayName();
     modalGenaiConfig.classList.remove("open");
     if (activeProduct) {
-      updateMainAiRecommendations(activeProduct, selectAiPersona.value);
+      updateMainAiTagAnalysis(activeProduct, selectAiPersona.value);
     }
     alert(`Saved! Now connected to ${window.aiService.getProviderDisplayName()}`);
   });
