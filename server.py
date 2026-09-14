@@ -173,7 +173,7 @@ async def scan_tag(req: TagRequest):
     if req.competitor_price and req.local_price:
         price_context = f" The competitor (Amazon) price is ₹{req.competitor_price}, but our local mall price is ₹{req.local_price}."
     
-    system_prompt = f"You are an expert shopping assistant AI. Your current client is a '{req.user_context}'. Analyze the mall product: {req.product_name}.{price_context} Use Indian Rupees (₹) for any currency mentioned. Output ONLY a JSON object."
+    system_prompt = f"You are an expert shopping assistant AI. Your current client is a '{req.user_context}'. Analyze the mall product: {req.product_name}.{price_context} Use Indian Rupees (₹). NEVER use the '$' symbol. Output ONLY a JSON object."
     user_prompt = f"""Format your response EXACTLY as this JSON structure, with no markdown formatting:
 {{
   "verdict": "A 2-sentence summary of online reviews tailored specifically for a {req.user_context}.",

@@ -573,7 +573,8 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.font = "bold 11px Outfit";
     ctx.textAlign = "center";
     const prodName = activeProduct ? activeProduct.name : "Target Item";
-    ctx.fillText(`📍 ${prodName}`, targetX, targetY - 14);
+    ctx.fillText("📍", targetX, targetY - 22);
+    ctx.fillText(prodName, targetX, targetY - 10);
   }
 
   // Modals Event Listeners
@@ -589,6 +590,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   btnView3dRoute.addEventListener("click", () => {
     modalStoreMap.classList.add("open");
+    if (activeProduct && activeProduct.location) {
+      mapTargetStatus.textContent = `Targeted Product: ${activeProduct.name} (${activeProduct.location.aisle})`;
+    } else {
+      mapTargetStatus.textContent = "Select/Scan a product to see guidance route.";
+    }
     drawStoreMap();
   });
 
