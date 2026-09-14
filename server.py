@@ -2,15 +2,13 @@ import os
 import json
 import urllib.request
 import urllib.error
-import ssl
-import torch
-from transformers import pipeline
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+import re
+from typing import Optional
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Optional
+from pydantic import BaseModel
 
-app = FastAPI(title="True LLM AI Server", description="Grocery Store GenAI API")
+app = FastAPI(title="OmniTag AI Server", description="OmniTag AR GenAI API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,49 +18,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-OLLAMA_API_URL = "http://llm-engine:11434/api/generate"
-CUSTOM_LLM = None
-
-def init_custom_model():
-    global CUSTOM_LLM
-    model_path = "./trained_model"
-    if os.path.exists(model_path):
-        print(f"🧠 Loading custom trained PyTorch model from {model_path}...")
-        device = 0 if torch.cuda.is_available() else -1
-        CUSTOM_LLM = pipeline(
-            "text-generation", 
-            model=model_path, 
-            tokenizer=model_path, 
-            device=device,
-            max_new_tokens=150,
-            pad_token_id=50256 # EOS token for GPT-2
-        )
-        print("✅ Custom PyTorch model loaded into GPU!")
-    else:
-        print("⚠️ Custom model not found. Will fallback to Ollama.")
-
-# Load custom model on startup
-@app.on_event("startup")
-async def startup_event():
-    init_custom_model()
+# Use Ollama container name if running in docker network
+OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://llm-engine:11434/api/generate")
 
 def query_local_llm(system_prompt, user_prompt):
-    if CUSTOM_LLM is not None:
-        formatted_prompt = f"System: {system_prompt}\nUser: {user_prompt}\nAssistant:"
-        try:
-            print(f"🤖 Generating response using custom PyTorch model...")
-            results = CUSTOM_LLM(formatted_prompt, do_sample=True, temperature=0.7, top_p=0.9)
-            generated_text = results[0]["generated_text"]
-            if "Assistant:" in generated_text:
-                reply = generated_text.split("Assistant:")[-1].strip()
-                reply = reply.split("<|endoftext|>")[0].strip()
-                return reply
-            return generated_text
-        except Exception as e:
-            print(f"Custom Model Error: {e}")
-            return f"[PyTorch Model Error]: {str(e)}"
-    
-    # Fallback to Ollama
+    # Route directly to Ollama Llama 3.2
     payload = {
         "model": "llama3.2",
         "system": system_prompt,
@@ -81,11 +41,8 @@ def query_local_llm(system_prompt, user_prompt):
     )
     
     try:
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        
-        with urllib.request.urlopen(req, context=ctx, timeout=60) as response:
+        print(f"🤖 Generating response using Ollama API at {OLLAMA_API_URL}...")
+        with urllib.request.urlopen(req, timeout=60) as response:
             result = json.loads(response.read().decode('utf-8'))
             return result.get("response", "No response generated.")
             
