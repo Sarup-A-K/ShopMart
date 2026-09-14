@@ -1,0 +1,452 @@
+[
+  {
+    "qrCode": "QR-TECH-001",
+    "name": "Sony WH-1000XM5 Headphones",
+    "brand": "Sony",
+    "category": "Electronics",
+    "price": 29490.0,
+    "oldPrice": 34990,
+    "discountBadge": "12% OFF",
+    "rating": 4.8,
+    "reviewsCount": 12450,
+    "unit": "1 pair",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500&q=80",
+    "colorTheme": "#0ea5e9",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "A+",
+      "macros": {
+        "Weight": "250g",
+        "Battery": "30h",
+        "ANC": "Yes"
+      },
+      "highlights": [
+        "Industry leading ANC",
+        "30 hour battery life",
+        "Multipoint connection"
+      ]
+    },
+    "location": {
+      "aisle": "Tech Zone",
+      "section": "Audio",
+      "guidance": "Level 2, near Apple Store.",
+      "coordinates": {
+        "x": 0.8,
+        "y": 0.2
+      }
+    },
+    "reviews": [
+      "Incredible noise cancellation!",
+      "A bit pricey, but worth every penny.",
+      "Battery life is insane.",
+      "They feel a bit plasticky compared to XM4.",
+      "Best travel headphones."
+    ]
+  },
+  {
+    "qrCode": "QR-FASH-002",
+    "name": "Levi's 501 Original Fit Jeans",
+    "brand": "Levi's",
+    "category": "Fashion",
+    "price": 5499,
+    "oldPrice": 7999,
+    "discountBadge": "SALE",
+    "rating": 4.6,
+    "reviewsCount": 8320,
+    "unit": "1 pair",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&q=80",
+    "colorTheme": "#3b82f6",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "A",
+      "macros": {
+        "Material": "Denim",
+        "Fit": "Straight",
+        "Stretch": "No"
+      },
+      "highlights": [
+        "100% Cotton",
+        "Classic straight leg",
+        "Button fly"
+      ]
+    },
+    "location": {
+      "aisle": "Apparel",
+      "section": "Men's Denim",
+      "guidance": "Level 1, Levi's outlet.",
+      "coordinates": {
+        "x": 0.3,
+        "y": 0.7
+      }
+    },
+    "reviews": [
+      "Classic fit, never goes out of style.",
+      "Takes a while to break in.",
+      "Shrinks a bit after washing.",
+      "Durable and thick.",
+      "The button fly takes getting used to."
+    ]
+  },
+  {
+    "qrCode": "QR-HOME-003",
+    "name": "Dyson V15 Detect Vacuum",
+    "brand": "Dyson",
+    "category": "Home",
+    "price": 59990,
+    "oldPrice": 69990,
+    "discountBadge": "\u20b9100 OFF",
+    "rating": 4.7,
+    "reviewsCount": 4100,
+    "unit": "1 piece",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=500&q=80",
+    "colorTheme": "#f59e0b",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "A",
+      "macros": {
+        "Weight": "6.8 lbs",
+        "Runtime": "60m",
+        "Bin": "0.2 gal"
+      },
+      "highlights": [
+        "Laser reveals microscopic dust",
+        "Piezo sensor automatically sizes particles",
+        "60 minutes runtime"
+      ]
+    },
+    "location": {
+      "aisle": "Home Goods",
+      "section": "Cleaning",
+      "guidance": "Level 3, Home Appliances.",
+      "coordinates": {
+        "x": 0.5,
+        "y": 0.9
+      }
+    },
+    "reviews": [
+      "The laser light is a game changer for hard floors.",
+      "Battery drains fast on boost mode.",
+      "Emptying the bin is super easy.",
+      "A bit heavy for long sessions.",
+      "Incredible suction power."
+    ]
+  },
+  {
+    "qrCode": "QR-TECH-004",
+    "name": "Apple iPad Pro 11-inch",
+    "brand": "Apple",
+    "category": "Electronics",
+    "price": 80750.0,
+    "oldPrice": 99900,
+    "discountBadge": "NEW",
+    "rating": 4.9,
+    "reviewsCount": 5600,
+    "unit": "1 tablet",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80",
+    "colorTheme": "#a855f7",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "A+",
+      "macros": {
+        "Chip": "M2",
+        "Storage": "128GB",
+        "Display": "Liquid Retina"
+      },
+      "highlights": [
+        "M2 chip performance",
+        "ProMotion 120Hz display",
+        "Supports Apple Pencil 2"
+      ]
+    },
+    "location": {
+      "aisle": "Tech Zone",
+      "section": "Tablets",
+      "guidance": "Level 2, Apple Store.",
+      "coordinates": {
+        "x": 0.7,
+        "y": 0.3
+      }
+    },
+    "reviews": [
+      "Blazing fast with the M2 chip.",
+      "Screen is gorgeous.",
+      "Wish it came with a charger in the box.",
+      "Perfect for digital art.",
+      "Overkill for just watching Netflix."
+    ]
+  },
+  {
+    "qrCode": "QR-FASH-005",
+    "name": "Nike Air Max 270",
+    "brand": "Nike",
+    "category": "Fashion",
+    "price": 7120.0,
+    "oldPrice": 14990,
+    "discountBadge": "",
+    "rating": 4.5,
+    "reviewsCount": 11200,
+    "unit": "1 pair",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
+    "colorTheme": "#ef4444",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "B+",
+      "macros": {
+        "Upper": "Mesh",
+        "Sole": "Rubber",
+        "Cushion": "Air Max"
+      },
+      "highlights": [
+        "Max Air 270 unit",
+        "Breathable mesh upper",
+        "Foam midsole"
+      ]
+    },
+    "location": {
+      "aisle": "Footwear",
+      "section": "Athletic",
+      "guidance": "Level 1, Nike Store.",
+      "coordinates": {
+        "x": 0.2,
+        "y": 0.5
+      }
+    },
+    "reviews": [
+      "Super comfortable for walking.",
+      "The air bubble popped after 6 months.",
+      "Runs half a size small.",
+      "Looks great with casual wear.",
+      "A bit squeaky on indoor floors."
+    ]
+  },
+  {
+    "qrCode": "QR-HOME-006",
+    "name": "Nespresso VertuoPlus",
+    "brand": "Nespresso",
+    "category": "Home",
+    "price": 19990,
+    "oldPrice": 24990,
+    "discountBadge": "25% OFF",
+    "rating": 4.6,
+    "reviewsCount": 3800,
+    "unit": "1 machine",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1517502474163-fdf6158e239e?w=500&q=80",
+    "colorTheme": "#10b981",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "A",
+      "macros": {
+        "Heat-up": "20s",
+        "Tank": "40 oz",
+        "Pods": "Vertuo"
+      },
+      "highlights": [
+        "Brews 4 cup sizes",
+        "Motorized head",
+        "Fast 20-second heat-up"
+      ]
+    },
+    "location": {
+      "aisle": "Home Goods",
+      "section": "Kitchen",
+      "guidance": "Level 3, Kitchenware.",
+      "coordinates": {
+        "x": 0.6,
+        "y": 0.8
+      }
+    },
+    "reviews": [
+      "Makes amazing crema.",
+      "The pods are expensive and hard to find locally.",
+      "Brews quickly and quietly.",
+      "The water tank is a bit small.",
+      "Coffee tastes consistently great."
+    ]
+  },
+  {
+    "qrCode": "QR-TECH-007",
+    "name": "Samsung 65\" Class OLED 4K S90C",
+    "brand": "Samsung",
+    "category": "Electronics",
+    "price": 58805.0,
+    "oldPrice": 159990,
+    "discountBadge": "\u20b9500 OFF",
+    "rating": 4.8,
+    "reviewsCount": 2100,
+    "unit": "1 TV",
+    "inStock": false,
+    "image": "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=500&q=80",
+    "colorTheme": "#0ea5e9",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "A+",
+      "macros": {
+        "Size": "65 in",
+        "Panel": "OLED",
+        "Refresh": "120Hz"
+      },
+      "highlights": [
+        "Quantum HDR OLED",
+        "Neural Quantum Processor 4K",
+        "LaserSlim Design"
+      ]
+    },
+    "location": {
+      "aisle": "Tech Zone",
+      "section": "Home Theater",
+      "guidance": "Level 2, Samsung Experience.",
+      "coordinates": {
+        "x": 0.9,
+        "y": 0.1
+      }
+    },
+    "reviews": [
+      "The blacks are incredible.",
+      "Tizen OS can be a bit laggy sometimes.",
+      "Gaming on this is mind-blowing.",
+      "Very thin and fragile feeling during setup.",
+      "Colors pop like crazy."
+    ]
+  },
+  {
+    "qrCode": "QR-FASH-008",
+    "name": "Ray-Ban Classic Wayfarer",
+    "brand": "Ray-Ban",
+    "category": "Fashion",
+    "price": 8075.0,
+    "oldPrice": 9990,
+    "discountBadge": "",
+    "rating": 4.7,
+    "reviewsCount": 9500,
+    "unit": "1 pair",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=500&q=80",
+    "colorTheme": "#f43f5e",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "A",
+      "macros": {
+        "Frame": "Acetate",
+        "Lenses": "Glass",
+        "UV": "100%"
+      },
+      "highlights": [
+        "Iconic design",
+        "100% UV protection",
+        "Polarized option available"
+      ]
+    },
+    "location": {
+      "aisle": "Accessories",
+      "section": "Sunglasses",
+      "guidance": "Level 1, Sunglass Hut.",
+      "coordinates": {
+        "x": 0.4,
+        "y": 0.6
+      }
+    },
+    "reviews": [
+      "Timeless style.",
+      "A bit heavy on the nose after a while.",
+      "Lenses resist scratching well.",
+      "They slide down when sweating.",
+      "Worth the investment."
+    ]
+  },
+  {
+    "qrCode": "QR-HOME-009",
+    "name": "Philips Hue White & Color Starter Kit",
+    "brand": "Philips",
+    "category": "Home",
+    "price": 12825.0,
+    "oldPrice": 15990,
+    "discountBadge": "SMART",
+    "rating": 4.6,
+    "reviewsCount": 6200,
+    "unit": "1 kit",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1550537687-c91072c4792d?w=500&q=80",
+    "colorTheme": "#8b5cf6",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "B+",
+      "macros": {
+        "Bulbs": "4",
+        "Hub": "Included",
+        "Colors": "16M"
+      },
+      "highlights": [
+        "Voice control compatible",
+        "16 million colors",
+        "Create schedules and routines"
+      ]
+    },
+    "location": {
+      "aisle": "Home Goods",
+      "section": "Smart Home",
+      "guidance": "Level 3, Smart Living.",
+      "coordinates": {
+        "x": 0.5,
+        "y": 0.7
+      }
+    },
+    "reviews": [
+      "Setup was a breeze.",
+      "The app can be confusing initially.",
+      "Colors are rich and vibrant.",
+      "Expensive for just 4 bulbs.",
+      "Integrates perfectly with Alexa."
+    ]
+  },
+  {
+    "qrCode": "QR-TECH-010",
+    "name": "Logitech MX Master 3S Mouse",
+    "brand": "Logitech",
+    "category": "Electronics",
+    "price": 7124.0,
+    "oldPrice": 10990,
+    "discountBadge": "POPULAR",
+    "rating": 4.8,
+    "reviewsCount": 4900,
+    "unit": "1 mouse",
+    "inStock": true,
+    "image": "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500&q=80",
+    "colorTheme": "#14b8a6",
+    "nutrition": {
+      "servingSize": "N/A",
+      "nutriScore": "A+",
+      "macros": {
+        "DPI": "8000",
+        "Clicks": "Quiet",
+        "Scroll": "MagSpeed"
+      },
+      "highlights": [
+        "Quiet clicks",
+        "8000 DPI track-on-glass sensor",
+        "MagSpeed scrolling"
+      ]
+    },
+    "location": {
+      "aisle": "Tech Zone",
+      "section": "Accessories",
+      "guidance": "Level 2, PC Accessories.",
+      "coordinates": {
+        "x": 0.8,
+        "y": 0.4
+      }
+    },
+    "reviews": [
+      "Best productivity mouse ever made.",
+      "Ergonomics are perfect.",
+      "Logi Options+ software is a bit bloated.",
+      "Quiet clicks are satisfying.",
+      "Scroll wheel feels magical."
+    ]
+  }
+]

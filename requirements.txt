@@ -1,0 +1,10 @@
+requests>=2.31.0
+torch
+transformers
+datasets
+accelerate
+fastapi
+uvicorn[standard]
+pydantic
+duckduckgo-search
+beautifulsoup4

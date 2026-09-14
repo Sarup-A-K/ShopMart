@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  llm-engine:
+    image: ollama/ollama:latest
+    container_name: local_llm_engine
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # Initialize the container by pulling the Llama 3.2 model if it doesn't exist
+    entrypoint: >
+      bash -c "
+      ollama serve & 
+      sleep 5 && 
+      ollama pull llama3.2 && 
+      wait
+      "
+
+  web-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+    container_name: local_web_app
+    hostname: ai-workspace
+    ports:
+      - "8000:8000"
+      - "5000:5000"
+    volumes:
+      - .:/workspace
+    depends_on:
+      - llm-engine
+    # Command to run both backend and frontend servers
+    command: bash -c "uvicorn server:app --host 0.0.0.0 --port 5000 & python3 -m http.server 8000 --bind 0.0.0.0"
+
+volumes:
+  ollama_data:
