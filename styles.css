@@ -467,14 +467,14 @@ body {
 }
 
 /* Nutrition Matrix Styles */
-.nutri-header-row {
+.spec-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
 }
 
-.nutri-score-pill {
+.quality-score-pill {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -537,7 +537,7 @@ body {
 }
 
 /* Recipes & Pairings */
-.recipe-card {
+.alt-card {
   background: rgba(30, 41, 59, 0.5);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);

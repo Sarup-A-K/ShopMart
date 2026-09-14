@@ -31,19 +31,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const aiProviderBadgeMain = document.getElementById("ai-provider-badge-main");
   const aiRecContentMain = document.getElementById("ai-rec-content-main");
 
-  const arNutriServing = document.getElementById("ar-nutri-serving");
-  const arNutriScore = document.getElementById("ar-nutri-score");
+  const arSpecWarranty = document.getElementById("ar-spec-warranty");
+  const arSpecQuality = document.getElementById("ar-spec-quality");
   const arMacrosGrid = document.getElementById("ar-macros-grid");
-  const arRecipesContainer = document.getElementById("ar-recipes-container");
-  const arPairingsContainer = document.getElementById("ar-pairings-container");
+  const arReviewsContainer = document.getElementById("ar-reviews-container");
+  const arAccessoriesContainer = document.getElementById("ar-accessories-container");
   const arWayfinderAisle = document.getElementById("ar-wayfinder-aisle");
   const arWayfinderText = document.getElementById("ar-wayfinder-text");
   const radarCanvas = document.getElementById("radar-canvas");
 
   // GenAI Elements
-  const selectAiDiet = document.getElementById("select-ai-diet");
-  const btnTriggerGenaiRecipe = document.getElementById("btn-trigger-genai-recipe");
-  const aiRecipeOutput = document.getElementById("ai-recipe-output");
+  const selectAiPersona = document.getElementById("select-ai-persona");
+  const btnTriggerGenaiReport = document.getElementById("btn-trigger-genai-report");
+  const aiReportOutput = document.getElementById("ai-report-output");
   const aiChatHistory = document.getElementById("ai-chat-history");
   const inputAiChat = document.getElementById("input-ai-chat");
   const btnSendAiChat = document.getElementById("btn-send-ai-chat");
@@ -210,8 +210,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Highlights list
     arProdHighlights.innerHTML = "";
-    if (product.nutrition && product.nutrition.highlights) {
-      product.nutrition.highlights.forEach(hl => {
+    if (product.specifications && product.specifications.features) {
+      product.specifications.features.forEach(hl => {
         const li = document.createElement("li");
         li.textContent = hl;
         arProdHighlights.appendChild(li);
@@ -220,19 +220,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Auto-Fetch Front-and-Center OmniTag AI Analysis
     if (!skipAiAnalysis) {
-      await updateMainAiTagAnalysis(product, selectAiDiet.value);
+      await updateMainAiTagAnalysis(product, selectAiPersona.value);
     } else {
       aiProviderBadgeMain.textContent = window.aiService.getProviderDisplayName();
       aiRecContentMain.innerHTML = `<span class="loading-pulse" style="font-size: 0.8rem; color: #34d399;">⚡ Checking live inventory and deals...</span>`;
     }
 
-    // Nutrition Panel
-    if (product.nutrition) {
-      arNutriServing.textContent = `Serving Size: ${product.nutrition.servingSize}`;
-      arNutriScore.textContent = product.nutrition.nutriScore || "A";
+    // Specs Panel
+    if (product.specifications) {
+      arSpecWarranty.textContent = `Warranty: ${product.specifications.warranty}`;
+      arSpecQuality.textContent = product.specifications.qualityScore || "A";
 
       arMacrosGrid.innerHTML = "";
-      const macros = product.nutrition.macros || {};
+      const macros = product.specifications.keySpecs || {};
       for (const [key, val] of Object.entries(macros)) {
         const macroBox = document.createElement("div");
         macroBox.className = "macro-item";
@@ -245,30 +245,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Reviews Panel
-    arRecipesContainer.innerHTML = "";
+    arReviewsContainer.innerHTML = "";
     if (product.reviews && product.reviews.length > 0) {
       product.reviews.forEach(rev => {
         const revCard = document.createElement("div");
-        revCard.className = "recipe-card";
+        revCard.className = "alt-card";
         revCard.innerHTML = `
           <div style="font-size: 0.8rem; color: #fff; margin-bottom: 0.4rem; font-style: italic;">"${rev}"</div>
           <div style="font-size: 0.65rem; color: #f59e0b;">⭐⭐⭐⭐⭐ Verified Buyer</div>
         `;
-        arRecipesContainer.appendChild(revCard);
+        arReviewsContainer.appendChild(revCard);
       });
     }
 
     // Alternatives Panel (Placeholder)
-    arPairingsContainer.innerHTML = "";
+    arAccessoriesContainer.innerHTML = "";
     const altItem = document.createElement("div");
-    altItem.className = "pairing-item";
+    altItem.className = "alt-card";
     altItem.innerHTML = `
-      <div class="pairing-info">
+      <div class="alt-info">
         <h5 style="color: #38bdf8;">Generate AI Alternatives</h5>
         <p>Head to the 🤖 AI Studio tab to generate personalized product alternatives and deal comparisons!</p>
       </div>
     `;
-    arPairingsContainer.appendChild(altItem);
+    arAccessoriesContainer.appendChild(altItem);
 
     // Wayfinder Radar Panel
     if (product.location) {
@@ -280,7 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Reset GenAI Output
-    aiRecipeOutput.style.display = "none";
+    aiReportOutput.style.display = "none";
     aiChatHistory.innerHTML = `
       <div style="font-size: 0.75rem; color: var(--text-muted); background: rgba(15, 23, 42, 0.6); padding: 0.5rem; border-radius: 6px;">
         🤖 <strong>OmniTag AI:</strong> Ask me about specs, comparisons, or review details for <strong>${product.name}</strong>!
@@ -322,33 +322,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Dynamic update when user context dropdown is changed
-  selectAiDiet.addEventListener("change", () => {
+  selectAiPersona.addEventListener("change", () => {
     if (activeProduct) {
-      updateMainAiTagAnalysis(activeProduct, selectAiDiet.value);
+      updateMainAiTagAnalysis(activeProduct, selectAiPersona.value);
     }
   });
 
   // GenAI Detailed Report Trigger
-  btnTriggerGenaiRecipe.addEventListener("click", async () => {
+  btnTriggerGenaiReport.addEventListener("click", async () => {
     if (!activeProduct) return;
 
-    btnTriggerGenaiRecipe.disabled = true;
-    btnTriggerGenaiRecipe.textContent = "🤖 Analyzing Deal...";
-    aiRecipeOutput.style.display = "block";
-    aiRecipeOutput.innerHTML = `
+    btnTriggerGenaiReport.disabled = true;
+    btnTriggerGenaiReport.textContent = "🤖 Analyzing Deal...";
+    aiReportOutput.style.display = "block";
+    aiReportOutput.innerHTML = `
       <div style="padding: 0.8rem; background: rgba(15, 23, 42, 0.7); border-radius: 8px; color: #10b981; font-size: 0.8rem;">
         ⚡ ${window.aiService.getProviderDisplayName()} is generating a detailed purchase report for ${activeProduct.name}...
       </div>
     `;
 
-    const aiData = await window.aiService.autoFetchTagAnalysis(activeProduct, selectAiDiet.value);
+    const aiData = await window.aiService.autoFetchTagAnalysis(activeProduct, selectAiPersona.value);
     const aiAnalysis = aiData.analysis;
 
-    aiRecipeOutput.innerHTML = `
-      <div class="recipe-card" style="border-color: #10b981; background: rgba(16, 185, 129, 0.1);">
+    aiReportOutput.innerHTML = `
+      <div class="alt-card" style="border-color: #10b981; background: rgba(16, 185, 129, 0.1);">
         <div style="font-size: 0.65rem; color: #34d399; font-weight: 700; text-transform: uppercase; margin-bottom: 0.2rem;">${aiAnalysis.aiNote || '✨ OmniTag Fine-Tuned Model'}</div>
-        <div class="recipe-title" style="color: #10b981;">Deep Dive: ${activeProduct.name}</div>
-        <div class="recipe-meta">
+        <div class="alt-title" style="color: #10b981;">Deep Dive: ${activeProduct.name}</div>
+        <div class="alt-meta">
           <span>📉 Deal: ${aiAnalysis.dealScore}</span>
         </div>
         <div style="font-size: 0.75rem; color: #fff; margin-bottom: 0.4rem;"><strong>Compatibility:</strong></div>
@@ -362,8 +362,8 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    btnTriggerGenaiRecipe.disabled = false;
-    btnTriggerGenaiRecipe.textContent = "Generate Report";
+    btnTriggerGenaiReport.disabled = false;
+    btnTriggerGenaiReport.textContent = "Generate Report";
   });
 
   // GenAI Assistant Chat Submit
@@ -432,7 +432,7 @@ document.addEventListener("DOMContentLoaded", () => {
     aiProviderBadgeMain.textContent = window.aiService.getProviderDisplayName();
     modalGenaiConfig.classList.remove("open");
     if (activeProduct) {
-      updateMainAiRecommendations(activeProduct, selectAiDiet.value);
+      updateMainAiRecommendations(activeProduct, selectAiPersona.value);
     }
     alert(`Saved! Now connected to ${window.aiService.getProviderDisplayName()}`);
   });

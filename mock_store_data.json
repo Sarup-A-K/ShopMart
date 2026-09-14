@@ -13,20 +13,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500&q=80",
     "colorTheme": "#0ea5e9",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "A+",
-      "macros": {
-        "Weight": "250g",
-        "Battery": "30h",
-        "ANC": "Yes"
-      },
-      "highlights": [
-        "Industry leading ANC",
-        "30 hour battery life",
-        "Multipoint connection"
-      ]
-    },
     "location": {
       "aisle": "Tech Zone",
       "section": "Audio",
@@ -42,7 +28,21 @@
       "Battery life is insane.",
       "They feel a bit plasticky compared to XM4.",
       "Best travel headphones."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "A+",
+      "keySpecs": {
+        "Weight": "250g",
+        "Battery": "30h",
+        "ANC": "Yes"
+      },
+      "features": [
+        "Industry leading ANC",
+        "30 hour battery life",
+        "Multipoint connection"
+      ]
+    }
   },
   {
     "qrCode": "QR-FASH-002",
@@ -58,20 +58,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&q=80",
     "colorTheme": "#3b82f6",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "A",
-      "macros": {
-        "Material": "Denim",
-        "Fit": "Straight",
-        "Stretch": "No"
-      },
-      "highlights": [
-        "100% Cotton",
-        "Classic straight leg",
-        "Button fly"
-      ]
-    },
     "location": {
       "aisle": "Apparel",
       "section": "Men's Denim",
@@ -87,7 +73,21 @@
       "Shrinks a bit after washing.",
       "Durable and thick.",
       "The button fly takes getting used to."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "A",
+      "keySpecs": {
+        "Material": "Denim",
+        "Fit": "Straight",
+        "Stretch": "No"
+      },
+      "features": [
+        "100% Cotton",
+        "Classic straight leg",
+        "Button fly"
+      ]
+    }
   },
   {
     "qrCode": "QR-HOME-003",
@@ -103,20 +103,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=500&q=80",
     "colorTheme": "#f59e0b",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "A",
-      "macros": {
-        "Weight": "6.8 lbs",
-        "Runtime": "60m",
-        "Bin": "0.2 gal"
-      },
-      "highlights": [
-        "Laser reveals microscopic dust",
-        "Piezo sensor automatically sizes particles",
-        "60 minutes runtime"
-      ]
-    },
     "location": {
       "aisle": "Home Goods",
       "section": "Cleaning",
@@ -132,7 +118,21 @@
       "Emptying the bin is super easy.",
       "A bit heavy for long sessions.",
       "Incredible suction power."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "A",
+      "keySpecs": {
+        "Weight": "6.8 lbs",
+        "Runtime": "60m",
+        "Bin": "0.2 gal"
+      },
+      "features": [
+        "Laser reveals microscopic dust",
+        "Piezo sensor automatically sizes particles",
+        "60 minutes runtime"
+      ]
+    }
   },
   {
     "qrCode": "QR-TECH-004",
@@ -148,20 +148,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80",
     "colorTheme": "#a855f7",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "A+",
-      "macros": {
-        "Chip": "M2",
-        "Storage": "128GB",
-        "Display": "Liquid Retina"
-      },
-      "highlights": [
-        "M2 chip performance",
-        "ProMotion 120Hz display",
-        "Supports Apple Pencil 2"
-      ]
-    },
     "location": {
       "aisle": "Tech Zone",
       "section": "Tablets",
@@ -177,7 +163,21 @@
       "Wish it came with a charger in the box.",
       "Perfect for digital art.",
       "Overkill for just watching Netflix."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "A+",
+      "keySpecs": {
+        "Chip": "M2",
+        "Storage": "128GB",
+        "Display": "Liquid Retina"
+      },
+      "features": [
+        "M2 chip performance",
+        "ProMotion 120Hz display",
+        "Supports Apple Pencil 2"
+      ]
+    }
   },
   {
     "qrCode": "QR-FASH-005",
@@ -193,20 +193,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
     "colorTheme": "#ef4444",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "B+",
-      "macros": {
-        "Upper": "Mesh",
-        "Sole": "Rubber",
-        "Cushion": "Air Max"
-      },
-      "highlights": [
-        "Max Air 270 unit",
-        "Breathable mesh upper",
-        "Foam midsole"
-      ]
-    },
     "location": {
       "aisle": "Footwear",
       "section": "Athletic",
@@ -222,7 +208,21 @@
       "Runs half a size small.",
       "Looks great with casual wear.",
       "A bit squeaky on indoor floors."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "B+",
+      "keySpecs": {
+        "Upper": "Mesh",
+        "Sole": "Rubber",
+        "Cushion": "Air Max"
+      },
+      "features": [
+        "Max Air 270 unit",
+        "Breathable mesh upper",
+        "Foam midsole"
+      ]
+    }
   },
   {
     "qrCode": "QR-HOME-006",
@@ -238,20 +238,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1517502474163-fdf6158e239e?w=500&q=80",
     "colorTheme": "#10b981",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "A",
-      "macros": {
-        "Heat-up": "20s",
-        "Tank": "40 oz",
-        "Pods": "Vertuo"
-      },
-      "highlights": [
-        "Brews 4 cup sizes",
-        "Motorized head",
-        "Fast 20-second heat-up"
-      ]
-    },
     "location": {
       "aisle": "Home Goods",
       "section": "Kitchen",
@@ -267,7 +253,21 @@
       "Brews quickly and quietly.",
       "The water tank is a bit small.",
       "Coffee tastes consistently great."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "A",
+      "keySpecs": {
+        "Heat-up": "20s",
+        "Tank": "40 oz",
+        "Pods": "Vertuo"
+      },
+      "features": [
+        "Brews 4 cup sizes",
+        "Motorized head",
+        "Fast 20-second heat-up"
+      ]
+    }
   },
   {
     "qrCode": "QR-TECH-007",
@@ -283,20 +283,6 @@
     "inStock": false,
     "image": "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=500&q=80",
     "colorTheme": "#0ea5e9",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "A+",
-      "macros": {
-        "Size": "65 in",
-        "Panel": "OLED",
-        "Refresh": "120Hz"
-      },
-      "highlights": [
-        "Quantum HDR OLED",
-        "Neural Quantum Processor 4K",
-        "LaserSlim Design"
-      ]
-    },
     "location": {
       "aisle": "Tech Zone",
       "section": "Home Theater",
@@ -312,7 +298,21 @@
       "Gaming on this is mind-blowing.",
       "Very thin and fragile feeling during setup.",
       "Colors pop like crazy."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "A+",
+      "keySpecs": {
+        "Size": "65 in",
+        "Panel": "OLED",
+        "Refresh": "120Hz"
+      },
+      "features": [
+        "Quantum HDR OLED",
+        "Neural Quantum Processor 4K",
+        "LaserSlim Design"
+      ]
+    }
   },
   {
     "qrCode": "QR-FASH-008",
@@ -328,20 +328,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=500&q=80",
     "colorTheme": "#f43f5e",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "A",
-      "macros": {
-        "Frame": "Acetate",
-        "Lenses": "Glass",
-        "UV": "100%"
-      },
-      "highlights": [
-        "Iconic design",
-        "100% UV protection",
-        "Polarized option available"
-      ]
-    },
     "location": {
       "aisle": "Accessories",
       "section": "Sunglasses",
@@ -357,7 +343,21 @@
       "Lenses resist scratching well.",
       "They slide down when sweating.",
       "Worth the investment."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "A",
+      "keySpecs": {
+        "Frame": "Acetate",
+        "Lenses": "Glass",
+        "UV": "100%"
+      },
+      "features": [
+        "Iconic design",
+        "100% UV protection",
+        "Polarized option available"
+      ]
+    }
   },
   {
     "qrCode": "QR-HOME-009",
@@ -373,20 +373,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1550537687-c91072c4792d?w=500&q=80",
     "colorTheme": "#8b5cf6",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "B+",
-      "macros": {
-        "Bulbs": "4",
-        "Hub": "Included",
-        "Colors": "16M"
-      },
-      "highlights": [
-        "Voice control compatible",
-        "16 million colors",
-        "Create schedules and routines"
-      ]
-    },
     "location": {
       "aisle": "Home Goods",
       "section": "Smart Home",
@@ -402,14 +388,28 @@
       "Colors are rich and vibrant.",
       "Expensive for just 4 bulbs.",
       "Integrates perfectly with Alexa."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "B+",
+      "keySpecs": {
+        "Bulbs": "4",
+        "Hub": "Included",
+        "Colors": "16M"
+      },
+      "features": [
+        "Voice control compatible",
+        "16 million colors",
+        "Create schedules and routines"
+      ]
+    }
   },
   {
     "qrCode": "QR-TECH-010",
     "name": "Logitech MX Master 3S Mouse",
     "brand": "Logitech",
     "category": "Electronics",
-    "price": 7124.0,
+    "price": 7030.0,
     "oldPrice": 10990,
     "discountBadge": "POPULAR",
     "rating": 4.8,
@@ -418,20 +418,6 @@
     "inStock": true,
     "image": "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500&q=80",
     "colorTheme": "#14b8a6",
-    "nutrition": {
-      "servingSize": "N/A",
-      "nutriScore": "A+",
-      "macros": {
-        "DPI": "8000",
-        "Clicks": "Quiet",
-        "Scroll": "MagSpeed"
-      },
-      "highlights": [
-        "Quiet clicks",
-        "8000 DPI track-on-glass sensor",
-        "MagSpeed scrolling"
-      ]
-    },
     "location": {
       "aisle": "Tech Zone",
       "section": "Accessories",
@@ -447,6 +433,20 @@
       "Logi Options+ software is a bit bloated.",
       "Quiet clicks are satisfying.",
       "Scroll wheel feels magical."
-    ]
+    ],
+    "specifications": {
+      "warranty": "1 Year Limited",
+      "qualityScore": "A+",
+      "keySpecs": {
+        "DPI": "8000",
+        "Clicks": "Quiet",
+        "Scroll": "MagSpeed"
+      },
+      "features": [
+        "Quiet clicks",
+        "8000 DPI track-on-glass sensor",
+        "MagSpeed scrolling"
+      ]
+    }
   }
 ]

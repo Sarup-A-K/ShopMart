@@ -21,7 +21,7 @@ app.add_middleware(
 # Use Ollama container name if running in docker network
 OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://llm-engine:11434/api/generate")
 
-def query_local_llm(system_prompt, user_prompt):
+def query_local_llm(system_prompt, user_prompt, is_json=False):
     # Route directly to Ollama Llama 3.2
     payload = {
         "model": "llama3.2",
@@ -33,6 +33,9 @@ def query_local_llm(system_prompt, user_prompt):
             "top_p": 0.9
         }
     }
+    
+    if is_json:
+        payload["format"] = "json"
     
     req = urllib.request.Request(
         OLLAMA_API_URL,
@@ -160,17 +163,17 @@ async def scan_tag(req: TagRequest):
     if req.competitor_price and req.local_price:
         price_context = f" The competitor (Amazon) price is ${req.competitor_price}, but our local mall price is ${req.local_price}."
     
-    system_prompt = f"You are an expert shopping assistant AI tailoring advice for a '{req.user_context}'. Analyze the mall product: {req.product_name}.{price_context} Output ONLY a JSON object."
-    user_prompt = """Format your response EXACTLY as this JSON structure, with no markdown formatting:
-{
-  "verdict": "A 2-sentence summary of online reviews.",
+    system_prompt = f"You are an expert shopping assistant AI. Your current client is a '{req.user_context}'. Analyze the mall product: {req.product_name}.{price_context} Output ONLY a JSON object."
+    user_prompt = f"""Format your response EXACTLY as this JSON structure, with no markdown formatting:
+{{
+  "verdict": "A 2-sentence summary of online reviews tailored specifically for a {req.user_context}.",
   "dealScore": "A rating like 'Great Deal' or 'Wait for Sale', factoring in the competitor price if provided.",
   "compatibility": "A suggestion on how this fits with typical outfits or electronics.",
-  "specsTranslation": "A 1-sentence plain English translation of its key feature.",
-  "aiNote": "A brief engaging note."
-}"""
+  "specsTranslation": "A 1-sentence plain English translation of its key feature, explained in a way a {req.user_context} would appreciate.",
+  "aiNote": "A brief engaging note speaking directly to the {req.user_context}."
+}}"""
     
-    raw_response = query_local_llm(system_prompt, user_prompt)
+    raw_response = query_local_llm(system_prompt, user_prompt, is_json=True)
     try:
         clean_json = raw_response.replace('```json', '').replace('```', '').strip()
         analysis_obj = json.loads(clean_json)

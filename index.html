@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AR Vision | Open-Source AI Product & Wayfinder Scanner</title>
-  <meta name="description" content="Open-Source AI Augmented Reality QR product scanner projecting real-time prices, AI recommendations, nutritional coaching, flavor pairings, and indoor store wayfinding HUD.">
+  <meta name="description" content="Open-Source AI Augmented Reality QR product scanner projecting real-time prices, AI recommendations, smart product insights, and indoor store wayfinding HUD.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
   <link rel="stylesheet" href="styles.css">
   <!-- jsQR decoder library -->
@@ -140,9 +140,9 @@
         <!-- AR Navigation Tabs -->
         <nav class="ar-tabs-bar" aria-label="Product AR Details Tabs">
           <button class="ar-tab-btn active" data-tab="tab-overview">Overview & AI</button>
-          <button class="ar-tab-btn" data-tab="tab-nutrition">Specs</button>
+          <button class="ar-tab-btn" data-tab="tab-specs">Specs</button>
           <button class="ar-tab-btn" data-tab="tab-genai" style="color: #10b981; font-weight: 600;">🤖 AI Studio</button>
-          <button class="ar-tab-btn" data-tab="tab-recipes">Alternatives</button>
+          <button class="ar-tab-btn" data-tab="tab-reviews">Reviews</button>
           <button class="ar-tab-btn" data-tab="tab-wayfinder">Wayfinder</button>
         </nav>
 
@@ -159,7 +159,7 @@
             </div>
             
             <div id="ai-rec-content-main" style="font-size: 0.8rem; color: #fff;">
-              <!-- Dynamically populated with AI recipe & pairing recommendation -->
+              <!-- Dynamically populated with AI analysis -->
             </div>
           </div>
 
@@ -177,13 +177,13 @@
           </div>
         </div>
 
-        <!-- Tab 2: Nutrition Matrix -->
-        <div class="ar-tab-panel" id="tab-nutrition">
-          <div class="nutri-header-row">
-            <span style="font-size: 0.8rem; color: var(--text-muted);" id="ar-nutri-serving">Serving: 100g</span>
-            <div class="nutri-score-pill">
-              <span>Nutri-Score</span>
-              <span id="ar-nutri-score">A</span>
+        <!-- Tab 2: Specs Matrix -->
+        <div class="ar-tab-panel" id="tab-specs">
+          <div class="spec-header-row">
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="ar-spec-warranty">Warranty: 1 Year</span>
+            <div class="quality-score-pill">
+              <span>Quality</span>
+              <span id="ar-spec-quality">A</span>
             </div>
           </div>
           <div class="macros-grid" id="ar-macros-grid"></div>
@@ -199,20 +199,20 @@
                   🤖 Custom AI Deep Dive
                 </div>
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
-                  <select id="select-ai-diet" class="btn-glass" style="flex: 1; padding: 0.4rem; font-size: 0.75rem;">
+                  <select id="select-ai-persona" class="btn-glass" style="flex: 1; padding: 0.4rem; font-size: 0.75rem;">
                     <option value="General Buyer">General Buyer</option>
                     <option value="Budget Shopper">Budget Shopper</option>
                     <option value="Tech Enthusiast">Tech Enthusiast</option>
                     <option value="Fashion Forward">Fashion Forward</option>
                   </select>
-                  <button class="btn-glass" id="btn-trigger-genai-recipe" style="background: linear-gradient(135deg, #059669, #0284c7); border: none; font-size: 0.75rem; font-weight: 600;">
+                  <button class="btn-glass" id="btn-trigger-genai-report" style="background: linear-gradient(135deg, #059669, #0284c7); border: none; font-size: 0.75rem; font-weight: 600;">
                     Generate Report
                   </button>
                 </div>
               </div>
             </div>
 
-            <div id="ai-recipe-output" style="display: none;"></div>
+            <div id="ai-report-output" style="display: none;"></div>
           </div>
 
           <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid var(--border-glass); border-radius: 12px; padding: 0.9rem;">
@@ -233,12 +233,12 @@
         </div>
 
         <!-- Tab 4: Alternatives -->
-        <div class="ar-tab-panel" id="tab-recipes">
-          <h4 style="font-size: 0.8rem; color: var(--primary); text-transform: uppercase; margin-bottom: 0.6rem;">Recommended Alternatives</h4>
-          <div id="ar-recipes-container"></div>
+        <div class="ar-tab-panel" id="tab-reviews">
+          <h4 style="font-size: 0.8rem; color: var(--primary); text-transform: uppercase; margin-bottom: 0.6rem;">Customer Reviews</h4>
+          <div id="ar-reviews-container"></div>
 
           <h4 style="font-size: 0.8rem; color: var(--accent-purple); text-transform: uppercase; margin-top: 1rem; margin-bottom: 0.6rem;">Frequently Paired Items</h4>
-          <div id="ar-pairings-container"></div>
+          <div id="ar-accessories-container"></div>
         </div>
 
         <!-- Tab 5: In-Store Wayfinder Radar HUD -->
