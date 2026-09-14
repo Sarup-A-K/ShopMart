@@ -6,7 +6,7 @@
     "price": 15999,
     "originalPrice": 18999,
     "category": "Electronics",
-    "image": "https://m.media-amazon.com/images/I/91ItZJh1F-L._SX679_.jpg",
+    "image": "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?q=80&w=600&auto=format&fit=crop",
     "description": "A powerful mid-range 5G smartphone with a massive battery and a vibrant Super AMOLED display.",
     "specifications": {
       "warranty": "1 Year Manufacturer Warranty",
@@ -45,7 +45,7 @@
     "price": 1299,
     "originalPrice": 2990,
     "category": "Electronics",
-    "image": "https://m.media-amazon.com/images/I/51nOzqGtw2L._SX522_.jpg",
+    "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=600&auto=format&fit=crop",
     "description": "Lightweight and stylish truly wireless earbuds offering long playtime and clear audio quality.",
     "specifications": {
       "warranty": "1 Year Warranty",
@@ -84,7 +84,7 @@
     "price": 849,
     "originalPrice": 1299,
     "category": "Fashion",
-    "image": "https://m.media-amazon.com/images/I/71cFlRq1X-L._SX569._SX._UX._SY._UY_.jpg",
+    "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=600&auto=format&fit=crop",
     "description": "A comfortable and breathable everyday cotton t-shirt featuring the classic Puma logo.",
     "specifications": {
       "warranty": "Not Available",
@@ -123,7 +123,7 @@
     "price": 1199,
     "originalPrice": 1999,
     "category": "Fashion",
-    "image": "https://m.media-amazon.com/images/I/71O15wU5L8L._SY741._SX._UX._SY._UY_.jpg",
+    "image": "https://images.unsplash.com/photo-1583391733958-d25e07fac0fa?q=80&w=600&auto=format&fit=crop",
     "description": "An elegant cotton straight kurta with vibrant prints, perfect for casual and festive wear.",
     "specifications": {
       "warranty": "Not Available",
@@ -162,7 +162,7 @@
     "price": 2795,
     "originalPrice": 3695,
     "category": "Footwear",
-    "image": "https://m.media-amazon.com/images/I/61m1hIARZ-L._SY695._SX._UX._SY._UY_.jpg",
+    "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop",
     "description": "Versatile and comfortable running shoes designed for maximum cushioning and flexibility.",
     "specifications": {
       "warranty": "30 Days Manufacturer Warranty",
@@ -201,7 +201,7 @@
     "price": 699,
     "originalPrice": 999,
     "category": "Footwear",
-    "image": "https://m.media-amazon.com/images/I/81P8N8fC9qL._SY695._SX._UX._SY._UY_.jpg",
+    "image": "https://images.unsplash.com/photo-1603487742131-4160ec999306?q=80&w=600&auto=format&fit=crop",
     "description": "Stylish and durable sandals featuring a comfortable footbed for all-day wear.",
     "specifications": {
       "warranty": "90 Days Warranty",

@@ -87,7 +87,7 @@ import re
 @app.post("/api/scrape_competitor")
 async def scrape_competitor(req: ScrapeRequest):
     try:
-                true_prices = {
+        true_prices = {
             "samsung galaxy m34": {"Amazon": 15999.0, "Flipkart": 16499.0, "Croma": 15999.0},
             "boat airdopes 141": {"Amazon": 1299.0, "Flipkart": 1399.0, "Croma": 1499.0},
             "puma men": {"Amazon": 849.0, "Flipkart": 849.0, "Croma": "NA"},
