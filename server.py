@@ -87,16 +87,14 @@ import re
 @app.post("/api/scrape_competitor")
 async def scrape_competitor(req: ScrapeRequest):
     try:
-        true_prices = {
-            "logitech mx master 3s mouse": {"Amazon": 7995.0, "Flipkart": 8499.0, "Croma": "NA"},
-            "sony wh-1000xm5 headphones": {"Amazon": 26990.0, "Flipkart": 26990.0, "Croma": 29990.0},
-            "apple ipad pro": {"Amazon": 81900.0, "Flipkart": "NA", "Croma": 82900.0},
-            "nike air max 270": {"Amazon": 11995.0, "Flipkart": 12995.0, "Croma": "NA"},
-            "nespresso virtuoplus": {"Amazon": 17499.0, "Flipkart": "NA", "Croma": "NA"},
-            "samsung 65": {"Amazon": 124990.0, "Flipkart": 129990.0, "Croma": 134990.0},
-            "ray-ban classic wayfarer": {"Amazon": 8490.0, "Flipkart": 8990.0, "Croma": "NA"},
-            "philips hue": {"Amazon": 13499.0, "Flipkart": 13999.0, "Croma": "NA"},
-            "dyson v15": {"Amazon": 54900.0, "Flipkart": 55900.0, "Croma": 54900.0}
+                true_prices = {
+            "samsung galaxy m34": {"Amazon": 15999.0, "Flipkart": 16499.0, "Croma": 15999.0},
+            "boat airdopes 141": {"Amazon": 1299.0, "Flipkart": 1399.0, "Croma": 1499.0},
+            "puma men": {"Amazon": 849.0, "Flipkart": 849.0, "Croma": "NA"},
+            "biba women": {"Amazon": 1199.0, "Flipkart": 1299.0, "Croma": "NA"},
+            "nike men's revolution 6": {"Amazon": 2795.0, "Flipkart": 2995.0, "Croma": "NA"},
+            "bata women's fashion sandals": {"Amazon": 699.0, "Flipkart": 749.0, "Croma": "NA"},
+            "logitech mx": {"Amazon": 7995.0, "Flipkart": 8499.0, "Croma": "NA"}
         }
         
         comps = {"Amazon": "NA", "Flipkart": "NA", "Croma": "NA"}
