@@ -5,7 +5,7 @@ class ProductService {
 
   async initDatabase() {
     try {
-      const response = await fetch("/mock_store_data.json");
+      const response = await fetch("/mock_store_data.json?v=3");
       if (response.ok) {
         this.products = await response.json();
       }
