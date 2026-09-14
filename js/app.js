@@ -151,7 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
         activeProduct.compPrice = scrapeResult.price;
         activeProduct.competitors = scrapeResult.competitors;
         // Dynamic Pricing: Beat least price by ~5%
-        let targetPrice = Math.floor(scrapeResult.price * 0.95);
+        let targetPrice = 0;
+        if (scrapeResult.price !== "NA") {
+          targetPrice = Math.floor(scrapeResult.price * 0.95);
+        }
         if (targetPrice > 0) {
           activeProduct.price = targetPrice;
           // Update JSON file via backend
@@ -182,10 +185,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Display dynamic pricing if competitor price is available
     if (product.competitors && product.competitors.length > 0) {
-      const compsHtml = product.competitors.map(c => `${c.name}: ₹${c.price.toFixed(2)}`).join(' | ');
+      const compsHtml = product.competitors.map(c => `${c.name}: ${c.price === "NA" ? "NA" : "₹" + c.price.toFixed(2)}`).join(' | ');
       arProdPrice.innerHTML = `<span style="color: #10b981;">₹${product.price.toFixed(2)}</span> <br><span style="font-size: 0.8rem; text-decoration: line-through; color: #64748b;">${compsHtml}</span>`;
     } else if (product.compPrice) {
-      arProdPrice.innerHTML = `<span style="color: #10b981;">₹${product.price.toFixed(2)}</span> <span style="font-size: 0.9rem; text-decoration: line-through; color: #64748b; margin-left: 0.5rem;">Amazon: ₹${product.compPrice.toFixed(2)}</span>`;
+      arProdPrice.innerHTML = `<span style="color: #10b981;">₹${product.price.toFixed(2)}</span> <span style="font-size: 0.9rem; text-decoration: line-through; color: #64748b; margin-left: 0.5rem;">Amazon: ${product.compPrice === "NA" ? "NA" : "₹" + product.compPrice.toFixed(2)}</span>`;
     } else {
       arProdPrice.textContent = `₹${product.price.toFixed(2)}`;
     }
