@@ -36,6 +36,11 @@
         "y": 0,
         "z": 5
       }
+    },
+    "competitorPrices": {
+      "Amazon": 15999,
+      "Flipkart": 16499,
+      "Croma": 15999
     }
   },
   {
@@ -75,13 +80,18 @@
         "y": 0,
         "z": 15
       }
+    },
+    "competitorPrices": {
+      "Amazon": 1299,
+      "Flipkart": 1399,
+      "Croma": 1499
     }
   },
   {
     "qrCode": "item-3",
     "name": "Puma Men's Regular Fit T-Shirt",
     "brand": "Puma",
-    "price": 806.0,
+    "price": 849,
     "originalPrice": 1299,
     "category": "Fashion",
     "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=600&auto=format&fit=crop",
@@ -114,6 +124,11 @@
         "y": 0,
         "z": 2
       }
+    },
+    "competitorPrices": {
+      "Amazon": 849,
+      "Flipkart": 849,
+      "Croma": null
     }
   },
   {
@@ -153,13 +168,18 @@
         "y": 0,
         "z": 10
       }
+    },
+    "competitorPrices": {
+      "Amazon": 1199,
+      "Flipkart": 1299,
+      "Croma": null
     }
   },
   {
     "qrCode": "item-5",
     "name": "Nike Men's Revolution 6 Running Shoes",
     "brand": "Nike",
-    "price": 2655.0,
+    "price": 2795,
     "originalPrice": 3695,
     "category": "Footwear",
     "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop",
@@ -192,6 +212,11 @@
         "y": 0,
         "z": 20
       }
+    },
+    "competitorPrices": {
+      "Amazon": 2795,
+      "Flipkart": 2995,
+      "Croma": null
     }
   },
   {
@@ -231,6 +256,11 @@
         "y": 0,
         "z": 10
       }
+    },
+    "competitorPrices": {
+      "Amazon": 699,
+      "Flipkart": 749,
+      "Croma": null
     }
   }
 ]

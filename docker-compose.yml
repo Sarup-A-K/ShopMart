@@ -34,13 +34,17 @@ services:
     hostname: ai-workspace
     ports:
       - "8000:8000"
-      - "5000:5000"
     volumes:
       - .:/workspace
+    environment:
+      # Set in .env (start.sh creates one with a random password on first run)
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-omnitag-admin}
+      # Address phones use to open the site; printed into QR codes. start.sh sets it automatically.
+      - PUBLIC_URL=${PUBLIC_URL:-}
     depends_on:
       - llm-engine
-    # Command to run both backend and frontend servers
-    command: bash -c "uvicorn server:app --host 0.0.0.0 --port 5000 & python3 -m http.server 8000 --bind 0.0.0.0"
+    # One server for the website and the API
+    command: uvicorn server:app --host 0.0.0.0 --port 8000
 
 volumes:
   ollama_data:

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10243a">
+  <title>Store Admin | OmniTag Mall</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/store.css?v=2">
+  <style>
+    .login-card { max-width: 380px; margin: 48px auto; padding: 24px; }
+    .login-card h1 { font-size: 1.3rem; margin-bottom: 4px; }
+    .login-card .input { width: 100%; margin: 16px 0 12px; }
+    .login-card .btn { width: 100%; }
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; overflow-x: auto; }
+    .tab { border: 0; background: transparent; padding: 10px 14px; font-weight: 600; color: var(--text-muted); border-bottom: 3px solid transparent; white-space: nowrap; }
+    .tab.active { color: var(--text); border-bottom-color: var(--cta); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+    .toolbar h2 { font-size: 1.15rem; }
+    .toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    table.price-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: #fff; }
+    .price-table th, .price-table td { padding: 8px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+    .price-table thead th { background: #f6f8fa; color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; position: sticky; top: 0; }
+    .price-table td.name { white-space: normal; min-width: 200px; }
+    .price-table input { width: 86px; padding: 6px 8px; border: 1px solid var(--border-strong); border-radius: 6px; font: inherit; }
+    .price-table input.dirty { border-color: #e8ad1c; background: #fff9e8; }
+    .price-table input.invalid { border-color: var(--deal); background: #fdecef; }
+    .effective { color: var(--brand-dark); font-weight: 700; }
+    .status { min-height: 1.3rem; font-size: 0.88rem; margin-top: 12px; white-space: pre-line; }
+    .status.ok { color: var(--brand-dark); }
+    .status.err { color: var(--deal); }
+    .dirty-count { color: #9a6b00; font-size: 0.85rem; margin-top: 8px; }
+    .url-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+    .url-row .input { flex: 1 1 280px; }
+    .warn-box { background: var(--warn-bg); color: #6b4b00; border: 1px solid #f3dc9b; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 0.88rem; margin: 10px 0; }
+
+    /* Printable price tags */
+    .tag-sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 14px; }
+    .price-tag { border: 1.5px dashed #9aa5b1; border-radius: 10px; padding: 12px; background: #fff; display: grid; grid-template-columns: 1fr auto; gap: 10px; break-inside: avoid; }
+    .price-tag .t-brand { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+    .price-tag .t-name { font-size: 0.85rem; font-weight: 600; line-height: 1.3; margin: 2px 0 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .price-tag .t-price { font-size: 1.5rem; font-weight: 800; }
+    .price-tag .t-mrp { font-size: 0.75rem; color: var(--text-dim); }
+    .price-tag .t-aisle { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+    .price-tag .t-qr { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .price-tag .t-qr img, .price-tag .t-qr canvas { width: 96px !important; height: 96px !important; }
+    .price-tag .t-hint { font-size: 0.6rem; color: var(--text-muted); text-align: center; max-width: 100px; line-height: 1.2; }
+
+    @media print {
+      body { background: #fff; }
+      .site-header, .tabs, .no-print, .site-footer { display: none !important; }
+      .container { padding: 0; max-width: none; }
+      .card { border: 0; box-shadow: none; }
+      .tag-sheet { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-row">
+      <a class="logo" href="/"><span class="logo-mark">🏷️</span>OmniTag<small>Store admin</small></a>
+      <div class="header-actions" style="margin-left: auto;">
+        <a class="header-link" href="/">View store</a>
+        <button class="btn-scan hidden" id="btn-logout" style="background: transparent; color: #fff; border-color: rgba(255,255,255,0.4);">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Login -->
+    <section class="card login-card" id="login-view">
+      <h1>Store admin</h1>
+      <p class="muted small">Sign in to manage prices and print QR price tags.</p>
+      <form id="login-form">
+        <label for="input-password" class="sr-only">Admin password</label>
+        <input type="password" id="input-password" class="input" placeholder="Admin password" autocomplete="current-password" required>
+        <button type="submit" class="btn btn-cta">Sign in</button>
+      </form>
+      <div class="status err" id="login-status"></div>
+    </section>
+
+    <section class="hidden" id="manager-view">
+      <div class="tabs no-print" role="tablist">
+        <button class="tab active" data-tab="prices-panel" role="tab">Prices</button>
+        <button class="tab" data-tab="tags-panel" role="tab">QR price tags</button>
+      </div>
+
+      <!-- Prices -->
+      <div class="card panel" id="prices-panel">
+        <div class="toolbar">
+          <div>
+            <h2>Prices</h2>
+            <p class="muted small">Shoppers see the <strong>Shown price</strong>: your store price, or ~5% below the cheapest online price if that is lower.</p>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn" id="btn-download">⬇ Download Excel</button>
+            <button class="btn" id="btn-upload">⬆ Upload Excel</button>
+            <input type="file" id="input-file" accept=".xlsx" class="hidden">
+            <button class="btn btn-cta" id="btn-save" disabled>Save changes</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="price-table">
+            <thead>
+              <tr>
+                <th>QR code</th><th>Product</th><th>Store price ₹</th><th>MRP ₹</th>
+                <th>Amazon ₹</th><th>Flipkart ₹</th><th>Croma ₹</th><th>Shown price</th><th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="price-rows"></tbody>
+          </table>
+        </div>
+        <div class="dirty-count" id="dirty-count"></div>
+        <div class="status" id="manager-status"></div>
+        <p class="muted small" style="margin-top: 10px;">Leave a competitor price empty if that store doesn't sell the product. For bulk edits, download the Excel file, change the price columns and upload it back. Rows are matched by QR code, and nothing is saved if any row has an error.</p>
+      </div>
+
+      <!-- QR price tags -->
+      <div class="card panel hidden" id="tags-panel">
+        <div class="toolbar no-print">
+          <div>
+            <h2>QR price tags</h2>
+            <p class="muted small">Print these and place them on the shelves. Scanning a tag with any phone camera opens that product's page.</p>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn btn-cta" id="btn-print">🖨 Print tags</button>
+          </div>
+        </div>
+        <div class="no-print">
+          <label for="input-base-url" class="small" style="font-weight: 600;">Website address phones should open</label>
+          <div class="url-row">
+            <input class="input" id="input-base-url" placeholder="http://192.168.43.10:8000">
+            <button class="btn" id="btn-apply-url">Update tags</button>
+          </div>
+          <div class="warn-box hidden" id="url-warning"></div>
+        </div>
+        <div class="tag-sheet" id="tag-sheet"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="/js/common.js?v=2"></script>
+  <script src="/js/admin.js?v=2"></script>
+</body>
+</html>

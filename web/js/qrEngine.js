@@ -1,6 +1,5 @@
 /**
- * AR QR Camera Engine & Decoder Module
- * Handles WebRTC live video streams, QR code frame analysis, and simulated triggers.
+ * QR camera scanner: streams the rear camera and decodes frames with jsQR.
  */
 
 class QREngine {
@@ -96,7 +95,7 @@ class QREngine {
 
             if (code && code.data) {
               if (this.onDetectCallback) {
-                this.onDetectCallback(code.data, code.location);
+                this.onDetectCallback(code.data);
               }
             }
           }
@@ -107,20 +106,6 @@ class QREngine {
     };
 
     processFrame();
-  }
-
-  // Simulated scan for quick testing or manual select
-  simulateScan(qrCodeValue) {
-    if (this.onDetectCallback) {
-      // Return simulated center location for AR overlay targeting
-      const mockLocation = {
-        topLeftCorner: { x: 250, y: 150 },
-        topRightCorner: { x: 450, y: 150 },
-        bottomRightCorner: { x: 450, y: 350 },
-        bottomLeftCorner: { x: 250, y: 350 }
-      };
-      this.onDetectCallback(qrCodeValue, mockLocation);
-    }
   }
 }
 

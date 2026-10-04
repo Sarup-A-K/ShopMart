@@ -2,5 +2,5 @@ requests>=2.31.0
 fastapi
 uvicorn[standard]
 pydantic
-duckduckgo-search
-beautifulsoup4
+openpyxl
+python-multipart

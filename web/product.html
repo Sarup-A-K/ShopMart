@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#10243a">
+  <title>Product | OmniTag Mall</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏷️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/store.css?v=2">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-row">
+      <a class="logo" href="/"><span class="logo-mark">🏷️</span>OmniTag<small>Mall</small></a>
+      <form class="search" role="search" action="/" method="get">
+        <label for="search-input" class="sr-only">Search products</label>
+        <input type="search" id="search-input" name="q" placeholder="Search phones, earbuds, shoes…" autocomplete="off">
+        <button type="submit" aria-label="Search">Search</button>
+      </form>
+      <div class="header-actions">
+        <button class="btn-scan" data-open-scanner>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+          Scan tag
+        </button>
+        <a class="header-link" href="/admin">Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="page">
+    <p class="muted" id="loading">Loading product…</p>
+
+    <div class="empty card hidden" id="not-found">
+      <h2>We couldn't find that price tag</h2>
+      <p class="muted">The tag code may be wrong or the product is no longer sold here.</p>
+      <p style="margin-top: 14px;"><a class="btn btn-cta" href="/">Browse all products</a></p>
+    </div>
+
+    <div class="hidden" id="product-view">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a> › <span id="crumb-category"></span> › <span id="crumb-brand"></span>
+      </nav>
+
+      <div class="pdp">
+        <div class="card pdp-media">
+          <img id="p-image" alt="">
+        </div>
+
+        <div class="pdp-info">
+          <section class="card pdp-head">
+            <a class="brand-link" id="p-brand" href="/"></a>
+            <h1 id="p-name"></h1>
+            <div id="p-badges" style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;"></div>
+            <div class="price-row" id="p-price-row"></div>
+            <p class="tax">Inclusive of all taxes</p>
+            <div class="save-note hidden" id="p-save-note"></div>
+            <p class="desc" id="p-desc"></p>
+            <div class="pdp-actions">
+              <a class="btn btn-cta" href="#find">📍 Find in store</a>
+              <a class="btn" href="#ai">✨ Ask AI assistant</a>
+            </div>
+          </section>
+
+          <section class="card panel" aria-labelledby="compare-title">
+            <h2 id="compare-title">Compare online prices</h2>
+            <table class="compare-table"><tbody id="compare-rows"></tbody></table>
+            <p class="muted small" style="margin-top: 8px;" id="compare-updated"></p>
+          </section>
+
+          <section class="card panel" id="find" aria-labelledby="find-title">
+            <h2 id="find-title">Find it in this store</h2>
+            <span class="aisle-badge" id="w-aisle"></span>
+            <div class="near-row">
+              <label for="w-near">I'm near:</label>
+              <select id="w-near">
+                <option value="entrance">Entrance</option>
+                <option value="aisle-1">Aisle 1</option>
+                <option value="aisle-2">Aisle 2</option>
+                <option value="aisle-3">Aisle 3</option>
+                <option value="aisle-4">Aisle 4</option>
+                <option value="aisle-5">Aisle 5</option>
+                <option value="aisle-6">Aisle 6</option>
+              </select>
+              <span class="muted small" id="w-summary"></span>
+            </div>
+            <ol class="route-steps" id="w-steps"></ol>
+            <canvas class="store-map" id="w-map" width="500" height="280" aria-label="Store map with route to the product"></canvas>
+          </section>
+
+          <section class="card panel" id="ai" aria-labelledby="ai-title">
+            <div class="ai-head">
+              <h2 id="ai-title" style="margin: 0;">AI shopping assistant <span class="ai-tag">Llama 3.2</span></h2>
+              <label class="small muted" style="display: flex; align-items: center; gap: 6px;">
+                Advice for
+                <select id="persona">
+                  <option>General Buyer</option>
+                  <option>Budget Shopper</option>
+                  <option>Student</option>
+                  <option>Tech Enthusiast</option>
+                  <option>Fashion Forward</option>
+                </select>
+              </label>
+            </div>
+            <div class="insight" id="insight" aria-live="polite"></div>
+
+            <div class="chat">
+              <div class="chat-log" id="chat-log" aria-live="polite"></div>
+              <div class="suggestions" id="suggestions">
+                <button class="suggestion">Is this a good deal?</button>
+                <button class="suggestion">Which aisle is it in?</button>
+                <button class="suggestion">Who is this best for?</button>
+              </div>
+              <form class="chat-form" id="chat-form">
+                <label for="chat-input" class="sr-only">Ask about this product</label>
+                <input class="input" id="chat-input" placeholder="Ask anything about this product…" autocomplete="off">
+                <button class="btn btn-brand" type="submit" id="chat-send">Ask</button>
+              </form>
+            </div>
+          </section>
+
+          <section class="card panel" aria-labelledby="specs-title">
+            <h2 id="specs-title">Product details</h2>
+            <table class="spec-table"><tbody id="spec-rows"></tbody></table>
+            <ul class="feature-list" id="feature-list"></ul>
+          </section>
+
+          <section class="card panel" aria-labelledby="reviews-title">
+            <h2 id="reviews-title">Customer reviews</h2>
+            <div id="reviews"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="sticky-bar hidden" id="sticky-bar">
+    <a class="btn btn-cta" href="#find">📍 Find in store</a>
+    <a class="btn" href="#ai">✨ Ask AI</a>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>OmniTag Mall · prices updated by the store.</span>
+      <a href="/">All products</a>
+    </div>
+  </footer>
+
+  <!-- Scanner modal -->
+  <div class="modal hidden" id="scan-modal" role="dialog" aria-modal="true" aria-labelledby="scan-title">
+    <div class="modal-box">
+      <div class="modal-top">
+        <h2 id="scan-title">Scan a price tag</h2>
+        <button class="icon-btn" id="scan-close" aria-label="Close">×</button>
+      </div>
+      <div class="scan-view" id="scan-view">
+        <video id="scan-video" playsinline muted></video>
+        <div class="scan-frame"></div>
+      </div>
+      <canvas id="scan-canvas" class="hidden"></canvas>
+      <p class="scan-msg" id="scan-msg"></p>
+      <form class="manual-entry" id="manual-form">
+        <label for="manual-code" class="sr-only">Tag code</label>
+        <input class="input" id="manual-code" placeholder="Or type the tag code, e.g. item-1" autocomplete="off">
+        <button class="btn btn-brand" type="submit">Go</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script src="/js/qrEngine.js?v=1"></script>
+  <script src="/js/common.js?v=2"></script>
+  <script src="/js/wayfinding.js?v=2"></script>
+  <script src="/js/product.js?v=2"></script>
+</body>
+</html>
