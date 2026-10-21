@@ -53,6 +53,17 @@ def init_db():
                 updated_at      TEXT NOT NULL
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS embeddings (
+                id          TEXT PRIMARY KEY,
+                source_type TEXT NOT NULL,
+                source_id   TEXT NOT NULL,
+                title       TEXT NOT NULL,
+                text        TEXT NOT NULL,
+                text_hash   TEXT NOT NULL,
+                vector      BLOB NOT NULL
+            )
+        """)
         if conn.execute("SELECT COUNT(*) FROM products").fetchone()[0] == 0:
             seed(conn)
 

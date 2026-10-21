@@ -5,7 +5,7 @@ import secrets
 import time
 from typing import Optional, Any, List
 
-from fastapi import FastAPI, Header, HTTPException, UploadFile, File, Depends, Request
+from fastapi import FastAPI, Header, HTTPException, UploadFile, File, Depends, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 import assistant
 import llm
+import rag
 import store_db
 
 app = FastAPI(title="OmniTag AI Server", description="OmniTag AR GenAI API")
@@ -41,6 +42,7 @@ _sessions = {}  # token -> expiry timestamp
 _failed_logins = {}  # client ip -> [timestamps]
 
 store_db.init_db()
+rag.start_background_index()
 
 
 # ---------------------------------------------------------------------------
@@ -75,6 +77,7 @@ def health_check():
         "service": "FastAPI LLM Gateway",
         "backend": llm.OLLAMA_BASE,
         "model": llm.CHAT_MODEL,
+        "rag": rag.status(),
     }
 
 
@@ -98,6 +101,19 @@ def get_product(qr_code: str):
     if not product:
         raise HTTPException(status_code=404, detail="Tag not found.")
     return {"success": True, "product": product}
+
+
+@app.get("/api/search")
+def search(q: str = Query(..., min_length=1, max_length=200), limit: int = 6):
+    """Semantic product search with price/category filters parsed from the text."""
+    q = q.strip()[:200]
+    if not q:
+        raise HTTPException(status_code=400, detail="Empty search.")
+    try:
+        found = rag.search_products(q, limit=max(1, min(limit, 12)))
+    except (llm.LLMError, RuntimeError) as e:
+        return {"success": False, "error": str(e)}
+    return {"success": True, **found}
 
 
 def resolve_product(qr_code, client_product):
@@ -329,10 +345,11 @@ def scan_tag(req: TagRequest):
 def ask_product(req: ChatRequest):
     product = resolve_product(req.qr_code, req.product)
     try:
-        text = assistant.answer(product, req.persona, [m.model_dump() for m in req.history], req.question)
+        policies = rag.policy_context(req.question)
+        text = assistant.answer(product, req.persona, [m.model_dump() for m in req.history], req.question, policies)
     except llm.LLMError as e:
         return {"success": False, "error": str(e)}
-    return {"success": True, "answer": text, "model": llm.CHAT_MODEL}
+    return {"success": True, "answer": text, "model": llm.CHAT_MODEL, "sources": assistant.sources_for(policies)}
 
 
 @app.post("/api/chat/stream")
@@ -344,12 +361,17 @@ def chat_stream(req: ChatRequest):
     def events():
         started = time.time()
         try:
-            for piece in assistant.stream_answer(product, req.persona, history, req.question):
+            policies = rag.policy_context(req.question)
+            for piece in assistant.stream_answer(product, req.persona, history, req.question, policies):
                 yield sse("token", {"text": piece})
         except llm.LLMError as e:
             yield sse("error", {"message": str(e)})
             return
-        yield sse("done", {"latency_ms": int((time.time() - started) * 1000), "model": llm.CHAT_MODEL})
+        yield sse("done", {
+            "latency_ms": int((time.time() - started) * 1000),
+            "model": llm.CHAT_MODEL,
+            "sources": assistant.sources_for(policies),
+        })
 
     return StreamingResponse(events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 

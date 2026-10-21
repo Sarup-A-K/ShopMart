@@ -7,6 +7,10 @@ import time
 
 import llm
 
+# Mirrors the "Payment options and EMI" section of knowledge/store_policies.md. LLMs (especially small ones)
+# are unreliable at comparing numbers, so conditions like this are computed in code and given to the model as facts.
+EMI_MIN_PRICE = 10000
+
 MAX_HISTORY_TURNS = 6          # user+assistant messages kept from the conversation
 MAX_MESSAGE_CHARS = 800
 INSIGHT_CACHE_SIZE = 200
@@ -42,6 +46,11 @@ def build_product_context(product):
         lines.append(f"Our store price: ₹{product['price']:.0f}")
     if product.get("originalPrice"):
         lines.append(f"MRP: ₹{product['originalPrice']:.0f}")
+    if product.get("price") is not None:
+        if product["price"] >= EMI_MIN_PRICE:
+            lines.append("EMI: eligible (no-cost EMI for 3 or 6 months with selected credit cards)")
+        else:
+            lines.append(f"EMI: not available for this product (its price is below the ₹{EMI_MIN_PRICE:,} minimum)")
     priced = [c for c in (product.get("competitors") or []) if isinstance(c.get("price"), (int, float))]
     if priced:
         lines.append("Online prices: " + ", ".join(f"{c['name']} ₹{c['price']:.0f}" for c in priced))
@@ -132,32 +141,42 @@ def clean_history(history):
     return turns[-MAX_HISTORY_TURNS:]
 
 
-def chat_system_prompt(product, persona):
+def chat_system_prompt(product, persona, policies=()):
+    """`policies` are store-information chunks retrieved by rag.policy_context for this question."""
     prompt = (
         f"You are OmniTag, a helpful in-store shopping assistant in an Indian mall, talking to a '{persona}'. "
         "Answer in 2-4 short sentences, tailored to that shopper. "
-        "Use only the product facts below for prices, specs and location; if something is not in the facts, say you don't know. "
+        "Use only the product facts and store information below for prices, specs, policies and location; "
+        "if something is not covered there, say you don't know. "
+        "When store information has conditions (minimum purchase amount, number of days, product types), "
+        "check them against this product's price and type before saying yes. "
         "Use Indian Rupees (₹), never '$'. Never change or negotiate prices."
     )
     context = build_product_context(product)
     if context:
         prompt += f"\n\nProduct facts:\n{context}"
+    if policies:
+        prompt += "\n\nStore information:\n" + "\n".join(f"[{p['title']}] {p['text']}" for p in policies)
     return prompt
 
 
-def build_chat_messages(product, persona, history, question):
+def sources_for(policies):
+    return [{"type": "policy", "title": p["title"]} for p in policies]
+
+
+def build_chat_messages(product, persona, history, question, policies=()):
     return (
-        [{"role": "system", "content": chat_system_prompt(product, persona)}]
+        [{"role": "system", "content": chat_system_prompt(product, persona, policies)}]
         + clean_history(history)
         + [{"role": "user", "content": question.strip()}]
     )
 
 
-def answer(product, persona, history, question):
+def answer(product, persona, history, question, policies=()):
     """Non-streaming answer (used by /api/ask)."""
-    return llm.chat(build_chat_messages(product, persona, history, question))["content"].strip()
+    return llm.chat(build_chat_messages(product, persona, history, question, policies))["content"].strip()
 
 
-def stream_answer(product, persona, history, question):
+def stream_answer(product, persona, history, question, policies=()):
     """Yield answer text pieces as they are generated."""
-    yield from llm.stream_chat(build_chat_messages(product, persona, history, question))
+    yield from llm.stream_chat(build_chat_messages(product, persona, history, question, policies))

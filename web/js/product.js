@@ -129,6 +129,19 @@
     return div;
   }
 
+  function addSources(bubble, sources) {
+    const row = document.createElement("div");
+    row.className = "sources";
+    row.append("Sources: ");
+    sources.forEach(src => {
+      const chip = document.createElement("span");
+      chip.className = "source-chip";
+      chip.textContent = src.title;
+      row.appendChild(chip);
+    });
+    bubble.appendChild(row);
+  }
+
   // Conversation memory: the server receives the recent turns so follow-ups ("and the price?") make sense
   const history = [];
 
@@ -183,6 +196,8 @@
           text += data.text;
           bubble.textContent = text;
           $("chat-log").scrollTop = $("chat-log").scrollHeight;
+        } else if (name === "done") {
+          if (data.sources && data.sources.length) addSources(bubble, data.sources);
         } else if (name === "error") {
           failed = true;
         }

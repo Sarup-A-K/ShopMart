@@ -106,6 +106,7 @@ button { font: inherit; cursor: pointer; }
 @media (min-width: 760px) { .hero { padding: 30px 32px; } .hero h1 { font-size: 1.8rem; } }
 
 /* ---------- Product grid ---------- */
+.search-note { margin: 0 2px 10px; padding: 8px 12px; background: #efeafd; color: #3d2a8f; border-radius: var(--radius-sm); font-size: 0.88rem; }
 .results-bar { display: flex; justify-content: space-between; align-items: baseline; margin: 4px 2px 10px; gap: 8px; flex-wrap: wrap; }
 .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 @media (min-width: 760px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; } }
@@ -215,6 +216,8 @@ select:focus, .input:focus { outline: 2px solid #9fd3c4; border-color: var(--bra
 .msg-ai { background: #f1f4f7; align-self: flex-start; border-bottom-left-radius: 4px; }
 .msg-user { background: #dff1ec; align-self: flex-end; border-bottom-right-radius: 4px; }
 .msg-error { background: #fdecef; color: #8a1a36; align-self: flex-start; }
+.sources { margin-top: 6px; font-size: 0.75rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.source-chip { background: #fff; border: 1px solid var(--border-strong); border-radius: 999px; padding: 1px 8px; color: #2c3743; }
 .msg.typing { color: var(--text-muted); font-style: italic; }
 .msg.typing::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.2s steps(4, end) infinite; }
 @keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }

@@ -35,16 +35,76 @@
       </a>`;
   }
 
+  // Semantic search state: multi-word queries ("running shoes under 3000") go to /api/search
+  let semantic = null;      // {query, filters, results, confident} for the current query, or null
+  let searchTimer = null;
+  let searchSeq = 0;
+  const searchNote = document.getElementById("search-note");
+
+  const localMatches = (q) => products.filter(p => `${p.name} ${p.brand} ${p.category}`.toLowerCase().includes(q.toLowerCase()));
+
+  // Multi-word queries use semantic search; so does a single word that matches nothing locally ("laptop")
+  const isSemanticQuery = (q) => {
+    if (q.length < 3) return false;
+    return q.split(/\s+/).filter(Boolean).length >= 2 || localMatches(q).length === 0;
+  };
+
+  function filterText(filters) {
+    const parts = [];
+    if (filters.max_price) parts.push(`under ₹${inr(filters.max_price)}`);
+    if (filters.category) parts.push(filters.category);
+    return parts.join(" · ");
+  }
+
   function render() {
-    const q = searchInput.value.trim().toLowerCase();
-    const filtered = products.filter(p =>
-      (!activeCategory || p.category === activeCategory) &&
-      (!q || `${p.name} ${p.brand} ${p.category}`.toLowerCase().includes(q))
-    );
+    const raw = searchInput.value.trim();
+    const q = raw.toLowerCase();
+    let filtered;
+    searchNote.classList.add("hidden");
+
+    if (semantic && semantic.query === raw) {
+      filtered = semantic.results.map(r => r.product).filter(p => !activeCategory || p.category === activeCategory);
+      const f = filterText(semantic.filters);
+      if (!semantic.results.length) {
+        searchNote.textContent = `No products match "${raw}"${f ? ` (${f})` : ""}.`;
+      } else if (!semantic.confident) {
+        searchNote.textContent = `No exact match for "${raw}". These are the closest items.`;
+      } else {
+        searchNote.textContent = `✨ Smart search understood${f ? `: ${f}` : " your request"}.`;
+      }
+      searchNote.classList.remove("hidden");
+    } else {
+      filtered = products.filter(p =>
+        (!activeCategory || p.category === activeCategory) &&
+        (!q || `${p.name} ${p.brand} ${p.category}`.toLowerCase().includes(q))
+      );
+    }
     grid.innerHTML = filtered.map(cardHtml).join("");
     emptyState.classList.toggle("hidden", filtered.length > 0);
-    resultsTitle.textContent = q ? `Results for "${searchInput.value.trim()}"` : (activeCategory || "All products");
+    resultsTitle.textContent = q ? `Results for "${raw}"` : (activeCategory || "All products");
     resultsCount.textContent = `${filtered.length} item${filtered.length === 1 ? "" : "s"}`;
+  }
+
+  async function runSemanticSearch() {
+    const raw = searchInput.value.trim();
+    if (!isSemanticQuery(raw)) { semantic = null; render(); return; }
+    const seq = ++searchSeq;
+    let res;
+    try {
+      res = await Omni.api(`/api/search?q=${encodeURIComponent(raw)}`);
+    } catch (e) {
+      res = { ok: false };
+    }
+    if (seq !== searchSeq) return; // a newer query is in flight
+    semantic = res.ok && res.body && res.body.success ? res.body : null; // fall back to plain filtering
+    render();
+  }
+
+  function onSearchInput() {
+    clearTimeout(searchTimer);
+    semantic = null;
+    render();
+    if (isSemanticQuery(searchInput.value.trim())) searchTimer = setTimeout(runSemanticSearch, 450);
   }
 
   function renderChips() {
@@ -65,8 +125,8 @@
     });
   }
 
-  searchForm.addEventListener("submit", (e) => { e.preventDefault(); render(); });
-  searchInput.addEventListener("input", render);
+  searchForm.addEventListener("submit", (e) => { e.preventDefault(); clearTimeout(searchTimer); runSemanticSearch(); });
+  searchInput.addEventListener("input", onSearchInput);
 
   (async () => {
     const res = await Omni.api("/api/products");
@@ -80,5 +140,6 @@
     products = res.body.products || [];
     renderChips();
     render();
+    if (isSemanticQuery(searchInput.value.trim())) runSemanticSearch();
   })();
 })();
