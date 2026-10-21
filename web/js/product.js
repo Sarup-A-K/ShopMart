@@ -129,30 +129,76 @@
     return div;
   }
 
+  // Conversation memory: the server receives the recent turns so follow-ups ("and the price?") make sense
+  const history = [];
+
+  function showTyping(el) {
+    el.classList.add("typing");
+    el.textContent = "Thinking…";
+  }
+
+  /** Read a Server-Sent Events response and call onEvent(name, data) for each event. */
+  async function readEvents(response, onEvent) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let split;
+      while ((split = buffer.indexOf("\n\n")) !== -1) {
+        const raw = buffer.slice(0, split);
+        buffer = buffer.slice(split + 2);
+        const name = (raw.match(/^event: (.*)$/m) || [])[1];
+        const data = (raw.match(/^data: (.*)$/m) || [])[1];
+        if (name && data) onEvent(name, JSON.parse(data));
+      }
+    }
+  }
+
   async function ask(question) {
     question = question.trim();
     if (!question) return;
     addMessage(question, "user");
     $("chat-input").value = "";
     $("chat-send").disabled = true;
-    const pending = addMessage("Thinking…", "ai");
-    let res;
+    const bubble = addMessage("", "ai");
+    showTyping(bubble);
+    let text = "";
+    let failed = false;
     try {
-      res = await api("/api/ask", {
+      const res = await fetch("/api/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ product_name: product.name, qr_code: product.qrCode, question, persona: personaSelect.value })
+        body: JSON.stringify({
+          product_name: product.name, qr_code: product.qrCode, question,
+          persona: personaSelect.value, history: history.slice(-6)
+        })
+      });
+      if (!res.ok || !res.body) throw new Error("bad response");
+      await readEvents(res, (name, data) => {
+        if (name === "token") {
+          if (!text) bubble.classList.remove("typing");
+          text += data.text;
+          bubble.textContent = text;
+          $("chat-log").scrollTop = $("chat-log").scrollHeight;
+        } else if (name === "error") {
+          failed = true;
+        }
       });
     } catch (e) {
-      res = { ok: false };
+      failed = true;
     }
-    if (res.ok && res.body && res.body.success) {
-      pending.textContent = res.body.answer;
+    bubble.classList.remove("typing");
+    if (failed && !text) {
+      bubble.className = "msg msg-error";
+      bubble.textContent = "Sorry, the AI assistant is unavailable right now. Please try again shortly.";
     } else {
-      pending.className = "msg msg-error";
-      pending.textContent = "Sorry, the AI assistant is unavailable right now. Please try again shortly.";
+      history.push({ role: "user", content: question }, { role: "assistant", content: text.trim() });
     }
     $("chat-send").disabled = false;
+    $("chat-input").focus();
   }
 
   $("chat-form").addEventListener("submit", (e) => { e.preventDefault(); ask($("chat-input").value); });

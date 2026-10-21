@@ -215,6 +215,9 @@ select:focus, .input:focus { outline: 2px solid #9fd3c4; border-color: var(--bra
 .msg-ai { background: #f1f4f7; align-self: flex-start; border-bottom-left-radius: 4px; }
 .msg-user { background: #dff1ec; align-self: flex-end; border-bottom-right-radius: 4px; }
 .msg-error { background: #fdecef; color: #8a1a36; align-self: flex-start; }
+.msg.typing { color: var(--text-muted); font-style: italic; }
+.msg.typing::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.2s steps(4, end) infinite; }
+@keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
 .suggestions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
 .suggestion { border: 1px solid var(--border-strong); background: #fff; border-radius: 999px; padding: 5px 11px; font-size: 0.82rem; color: #2c3743; }
 .suggestion:hover { background: #f5f7f9; }

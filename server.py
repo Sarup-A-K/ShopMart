@@ -3,17 +3,18 @@ import io
 import json
 import secrets
 import time
-from typing import Optional, Any
+from typing import Optional, Any, List
 
-import requests
 from fastapi import FastAPI, Header, HTTPException, UploadFile, File, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, PatternFill
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+import assistant
+import llm
 import store_db
 
 app = FastAPI(title="OmniTag AI Server", description="OmniTag AR GenAI API")
@@ -24,10 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Use Ollama container name if running in docker network
-OLLAMA_API_URL = os.environ.get("OLLAMA_API_URL", "http://llm-engine:11434/api/generate")
-LLM_MODEL = os.environ.get("LLM_MODEL", "llama3.2")
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "omnitag-admin")
 SESSION_TTL = 8 * 3600  # seconds
@@ -46,89 +43,28 @@ _failed_logins = {}  # client ip -> [timestamps]
 store_db.init_db()
 
 
-class LLMError(Exception):
-    pass
-
-
-def query_local_llm(system_prompt, user_prompt, is_json=False):
-    """Call Ollama. Raises LLMError so callers can report failures honestly."""
-    payload = {
-        "model": LLM_MODEL,
-        "system": system_prompt,
-        "prompt": user_prompt,
-        "stream": False,
-        "options": {"temperature": 0.4, "top_p": 0.9},
-    }
-    if is_json:
-        payload["format"] = "json"
-
-    try:
-        print(f"🤖 Generating response using Ollama API at {OLLAMA_API_URL}...")
-        res = requests.post(OLLAMA_API_URL, json=payload, timeout=90)
-        res.raise_for_status()
-        return res.json().get("response", "")
-    except requests.RequestException as e:
-        print(f"Error connecting to Ollama: {e}")
-        raise LLMError(f"Unable to reach the local Ollama LLM at {OLLAMA_API_URL}. Ensure the llm-engine container is running.")
-
-
-# ---------------------------------------------------------------------------
-# Grounding helpers: turn the product record into LLM context
-# ---------------------------------------------------------------------------
-
-def build_product_context(product, competitors=None):
-    if not product:
-        return ""
-    lines = [
-        f"Product: {product.get('name')}",
-        f"Brand: {product.get('brand')}",
-        f"Category: {product.get('category')}",
-    ]
-    if product.get("price") is not None:
-        lines.append(f"Our store price: ₹{product['price']}")
-    if product.get("originalPrice"):
-        lines.append(f"MRP: ₹{product['originalPrice']}")
-    competitors = competitors or product.get("competitors") or []
-    priced = [c for c in competitors if isinstance(c.get("price"), (int, float))]
-    if priced:
-        lines.append("Online prices: " + ", ".join(f"{c['name']} ₹{c['price']:.0f}" for c in priced))
-    if product.get("description"):
-        lines.append(f"Description: {product['description']}")
-    specs = product.get("specifications") or {}
-    if specs.get("keySpecs"):
-        lines.append("Key specs: " + ", ".join(f"{k}: {v}" for k, v in specs["keySpecs"].items()))
-    if specs.get("features"):
-        lines.append("Features: " + ", ".join(specs["features"]))
-    if specs.get("warranty"):
-        lines.append(f"Warranty: {specs['warranty']}")
-    if product.get("reviews"):
-        lines.append("Customer reviews: " + " | ".join(product["reviews"]))
-    loc = product.get("location") or {}
-    if loc.get("aisle"):
-        lines.append(f"In-store location: {loc['aisle']}, {loc.get('section', '')} section")
-    return "\n".join(lines)
-
-
 # ---------------------------------------------------------------------------
 # API
 # ---------------------------------------------------------------------------
 
 class TagRequest(BaseModel):
-    product_name: str
+    product_name: str = ""
     qr_code: Optional[str] = None
-    category: Optional[str] = None
     user_context: str = "General Buyer"
-    competitor_price: Any = None
-    competitor_name: Optional[str] = None
-    local_price: Any = None
     product: Optional[dict] = None
 
 
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
 class ChatRequest(BaseModel):
-    product_name: str
+    product_name: str = ""
     qr_code: Optional[str] = None
-    question: str
+    question: str = Field(min_length=1, max_length=2000)
     persona: str = "General Buyer"
+    history: List[ChatMessage] = []
     product: Optional[dict] = None
 
 
@@ -137,8 +73,8 @@ def health_check():
     return {
         "status": "online",
         "service": "FastAPI LLM Gateway",
-        "backend": OLLAMA_API_URL,
-        "model": LLM_MODEL,
+        "backend": llm.OLLAMA_BASE,
+        "model": llm.CHAT_MODEL,
     }
 
 
@@ -367,84 +303,55 @@ async def admin_import_excel(file: UploadFile = File(...), _: str = Depends(requ
     return {"success": True, "updated": len(updates), "unchanged": len(seen) - len(updates), "changes": changes}
 
 
+def sse(event, data):
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
 @app.post("/api/scan_tag")
 def scan_tag(req: TagRequest):
-    persona = req.user_context
     product = resolve_product(req.qr_code, req.product)
-    comp_price = product.get("compPrice") if product else req.competitor_price
-    comp_name = product.get("compName") if product else req.competitor_name
-    local_price = product.get("price") if product else req.local_price
-    price_context = ""
-    if isinstance(comp_price, (int, float)) and local_price:
-        comp = comp_name or "the cheapest online store"
-        price_context = f" The lowest online price is ₹{comp_price} on {comp}; our store price is ₹{local_price}."
-
-    product_context = build_product_context(product)
-    system_prompt = (
-        f"You are an in-store shopping assistant in an Indian mall. Your shopper persona is '{persona}'. "
-        f"Analyze the product: {req.product_name}.{price_context} "
-        "Base your answer only on the product facts provided. Use Indian Rupees (₹); NEVER use '$'. Output ONLY a JSON object."
-    )
-    if product_context:
-        system_prompt += f"\n\nProduct facts:\n{product_context}"
-
-    user_prompt = f"""Format your response EXACTLY as this JSON structure, with no markdown formatting:
-{{
-  "verdict": "A 2-sentence summary of the customer reviews tailored for a {persona}.",
-  "dealScore": "A short rating like 'Great Deal', 'Fair Price' or 'Wait for Sale', based on our price vs the online prices.",
-  "compatibility": "A suggestion on how this fits a {persona}'s typical outfits, devices or needs.",
-  "specsTranslation": "A 1-sentence plain English translation of its key feature for a {persona}.",
-  "aiNote": "A brief engaging note speaking directly to the {persona}."
-}}"""
-
+    if not product:
+        raise HTTPException(status_code=404, detail="Unknown product.")
     try:
-        raw_response = query_local_llm(system_prompt, user_prompt, is_json=True)
-    except LLMError as e:
+        analysis, llm_ok, cached = assistant.get_insight(product, req.user_context)
+    except llm.LLMError as e:
         return {"success": False, "error": str(e)}
-
-    try:
-        clean_json = raw_response.replace("```json", "").replace("```", "").strip()
-        analysis_obj = json.loads(clean_json)
-        llm_ok = all(k in analysis_obj for k in ("verdict", "dealScore", "compatibility", "specsTranslation"))
-    except json.JSONDecodeError as e:
-        print(f"JSON Parse Error from LLM: {e}\nRaw Response: {raw_response}")
-        analysis_obj, llm_ok = {}, False
-
-    if not llm_ok:
-        analysis_obj = {
-            "verdict": f"{req.product_name} is well rated by most buyers.",
-            "dealScore": "Fair Price",
-            "compatibility": "Suits most everyday needs.",
-            "specsTranslation": "Built with quality materials for longevity.",
-            "aiNote": "⚠️ AI output could not be parsed; showing a default summary.",
-            **{k: v for k, v in analysis_obj.items() if isinstance(v, str)},
-        }
-
     return {
         "success": True,
-        "provider": f"OmniTag AI Engine ({LLM_MODEL})",
+        "provider": f"OmniTag AI Engine ({llm.CHAT_MODEL})",
         "llm_ok": llm_ok,
-        "data": {"analysis": analysis_obj},
+        "cached": cached,
+        "data": {"analysis": analysis},
     }
 
 
 @app.post("/api/ask")
 def ask_product(req: ChatRequest):
-    product_context = build_product_context(resolve_product(req.qr_code, req.product))
-    system_prompt = (
-        f"You are OmniTag, a helpful in-store shopping assistant in an Indian mall, talking to a '{req.persona}'. "
-        f"Answer questions about {req.product_name} in 2-4 sentences, tailored to that persona. "
-        "Use only the product facts below for prices, specs and location; if something is not in the facts, say you don't know. "
-        "Use Indian Rupees (₹), never '$'."
-    )
-    if product_context:
-        system_prompt += f"\n\nProduct facts:\n{product_context}"
-
+    product = resolve_product(req.qr_code, req.product)
     try:
-        ai_answer = query_local_llm(system_prompt, req.question)
-    except LLMError as e:
+        text = assistant.answer(product, req.persona, [m.model_dump() for m in req.history], req.question)
+    except llm.LLMError as e:
         return {"success": False, "error": str(e)}
-    return {"success": True, "answer": ai_answer, "model": LLM_MODEL}
+    return {"success": True, "answer": text, "model": llm.CHAT_MODEL}
+
+
+@app.post("/api/chat/stream")
+def chat_stream(req: ChatRequest):
+    """Server-Sent Events: `token` events with text pieces, then one `done` event."""
+    product = resolve_product(req.qr_code, req.product)
+    history = [m.model_dump() for m in req.history]
+
+    def events():
+        started = time.time()
+        try:
+            for piece in assistant.stream_answer(product, req.persona, history, req.question):
+                yield sse("token", {"text": piece})
+        except llm.LLMError as e:
+            yield sse("error", {"message": str(e)})
+            return
+        yield sse("done", {"latency_ms": int((time.time() - started) * 1000), "model": llm.CHAT_MODEL})
+
+    return StreamingResponse(events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 # ---------------------------------------------------------------------------
