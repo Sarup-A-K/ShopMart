@@ -13,8 +13,9 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, PatternFill
 from pydantic import BaseModel, Field
 
-import agent
 import assistant
+import chat_service
+import guardrails
 import llm
 import rag
 import store_db
@@ -69,7 +70,9 @@ class ChatRequest(BaseModel):
     persona: str = "General Buyer"
     history: List[ChatMessage] = []
     product: Optional[dict] = None
-    mode: str = "auto"       # "agent" (always tools), "rag" (single grounded call), "auto" (router decides)
+    mode: str = "auto"       # auto (router), agent, rag, context, baseline. See chat_service.py
+    guard: bool = True       # guardrails on/off. Honoured only when OMNITAG_TEST_HOOKS=1 (evaluation)
+    debug_append: Optional[str] = None   # test hook (OMNITAG_TEST_HOOKS=1): text appended to the model's answer
 
 
 @app.get("/api/health")
@@ -181,7 +184,7 @@ def admin_prices(_: str = Depends(require_admin)):
 
 @app.put("/api/admin/prices/{qr_code}")
 def admin_update_prices(qr_code: str, req: PriceUpdate, _: str = Depends(require_admin)):
-    values, errors = store_db.validate_prices(req.model_dump())
+    values, errors = store_db.validate_prices(req.model_dump(exclude_unset=True))   # omitted fields stay unchanged
     if errors:
         raise HTTPException(status_code=400, detail="; ".join(errors))
     product = store_db.update_prices(qr_code, values)
@@ -343,45 +346,40 @@ def scan_tag(req: TagRequest):
     }
 
 
+def _chat_args(req: ChatRequest):
+    product = resolve_product(req.qr_code, req.product)
+    history = [m.model_dump() for m in req.history]
+    guard = req.guard if guardrails.TEST_HOOKS else True
+    return product, history, guard
+
+
 @app.post("/api/ask")
 def ask_product(req: ChatRequest):
-    product = resolve_product(req.qr_code, req.product)
+    """Non-streaming answer with the same pipeline (guardrails, tools, fact-check) as the streaming endpoint."""
+    product, history, guard = _chat_args(req)
     try:
-        policies = rag.policy_context(req.question)
-        text = assistant.answer(product, req.persona, [m.model_dump() for m in req.history], req.question, policies)
+        text, done = chat_service.answer_once(req.question, req.persona, history, product, req.mode, guard, req.debug_append)
     except llm.LLMError as e:
         return {"success": False, "error": str(e)}
-    return {"success": True, "answer": text, "model": llm.CHAT_MODEL, "sources": assistant.sources_for(policies)}
+    done.pop("answer", None)
+    return {"success": True, "answer": text, "model": llm.CHAT_MODEL, **done}
 
 
 @app.post("/api/chat/stream")
 def chat_stream(req: ChatRequest):
     """
-    Server-Sent Events. Events: `tool` (agent called a tool), `token` (answer text piece),
-    `done` (summary), `error`. With no qr_code this is the store-wide assistant.
+    Server-Sent Events. Events: `tool` (agent called a tool), `token` (answer text piece), `replace` (answer failed the
+    fact-check and is replaced), `done` (summary), `error`. With no qr_code this is the store-wide assistant.
     """
-    product = resolve_product(req.qr_code, req.product)
-    history = [m.model_dump() for m in req.history]
+    product, history, guard = _chat_args(req)
 
     def events():
-        started = time.time()
         try:
-            use_agent = req.mode == "agent" or (req.mode == "auto" and agent.needs_agent(req.question, product))
-            if use_agent:
-                for ev in agent.run_agent(req.question, req.persona, history, product):
-                    name = ev.pop("event")
-                    if name == "done":
-                        ev.pop("answer", None)
-                        ev.update(latency_ms=int((time.time() - started) * 1000), model=llm.CHAT_MODEL)
-                    yield sse(name, ev)
-                return
-            policies = rag.policy_context(req.question)
-            for piece in assistant.stream_answer(product, req.persona, history, req.question, policies):
-                yield sse("token", {"text": piece})
-            yield sse("done", {
-                "latency_ms": int((time.time() - started) * 1000), "model": llm.CHAT_MODEL,
-                "tools": [], "products": [], "fallback": False, "sources": assistant.sources_for(policies),
-            })
+            for kind, data in chat_service.run(req.question, req.persona, history, product, req.mode, guard, req.debug_append):
+                if kind == "done":
+                    data.pop("answer", None)
+                    data["model"] = llm.CHAT_MODEL
+                yield sse(kind, data)
         except llm.LLMError as e:
             yield sse("error", {"message": str(e)})
 

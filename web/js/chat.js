@@ -93,6 +93,10 @@ const OmniChat = (() => {
             text += data.text;
             textEl.textContent = text;
             scroll();
+          } else if (name === "replace") {
+            // The first answer failed the fact-check: show the corrected one instead
+            text = data.text;
+            textEl.textContent = text;
           } else if (name === "done") {
             doneInfo = data;
           } else if (name === "error") {
@@ -116,6 +120,11 @@ const OmniChat = (() => {
     }
 
     async function decorate(bubble, info) {
+      if (info.corrected) {
+        bubble.appendChild(el("div", "verify warn", "⚠ Corrected using store data"));
+      } else if (info.verified && info.facts_checked > 0) {
+        bubble.appendChild(el("div", "verify ok", "✓ Prices and locations checked against store data"));
+      }
       if (info.sources && info.sources.length) {
         const row = el("div", "sources", "Sources: ");
         info.sources.forEach(src => row.appendChild(el("span", "source-chip", src.title)));

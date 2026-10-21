@@ -64,6 +64,23 @@ def init_db():
                 vector      BLOB NOT NULL
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS chat_log (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                ts          TEXT NOT NULL,
+                qr_code     TEXT,
+                persona     TEXT,
+                question    TEXT NOT NULL,
+                mode        TEXT,
+                tools       TEXT,
+                guardrail   TEXT,
+                verified    INTEGER,
+                corrected   INTEGER NOT NULL DEFAULT 0,
+                issues      TEXT,
+                fallback    INTEGER NOT NULL DEFAULT 0,
+                latency_ms  INTEGER
+            )
+        """)
         if conn.execute("SELECT COUNT(*) FROM products").fetchone()[0] == 0:
             seed(conn)
 
@@ -206,3 +223,19 @@ def bulk_update_prices(updates):
 def existing_qr_codes():
     with connect() as conn:
         return {r[0] for r in conn.execute("SELECT qr_code FROM products")}
+
+
+def log_chat(question, qr_code=None, persona=None, mode=None, tools=None, guardrail=None, verified=None,
+             corrected=False, issues=None, fallback=False, latency_ms=None):
+    """Record one exchange for the admin insights. Stores the (truncated) question, not who asked it."""
+    try:
+        with connect() as conn:
+            conn.execute(
+                "INSERT INTO chat_log (ts, qr_code, persona, question, mode, tools, guardrail, verified, corrected, issues, fallback, latency_ms) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                (now_iso(), qr_code, persona, (question or "")[:300], mode, ",".join(tools or []), guardrail,
+                 None if verified is None else int(bool(verified)), int(bool(corrected)), "; ".join(issues or [])[:500],
+                 int(bool(fallback)), latency_ms),
+            )
+    except sqlite3.Error as e:
+        print(f"chat_log write failed: {e}")
