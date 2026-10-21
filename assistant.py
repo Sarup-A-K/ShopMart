@@ -54,6 +54,14 @@ def build_product_context(product):
     priced = [c for c in (product.get("competitors") or []) if isinstance(c.get("price"), (int, float))]
     if priced:
         lines.append("Online prices: " + ", ".join(f"{c['name']} ₹{c['price']:.0f}" for c in priced))
+        if product.get("price") is not None:
+            # Comparison worked out in code: small models get "higher/lower" and "lowest" wrong, even with the numbers in front of them
+            ours, parts = float(product["price"]), []
+            for c in sorted(priced, key=lambda c: c["price"]):
+                gap = c["price"] - ours
+                parts.append(f"{c['name']} ₹{c['price']:.0f} (our price is ₹{abs(gap):.0f} {'lower' if gap > 0 else 'higher'})" if gap else f"{c['name']} ₹{c['price']:.0f} (same as ours)")
+            lowest = min(priced, key=lambda c: c["price"])
+            lines.append("Price comparison (computed): " + "; ".join(parts) + f". The lowest online price is {lowest['name']} at ₹{lowest['price']:.0f}.")
     if product.get("description"):
         lines.append(f"Description: {product['description']}")
     specs = product.get("specifications") or {}
@@ -172,11 +180,11 @@ def build_chat_messages(product, persona, history, question, policies=()):
     )
 
 
-def answer(product, persona, history, question, policies=()):
-    """Non-streaming answer (used by /api/ask)."""
-    return llm.chat(build_chat_messages(product, persona, history, question, policies))["content"].strip()
+def answer(product, persona, history, question, policies=(), model=None):
+    """Non-streaming answer."""
+    return llm.chat(build_chat_messages(product, persona, history, question, policies), model=model)["content"].strip()
 
 
-def stream_answer(product, persona, history, question, policies=()):
+def stream_answer(product, persona, history, question, policies=(), model=None):
     """Yield answer text pieces as they are generated."""
-    yield from llm.stream_chat(build_chat_messages(product, persona, history, question, policies))
+    yield from llm.stream_chat(build_chat_messages(product, persona, history, question, policies), model=model)

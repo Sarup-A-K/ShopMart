@@ -33,21 +33,21 @@ TOOLS = [
         "name": "get_product",
         "description": "Get full details (price, MRP, online prices, specs, features, warranty, reviews, aisle) of one product.",
         "parameters": {"type": "object", "properties": {
-            "qr_code": {"type": "string", "description": "The product's qr_code such as item-3, or its name"},
+            "qr_code": {"type": "string", "description": "The product's name as the shopper said it, or a qr_code from the catalogue list. Never guess a code."},
         }, "required": ["qr_code"]},
     }},
     {"type": "function", "function": {
         "name": "compare_products",
         "description": "Compare two or more products side by side on price, specs and location. Use when asked which is cheaper or better.",
         "parameters": {"type": "object", "properties": {
-            "qr_codes": {"type": "array", "items": {"type": "string"}, "description": "qr_codes such as item-2, or product names"},
+            "qr_codes": {"type": "array", "items": {"type": "string"}, "description": "Product names as the shopper said them, or qr_codes from the catalogue list. Never guess a code."},
         }, "required": ["qr_codes"]},
     }},
     {"type": "function", "function": {
         "name": "get_directions",
         "description": "Get walking directions inside the store to a product, from the entrance or from an aisle.",
         "parameters": {"type": "object", "properties": {
-            "qr_code": {"type": "string", "description": "The product's qr_code such as item-3, or its name"},
+            "qr_code": {"type": "string", "description": "The product's name as the shopper said it, or a qr_code from the catalogue list. Never guess a code."},
             "from_checkpoint": {"type": "string", "description": "'entrance' (default) or 'aisle-1' ... 'aisle-6'"},
         }, "required": ["qr_code"]},
     }},
@@ -255,32 +255,43 @@ def _calls_from_text(text):
 # Router: does this question need tools?
 # ---------------------------------------------------------------------------
 
+# Questions that need other products, search or directions. Store-policy words are NOT here on purpose: the evaluation
+# showed the single-call RAG path answers pure policy questions more reliably than the agent (which sometimes skips
+# the policy tool and invents a number), and faster.
 AGENT_HINTS = re.compile(
     r"\b(compare|comparison|versus|vs|cheaper|cheapest|costlier|better than|than|other|others|another|similar|alternative|"
-    r"alternatives|instead|recommend|suggest|under|below|budget|show me|do you have|how do i get|directions?|way to|"
-    r"policy|return|refund|exchange|emi|delivery|deliver|parking|timings?|open|close|offers?)\b",
+    r"alternatives|instead|recommend|suggest|under|below|budget|show me|do you have|how do i get|directions?|way to)\b",
+    re.IGNORECASE,
+)
+POLICY_HINTS = re.compile(
+    r"\b(policy|policies|return|returns|refund|exchange|emi|warranty|delivery|deliver|parking|timings?|open|close|closes|"
+    r"offers?|payment|pay|upi|card|loyalty|rewards?|gift)\b",
     re.IGNORECASE,
 )
 
 
-def needs_agent(question, product):
-    """
-    On a product page, simple questions about the product being viewed (specs, battery, price) are answered
-    faster and more reliably from the product facts alone. Use the agent for anything that involves other
-    products, searching, directions or store policies. Without a current product the agent is always used.
-    """
-    if not product:
-        return True
-    if AGENT_HINTS.search(question):
-        return True
+def _mentions_other_product(question, product):
     q = question.lower()
     for other in store_db.list_products():
-        if other["qrCode"] == product["qrCode"]:
+        if product and other["qrCode"] == product["qrCode"]:
             continue
         names = {w for w in re.findall(r"[a-z]{4,}", f"{other.get('brand', '')} {other['name']}".lower())}
         if any(n in q for n in names if n not in {"men", "women", "with", "wireless", "regular"}):
             return True
     return False
+
+
+def needs_agent(question, product):
+    """
+    Route a question: the agent for anything that involves other products, search or directions; the single-call
+    RAG path for questions about the product on screen and for pure store-policy questions (retrieval is automatic
+    there, which proved more reliable than letting the model decide to call a tool).
+    """
+    if AGENT_HINTS.search(question) or _mentions_other_product(question, product):
+        return True
+    if POLICY_HINTS.search(question):
+        return False
+    return product is None
 
 
 # ---------------------------------------------------------------------------
@@ -295,9 +306,12 @@ def system_prompt(persona, product):
         "- Call a tool only when you need it. If the answer is already in 'Product the shopper is viewing', answer directly.\n"
         "- Prices are in Indian Rupees (₹). Never use '$'. Never change or negotiate prices.\n"
         "- Answer in 2-4 short sentences. When you recommend or compare products, give each name, price and aisle.\n"
+        "- Never guess a qr_code. Use the product name as the shopper said it, or a code from the catalogue list below.\n"
         "- Mention only products that the tools returned. Never invent or suggest products, brands, prices or aisles that are not in the tool results.\n"
         "- If the tools return nothing relevant, say you couldn't find it."
     )
+    catalogue = store_db.list_products()[:40]    # a compact index; with a large catalogue the search tool is the way in
+    prompt += "\n\nCatalogue (qr_code = name):\n" + "\n".join(f"{p['qrCode']} = {p['name']}" for p in catalogue)
     if product:
         prompt += f"\n\nProduct the shopper is viewing (qr_code {product['qrCode']}):\n{assistant.build_product_context(product)}"
     return prompt
@@ -324,7 +338,7 @@ def _fallback_prompt(question, persona):
     return text, products, assistant.sources_for(policies)
 
 
-def run_agent(question, persona="General Buyer", history=None, product=None, max_rounds=MAX_ROUNDS):
+def run_agent(question, persona="General Buyer", history=None, product=None, max_rounds=MAX_ROUNDS, model=None):
     messages = [{"role": "system", "content": system_prompt(persona, product)}]
     messages += assistant.clean_history(history)
     messages.append({"role": "user", "content": question.strip()})
@@ -334,7 +348,7 @@ def run_agent(question, persona="General Buyer", history=None, product=None, max
 
     for rounds in range(1, max_rounds + 1):
         text_parts, raw_calls, buffering, started = [], [], False, False
-        for kind, payload in llm.stream_chat_events(messages, tools=TOOLS):
+        for kind, payload in llm.stream_chat_events(messages, tools=TOOLS, model=model):
             if kind == "tool_calls":
                 raw_calls.extend(payload)
                 continue
@@ -376,7 +390,7 @@ def run_agent(question, persona="General Buyer", history=None, product=None, max
     else:
         # Out of rounds with tools still being requested: ask for the answer without tools
         messages.append({"role": "user", "content": "Now answer the shopper using the information above. Do not call any more tools."})
-        for kind, payload in llm.stream_chat_events(messages, tools=None):
+        for kind, payload in llm.stream_chat_events(messages, tools=None, model=model):
             if kind == "text":
                 final_text += payload
                 yield {"event": "token", "text": payload}
@@ -389,7 +403,7 @@ def run_agent(question, persona="General Buyer", history=None, product=None, max
         products += [q for q in fb_products if q not in products]
         sources += [s for s in fb_sources if s not in sources]
         fb_messages = [{"role": "system", "content": system}] + assistant.clean_history(history) + [{"role": "user", "content": question.strip()}]
-        for piece in llm.stream_chat(fb_messages, temperature=0.2):
+        for piece in llm.stream_chat(fb_messages, temperature=0.2, model=model):
             final_text += piece
             yield {"event": "token", "text": piece}
 

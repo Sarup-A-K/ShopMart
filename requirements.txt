@@ -5,3 +5,4 @@ pydantic
 openpyxl
 python-multipart
 numpy
+matplotlib

@@ -1,40 +1,55 @@
-# OmniTag AR: Smart Price Tags & GenAI Retail Assistant
+# OmniTag Mall: Smart Price Tags & GenAI Retail Assistant
 
-OmniTag is a next-generation brick-and-mortar retail solution. It turns static paper price tags into QR-linked product pages with online price comparison, in-store directions and a locally hosted **Generative AI** shopping assistant.
+OmniTag turns static paper price tags in a store into QR-linked product pages with online price comparison, in-store directions and a **locally hosted Generative AI shopping assistant** (Llama 3.2 through Ollama). Nothing leaves the store's own machine.
 
-Instead of fighting "showrooming" (where customers check online prices while in-store), OmniTag embraces it. Store staff manage prices, including Amazon India, Flipkart and Croma prices, from an admin page or an Excel upload. When a customer scans a product's QR code with their phone, its product page opens and shows the online prices, and the store undercuts the lowest one by ~5%. A locally hosted Llama 3.2 model gives persona-tailored product insights and answers questions grounded in the store's product data, and a store map guides the shopper to the right aisle.
+Instead of fighting "showrooming" (shoppers checking online prices in the aisle), OmniTag embraces it. Staff manage store prices and the Amazon / Flipkart / Croma prices from an admin page or an Excel sheet. A shopper scans a shelf QR code with their phone, sees the price against online prices (the store undercuts the lowest by about 5%), gets directions to the aisle, and can ask an AI assistant that looks facts up in the store's own data instead of guessing.
+
+> **Learning the project?** Read [`docs/HOW_IT_WORKS.md`](docs/HOW_IT_WORKS.md): architecture, every GenAI technique explained with the code that implements it, how each part is tested, and the limits. Real problems met while building are logged in [`docs/FINDINGS.md`](docs/FINDINGS.md).
 
 ---
 
 ## 🌟 Key Features
 
-* **Scan-to-product pages**: Each shelf price tag has a QR code that links to `/p/<code>`. Any phone camera opens the product page directly: price vs MRP, online price comparison, directions to the aisle, AI advice, specs and reviews. The site has a light, mobile-first e-commerce design with a searchable catalogue and an in-page QR scanner (jsQR).
-* **Admin price manager** (`/admin`): Password-protected page to print QR price tags and to edit the store price, MRP and the Amazon / Flipkart / Croma prices in a table, with a live preview of the price shoppers will see. For bulk updates, **Download Excel**, edit the price columns, and **Upload Excel**. Rows are matched by QR code. If any row is invalid, nothing is saved and every bad row is listed.
-* **SQLite product database** (`omnitag.db`): Created and seeded from `seed_products.json` on first start. Every scan reads the latest record, so price changes show up on the next scan without reloading.
-* **Dynamic price matching**: Shoppers see a price ~5% below the cheapest online price entered by the admin, but never more than the admin's store price.
-* **Indoor wayfinding**: Store map with an "I'm near" checkpoint selector (Entrance or Aisle 1–6). It draws the route along the front corridor and up the aisle walkway, and gives step-by-step directions with distances.
-* **Persona-based GenAI assistant** (Llama 3.2 via Ollama):
-  * Personas: General Buyer, Budget Shopper, Student, Tech Enthusiast, Fashion Forward.
-  * Structured JSON insights (`Verdict`, `Deal Score`, `Compatibility`, `Specs Translation`), tailored to the persona.
-  * A chat that is **grounded** in the product record (price, online prices, specs, reviews, aisle), so answers quote real prices and locations instead of made-up ones.
+### Shopping
+* **Scan-to-product pages**: Each shelf price tag has a QR code linking to `/p/<code>`. Any phone camera opens the product page directly: price vs M.R.P., online price comparison, directions to the aisle, AI advice, specs and reviews. Light, mobile-first design with a searchable catalogue and an in-page QR scanner (jsQR).
+* **Dynamic price matching**: Shoppers see a price ~5% below the cheapest online price entered by the admin, never above the store's own price.
+* **Indoor wayfinding**: Map with an "I'm near" selector (Entrance or Aisle 1-6), route along the corridor and up the aisle, step-by-step directions with distances.
+
+### Generative AI
+* **Streaming chat with memory**: Answers appear word by word and follow-up questions ("and the price?") work.
+* **RAG and semantic search**: Products, reviews and store policies are embedded (`nomic-embed-text`). Search understands meaning and budgets ("running shoes under 3000") and says honestly when nothing matches. Policy questions ("Can I return this?", "Is there EMI?") are answered from retrieved sections, with sources shown.
+* **Tool-calling shopping agent**: Llama chooses tools (search, product lookup, comparison, store-info lookup, directions) and answers from live data. Available as "Ask the store assistant" on the home page and inside product pages when a question needs other products or policies.
+* **Guardrails and fact-check**: Prompt-injection, price-haggling and off-topic requests are refused. Every ₹ amount, aisle number and product name in an answer is checked against the database; a wrong answer is regenerated once, then replaced by one built straight from the data.
+* **Persona-based insights**: Structured (JSON-schema) verdict, deal score and fit for the chosen shopper type.
+* **GenAI for store staff**: Review summaries and product descriptions drafted by the model (previewed, edited and approved by staff), and a "what are shoppers asking" report with suggested actions.
+
+### Store management
+* **Admin price manager** (`/admin`): Edit store price, M.R.P. and competitor prices in a table (with a live preview of the shopper price) or in bulk through Excel (all-or-nothing validation). Print shelf QR price tags.
+* **SQLite database** (`omnitag.db`), seeded from `seed_products.json`. Price edits show on the next scan.
 
 ---
 
 ## 📁 Project Structure
 
-* `web/` - The website, served by the backend:
-  * `index.html`, `js/catalog.js` - Store catalogue with search, categories and a "Scan tag" button.
-  * `product.html`, `js/product.js` - Product page at `/p/<qr_code>`, the page a price-tag QR code opens: price, online price comparison, directions, AI assistant, specs and reviews.
-  * `admin.html`, `js/admin.js` - Store admin: price table, Excel import/export, printable QR price tags.
-  * `js/wayfinding.js` - Route and step-by-step directions to the product's aisle.
-  * `js/common.js`, `js/qrEngine.js` - Shared helpers and the in-page QR camera scanner.
-  * `css/store.css` - Light, mobile-first e-commerce theme.
-* `server.py` - FastAPI backend: website, product API, admin API, Excel import/export and LLM routing.
-* `store_db.py` - SQLite storage, validation and the price-matching rule.
-* `seed_products.json` - Initial products (details, location, prices) used to create the database on first run.
-* `start.sh` - Starts everything and sets the network address used in QR codes.
-* `eval.py` - Evaluation harness (JSON validity, grounding accuracy, latency, currency compliance).
-* `docker-compose.yml`, `Dockerfile` - The backend and the Ollama LLM engine.
+```
+server.py            FastAPI routes: website, products, search, chat (streaming), admin
+chat_service.py      One pipeline for every chat: guardrails -> answer (agent | RAG | baseline) -> fact-check -> log
+agent.py             Tool-calling loop, the five tools, router (does this question need tools?)
+rag.py               Embeddings index, semantic search, policy retrieval
+assistant.py         Product grounding prompts, persona insight (JSON schema), chat memory
+guardrails.py        Input checks, output fact-check, database-built safe answer
+insights.py          Admin GenAI: review summaries, description drafts, shopper report
+llm.py               The only place that talks to Ollama (chat, streaming, tools, embeddings)
+store_db.py          SQLite: products, prices, embeddings, chat log; price-matching rule
+wayfinding.py        Directions (Python port of web/js/wayfinding.js)
+knowledge/           store_policies.md: demo store policies that RAG retrieves from
+seed_products.json   Initial products
+eval/                Golden set, evaluation harness, results (CSV, summary, charts)
+tests/               Unit tests for the guardrails
+docs/                HOW_IT_WORKS.md (learning guide) and FINDINGS.md (problems and fixes)
+web/                 Catalogue, product page, admin page (HTML, JS, CSS)
+start.sh             Starts everything and sets the network address used in QR codes
+```
 
 ---
 
@@ -68,38 +83,57 @@ docker compose down
 
 ## 🛠️ API Endpoints Reference
 
-The FastAPI backend (`http://localhost:8000`) exposes the following core endpoints:
+Public (`http://localhost:8000`):
 * `GET /api/products`, `GET /api/products/{qr_code}`: Product records with store, shown (price-matched) and competitor prices.
-* `POST /api/scan_tag`: Asks Llama 3.2 for structured, persona-tailored product insights grounded in the product record.
-* `POST /api/ask`: Grounded, persona-aware chat about a specific product.
-* `GET /api/health`: Backend and model status.
-* `GET /api/config`: The public address used for QR codes.
+* `GET /api/search?q=`: Semantic product search. Understands budgets and categories in the text.
+* `POST /api/chat/stream`: Streaming chat (Server-Sent Events: `tool`, `token`, `replace`, `done`, `error`). With a `qr_code` it is a product-page chat, without one it is the store assistant.
+* `POST /api/ask`: Same pipeline, one JSON answer (used by the evaluation).
+* `POST /api/scan_tag`: Persona insight (JSON schema), cached per product, persona and price.
+* `GET /api/health`, `GET /api/config`: Status (model, search index) and the public address used for QR codes.
 
-Admin endpoints (need `Authorization: Bearer <token>` from `POST /api/admin/login`):
-* `GET /api/admin/prices`, `PUT /api/admin/prices/{qr_code}`: List and edit prices.
+Admin (need `Authorization: Bearer <token>` from `POST /api/admin/login`):
+* `GET /api/admin/prices`, `PUT /api/admin/prices/{qr_code}`: List and edit prices (omitted fields stay unchanged).
 * `GET /api/admin/prices.xlsx`, `POST /api/admin/prices/import`: Excel export and import.
+* `POST /api/admin/ai/review-summary/{qr}`, `POST /api/admin/ai/description/{qr}`: AI drafts (previews only).
+* `POST /api/admin/products/{qr}/content`: Publish an approved summary or description.
+* `GET /api/admin/insights`, `POST /api/admin/insights/report`, `DELETE /api/admin/insights/log`: Shopper question statistics, AI report, clear the log.
 
-If the LLM is unreachable, `/api/scan_tag` and `/api/ask` return `{"success": false, "error": ...}`.
+If the LLM is unreachable the AI endpoints return `{"success": false, "error": ...}` (or an `error` event when streaming) instead of a made-up answer.
 
 ---
 
 ## 📊 Evaluation
 
-With the stack running:
+The evaluation runs a golden set against the live system in five configurations (model alone, + product facts, + RAG, + agent, + guardrails and fact-check) so you can see what each technique adds. It also measures semantic vs keyword search, guardrail block / over-block rates on fresh phrasings, structured-output validity and (optionally) model size.
+
 ```bash
-docker exec -w /workspace local_web_app python3 eval.py            # all personas
-docker exec -w /workspace local_web_app python3 eval.py --personas 1
+OMNITAG_TEST_HOOKS=1 docker compose up -d web-app          # enables evaluation-only switches (guardrails off, model choice)
+docker exec -w /workspace local_web_app python eval/run_eval.py --quick   # ~6 minutes, smoke test
+docker exec -w /workspace local_web_app python eval/run_eval.py           # full run, ~25 minutes
+docker exec -w /workspace local_web_app python eval/run_eval.py --configs v4_full --models llama3.2:1b   # model size
+docker compose up -d web-app                               # back to normal (switches off)
 ```
-This runs every product × persona × question against the API. It prints a summary and writes `eval_results.csv`, which has an empty `human_rating` column for manual 1–5 scoring. Metrics reported:
-* Insight JSON validity rate
-* Price and aisle grounding accuracy (does the answer quote the correct ₹ price / aisle?)
-* Currency compliance (no `$` in outputs)
-* Latency (mean / p95) for insights and chat
+
+Results are written to `eval/results/<timestamp>/` (also `eval/results/latest/`): `results.csv` (every answer, with an empty `human_rating` column for your own 1-5 scores), `summary.md` (the tables), `summary.json` and charts (`*.png`). Questions asked during evaluation are removed from the admin shopper log afterwards.
+
+Tune or check the input guardrails on any labelled prompt file (reports attacks blocked and legitimate questions wrongly blocked, rules alone vs rules + LLM guard):
+```bash
+docker exec -w /workspace local_web_app python eval/check_guard.py eval/guard_dev.json
+docker exec -w /workspace local_web_app python eval/check_guard.py eval/golden_set.json --key safety_holdout
+```
+
+Unit tests (guardrails, fact-check, router):
+```bash
+docker exec -w /workspace local_web_app python -m unittest discover -s tests -v
+```
 
 ---
 
 ## ⚠️ Known Limitations
 * Competitor prices are entered by store staff (table or Excel), not fetched automatically. Retailers block scraping, so a manual or feed-based update is more reliable.
+* Llama 3.2 (3B) is small: it can mis-handle tool calls and invent products. The fact-checker and code-computed facts reduce this but are heuristics; see `docs/FINDINGS.md` and the evaluation for measured rates.
+* Guardrail rules are pattern-based, so unusual paraphrases of an attack can get through (the evaluation reports the miss rate on unseen phrasings).
+* Shopper questions are stored (first 300 characters, no identity) so the admin can see trends; use "Clear log" in the admin page to delete them.
 * Admin login is a single shared password with in-memory sessions (8 hours); restarting the backend logs the admin out. After 5 wrong passwords, logins from that device are blocked for 5 minutes.
 * The site is served over plain HTTP on the local network, so anyone on the same network can open it. Use your own hotspot rather than shared Wi-Fi when demoing.
 * Indoor position comes from the shopper's chosen checkpoint, not continuous tracking (browsers have no indoor positioning).

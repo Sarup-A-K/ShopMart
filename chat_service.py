@@ -32,23 +32,23 @@ def _plain_history_text(history):
     return " ".join(m.get("content", "") for m in assistant.clean_history(history))
 
 
-def _stream_single(mode, product, persona, history, question):
+def _stream_single(mode, product, persona, history, question, model=None):
     """Non-agent paths. Yields ("token", text); returns (sources) via the final ("sources", [...])."""
     policies = []
     if mode == "baseline":
         messages = [{"role": "system", "content": BASELINE_SYSTEM}] + assistant.clean_history(history) \
             + [{"role": "user", "content": question.strip()}]
-        for piece in llm.stream_chat(messages):
+        for piece in llm.stream_chat(messages, model=model):
             yield "token", piece
     else:
         if mode == "rag":
             policies = rag.policy_context(question)
-        for piece in assistant.stream_answer(product, persona, history, question, policies):
+        for piece in assistant.stream_answer(product, persona, history, question, policies, model=model):
             yield "token", piece
     yield "sources", assistant.sources_for(policies)
 
 
-def _regenerate(question, persona, products, issues):
+def _regenerate(question, persona, products, issues, model=None):
     """One non-streaming retry that is told exactly what was wrong and given only the verified facts."""
     facts = "\n\n".join(assistant.build_product_context(p) for p in products) or "(no product facts available)"
     system = (
@@ -57,10 +57,10 @@ def _regenerate(question, persona, products, issues):
     )
     note = "Your previous answer contained errors: " + "; ".join(issues) + ". Answer again correctly."
     return llm.chat([{"role": "system", "content": system}, {"role": "user", "content": f"{question.strip()}\n\n{note}"}],
-                    temperature=0.0)["content"].strip()
+                    temperature=0.0, model=model)["content"].strip()
 
 
-def run(question, persona="General Buyer", history=None, product=None, mode="auto", guard=True, debug_append=None):
+def run(question, persona="General Buyer", history=None, product=None, mode="auto", guard=True, debug_append=None, model=None):
     started = time.time()
     qr_code = product["qrCode"] if product else None
     history = history or []
@@ -74,7 +74,7 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
 
     # 1. input guardrails
     if guard:
-        verdict = guardrails.check_input(question)
+        verdict = guardrails.check_input(question) or guardrails.check_input_llm(question, product["name"] if product else "")
         if verdict:
             yield "token", {"text": verdict["reply"]}
             yield "done", finish({"mode": mode, "blocked": verdict["category"], "tools": [], "products": [], "sources": [],
@@ -85,7 +85,7 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
     use_agent = mode == "agent" or (mode == "auto" and agent.needs_agent(question, product))
     parts, info = [], {"tools": [], "products": [], "sources": [], "fallback": False}
     if use_agent:
-        for ev in agent.run_agent(question, persona, history, product):
+        for ev in agent.run_agent(question, persona, history, product, model=model):
             kind = ev.pop("event")
             if kind == "token":
                 parts.append(ev["text"])
@@ -97,7 +97,7 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
         used_mode = "agent"
     else:
         used_mode = "baseline" if mode == "baseline" else "context" if mode == "context" else "rag"
-        for kind, payload in _stream_single(used_mode, product, persona, history, question):
+        for kind, payload in _stream_single(used_mode, product, persona, history, question, model):
             if kind == "token":
                 parts.append(payload)
                 yield "token", {"text": payload}
@@ -122,7 +122,7 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
         if issues:
             corrected = True
             try:
-                retry = _regenerate(question, persona, allowed["products"], issues)
+                retry = _regenerate(question, persona, allowed["products"], issues, model)
                 retry_issues, _ = guardrails.verify_answer(retry, allowed)
             except llm.LLMError:
                 retry, retry_issues = "", ["retry failed"]
@@ -134,10 +134,10 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
     yield "done", finish(info)
 
 
-def answer_once(question, persona="General Buyer", history=None, product=None, mode="auto", guard=True, debug_append=None):
+def answer_once(question, persona="General Buyer", history=None, product=None, mode="auto", guard=True, debug_append=None, model=None):
     """Non-streaming helper (used by /api/ask and the evaluation). Returns the final text plus the done summary."""
     text, done, tool_events = "", {}, []
-    for kind, data in run(question, persona, history, product, mode, guard, debug_append):
+    for kind, data in run(question, persona, history, product, mode, guard, debug_append, model):
         if kind == "token":
             text += data["text"]
         elif kind == "replace":

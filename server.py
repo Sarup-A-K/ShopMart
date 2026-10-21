@@ -74,6 +74,7 @@ class ChatRequest(BaseModel):
     mode: str = "auto"       # auto (router), agent, rag, context, baseline. See chat_service.py
     guard: bool = True       # guardrails on/off. Honoured only when OMNITAG_TEST_HOOKS=1 (evaluation)
     debug_append: Optional[str] = None   # test hook (OMNITAG_TEST_HOOKS=1): text appended to the model's answer
+    model: Optional[str] = None          # evaluation only (OMNITAG_TEST_HOOKS=1): use another Ollama chat model
 
 
 @app.get("/api/health")
@@ -432,12 +433,16 @@ def _chat_args(req: ChatRequest):
     return product, history, guard
 
 
+def _model(req: ChatRequest):
+    return req.model if (guardrails.TEST_HOOKS and req.model) else None
+
+
 @app.post("/api/ask")
 def ask_product(req: ChatRequest):
     """Non-streaming answer with the same pipeline (guardrails, tools, fact-check) as the streaming endpoint."""
     product, history, guard = _chat_args(req)
     try:
-        text, done = chat_service.answer_once(req.question, req.persona, history, product, req.mode, guard, req.debug_append)
+        text, done = chat_service.answer_once(req.question, req.persona, history, product, req.mode, guard, req.debug_append, _model(req))
     except llm.LLMError as e:
         return {"success": False, "error": str(e)}
     done.pop("answer", None)
@@ -454,7 +459,7 @@ def chat_stream(req: ChatRequest):
 
     def events():
         try:
-            for kind, data in chat_service.run(req.question, req.persona, history, product, req.mode, guard, req.debug_append):
+            for kind, data in chat_service.run(req.question, req.persona, history, product, req.mode, guard, req.debug_append, _model(req)):
                 if kind == "done":
                     data.pop("answer", None)
                     data["model"] = llm.CHAT_MODEL
