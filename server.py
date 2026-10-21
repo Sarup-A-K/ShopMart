@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 import assistant
 import chat_service
 import guardrails
+import insights
 import llm
 import rag
 import store_db
@@ -191,6 +192,84 @@ def admin_update_prices(qr_code: str, req: PriceUpdate, _: str = Depends(require
     if not product:
         raise HTTPException(status_code=404, detail="Unknown QR code.")
     return {"success": True, "product": product}
+
+
+# --- GenAI for the admin: drafts are previews, nothing is saved until the admin approves ---
+
+class ApproveRequest(BaseModel):
+    description: Optional[str] = Field(default=None, max_length=1000)
+    ai_summary: Optional[dict] = None      # {"summary": str, "pros": [str], "cons": [str]}
+    clear_summary: bool = False
+
+
+def _admin_product(qr_code):
+    product = store_db.get_product(qr_code)
+    if not product:
+        raise HTTPException(status_code=404, detail="Unknown QR code.")
+    return product
+
+
+def _ai_call(fn, *args):
+    try:
+        result = fn(*args)
+    except llm.LLMError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+    if result.get("error"):
+        raise HTTPException(status_code=422, detail=result["error"])
+    return {"success": True, **result}
+
+
+@app.post("/api/admin/ai/review-summary/{qr_code}")
+def admin_review_summary(qr_code: str, _: str = Depends(require_admin)):
+    return _ai_call(insights.summarise_reviews, _admin_product(qr_code))
+
+
+@app.post("/api/admin/ai/description/{qr_code}")
+def admin_description(qr_code: str, _: str = Depends(require_admin)):
+    return _ai_call(insights.draft_description, _admin_product(qr_code))
+
+
+@app.post("/api/admin/products/{qr_code}/content")
+def admin_save_content(qr_code: str, req: ApproveRequest, _: str = Depends(require_admin)):
+    _admin_product(qr_code)
+    patch = {}
+    if req.description is not None:
+        if not req.description.strip():
+            raise HTTPException(status_code=400, detail="Description cannot be empty.")
+        patch["description"] = req.description.strip()
+    if req.ai_summary is not None:
+        summary = req.ai_summary
+        if not isinstance(summary.get("summary"), str) or not summary["summary"].strip():
+            raise HTTPException(status_code=400, detail="The summary text is required.")
+        patch["aiSummary"] = {
+            "summary": summary["summary"].strip()[:600],
+            "pros": [str(x)[:120] for x in (summary.get("pros") or [])][:3],
+            "cons": [str(x)[:120] for x in (summary.get("cons") or [])][:3],
+        }
+    if req.clear_summary:
+        patch["aiSummary"] = None
+    product = store_db.update_details(qr_code, patch)
+    try:                                   # keep semantic search in step with the new text
+        rag.ensure_index()
+    except Exception as e:
+        print(f"RAG re-index after content change failed: {e}")
+    return {"success": True, "product": product}
+
+
+@app.get("/api/admin/insights")
+def admin_insights(_: str = Depends(require_admin)):
+    return {"success": True, **store_db.chat_stats()}
+
+
+@app.post("/api/admin/insights/report")
+def admin_insights_report(_: str = Depends(require_admin)):
+    return _ai_call(insights.shopper_report)
+
+
+@app.delete("/api/admin/insights/log")
+def admin_clear_log(_: str = Depends(require_admin)):
+    store_db.clear_chat_log()
+    return {"success": True}
 
 
 # Excel layout: (header, db field, editable)

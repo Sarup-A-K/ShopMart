@@ -239,3 +239,66 @@ def log_chat(question, qr_code=None, persona=None, mode=None, tools=None, guardr
             )
     except sqlite3.Error as e:
         print(f"chat_log write failed: {e}")
+
+
+def update_details(qr_code, patch):
+    """Merge keys (for example description, aiSummary) into the product's details JSON. Returns the product or None."""
+    with connect() as conn:
+        row = conn.execute("SELECT details FROM products WHERE qr_code = ?", (qr_code,)).fetchone()
+        if not row:
+            return None
+        details = json.loads(row["details"] or "{}")
+        for key, value in patch.items():
+            if value is None:
+                details.pop(key, None)
+            else:
+                details[key] = value
+        conn.execute("UPDATE products SET details = ?, updated_at = ? WHERE qr_code = ?",
+                     (json.dumps(details, ensure_ascii=False), now_iso(), qr_code))
+    return get_product(qr_code)
+
+
+def chat_stats(recent=40):
+    """Aggregate numbers and recent questions from chat_log for the admin insights page."""
+    with connect() as conn:
+        total = conn.execute("SELECT COUNT(*) FROM chat_log").fetchone()[0]
+        rows = conn.execute("SELECT * FROM chat_log ORDER BY id DESC").fetchall()
+        names = {r["qr_code"]: r["name"] for r in conn.execute("SELECT qr_code, name FROM products")}
+    blocked, tools, modes, products = {}, {}, {}, {}
+    corrected = fallback = latency_total = latency_n = 0
+    for r in rows:
+        if r["guardrail"]:
+            blocked[r["guardrail"]] = blocked.get(r["guardrail"], 0) + 1
+        for t in (r["tools"] or "").split(","):
+            if t:
+                tools[t] = tools.get(t, 0) + 1
+        if r["mode"]:
+            modes[r["mode"]] = modes.get(r["mode"], 0) + 1
+        if r["qr_code"]:
+            products[r["qr_code"]] = products.get(r["qr_code"], 0) + 1
+        corrected += r["corrected"] or 0
+        fallback += r["fallback"] or 0
+        if r["latency_ms"] and not r["guardrail"]:
+            latency_total += r["latency_ms"]
+            latency_n += 1
+    top_products = sorted(products.items(), key=lambda kv: -kv[1])[:5]
+    return {
+        "total_questions": total,
+        "blocked": blocked,
+        "blocked_total": sum(blocked.values()),
+        "corrected": corrected,
+        "fallback": fallback,
+        "tools": tools,
+        "modes": modes,
+        "avg_latency_ms": int(latency_total / latency_n) if latency_n else None,
+        "top_products": [{"qr_code": q, "name": names.get(q, q), "questions": n} for q, n in top_products],
+        "recent_questions": [
+            {"ts": r["ts"], "question": r["question"], "product": names.get(r["qr_code"]), "blocked": r["guardrail"]}
+            for r in rows[:recent]
+        ],
+    }
+
+
+def clear_chat_log():
+    with connect() as conn:
+        conn.execute("DELETE FROM chat_log")

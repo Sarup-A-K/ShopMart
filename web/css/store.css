@@ -245,6 +245,9 @@ select:focus, .input:focus { outline: 2px solid #9fd3c4; border-color: var(--bra
 .review:last-child { border-bottom: 0; }
 .review .who { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 2px; }
 
+.ai-summary { background: #f5f2ff; border: 1px solid #ddd5fa; border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 12px; font-size: 0.9rem; display: grid; gap: 4px; }
+.ai-summary-tag { font-size: 0.72rem; font-weight: 700; color: #5a3fc0; }
+
 /* Mobile sticky action bar */
 .sticky-bar {
   position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--border);

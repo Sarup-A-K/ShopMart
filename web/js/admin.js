@@ -302,7 +302,8 @@
   document.querySelectorAll(".tab").forEach(tab => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === tab));
-      ["prices-panel", "tags-panel"].forEach(id => $(id).classList.toggle("hidden", id !== tab.dataset.tab));
+      ["prices-panel", "tags-panel", "content-panel", "insights-panel"].forEach(id => $(id).classList.toggle("hidden", id !== tab.dataset.tab));
+      document.dispatchEvent(new CustomEvent("admin:tab", { detail: tab.dataset.tab }));
     });
   });
 
@@ -375,6 +376,8 @@
     try { base = (await (await fetch(`${API}/api/config`)).json()).public_url || ""; } catch (e) { /* offline */ }
     baseUrlInput.value = base || window.location.origin;
   }
+
+  window.OmniAdmin = { api, setStatus, errorText, fmt };
 
   // ---- Start ----
   initBaseUrl().then(() => { if (token) showManager(); else showLogin(); });

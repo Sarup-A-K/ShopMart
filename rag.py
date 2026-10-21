@@ -95,8 +95,9 @@ def product_chunks():
             parts.append("Features: " + ", ".join(specs["features"]) + ".")
         if specs.get("warranty"):
             parts.append(f"Warranty: {specs['warranty']}.")
-        if p.get("aiSummary"):
-            parts.append(f"Review summary: {p['aiSummary']}")
+        summary = p.get("aiSummary")
+        if isinstance(summary, dict) and summary.get("summary"):
+            parts.append(f"Review summary: {summary['summary']}")
         chunks.append({"id": f"product:{p['qrCode']}", "source_type": "product", "source_id": p["qrCode"],
                        "title": p["name"], "text": " ".join(x for x in parts if x)})
         for i, review in enumerate(p.get("reviews") or [], start=1):

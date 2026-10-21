@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/store.css?v=6">
+  <link rel="stylesheet" href="/css/store.css?v=7">
   <style>
     .login-card { max-width: 380px; margin: 48px auto; padding: 24px; }
     .login-card h1 { font-size: 1.3rem; margin-bottom: 4px; }
@@ -36,6 +36,19 @@
     .dirty-count { color: #9a6b00; font-size: 0.85rem; margin-top: 8px; }
     .url-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
     .url-row .input { flex: 1 1 280px; }
+    .ai-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-top: 14px; background: #fbfcfd; }
+    .ai-card h3, .two-col h3 { font-size: 0.95rem; margin-bottom: 6px; }
+    .ai-preview { margin-top: 12px; display: grid; gap: 8px; }
+    .ai-preview textarea { width: 100%; resize: vertical; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 6px 0 14px; }
+    .stat { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; background: #fff; }
+    .stat b { display: block; font-size: 1.4rem; }
+    .stat span { font-size: 0.78rem; color: var(--text-muted); }
+    .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .plain-list { list-style: none; display: grid; gap: 4px; font-size: 0.88rem; }
+    .plain-list li { padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .plain-list .when { color: var(--text-dim); font-size: 0.75rem; margin-left: 6px; }
+    .report-list { margin: 4px 0 0 18px; display: grid; gap: 4px; font-size: 0.9rem; }
     .warn-box { background: var(--warn-bg); color: #6b4b00; border: 1px solid #f3dc9b; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 0.88rem; margin: 10px 0; }
 
     /* Printable price tags */
@@ -89,6 +102,8 @@
       <div class="tabs no-print" role="tablist">
         <button class="tab active" data-tab="prices-panel" role="tab">Prices</button>
         <button class="tab" data-tab="tags-panel" role="tab">QR price tags</button>
+        <button class="tab" data-tab="content-panel" role="tab">✨ AI content</button>
+        <button class="tab" data-tab="insights-panel" role="tab">✨ Shopper insights</button>
       </div>
 
       <!-- Prices -->
@@ -142,12 +157,82 @@
         </div>
         <div class="tag-sheet" id="tag-sheet"></div>
       </div>
+
+      <!-- AI content -->
+      <div class="card panel hidden" id="content-panel">
+        <div class="toolbar">
+          <div>
+            <h2>AI content for the product page</h2>
+            <p class="muted small">Drafts are written by the local Llama model from the product data. Review and edit them, then save. Nothing is published until you click Save.</p>
+          </div>
+          <label class="small" style="display: flex; align-items: center; gap: 6px;">Product
+            <select id="content-product"></select>
+          </label>
+        </div>
+
+        <div class="ai-card">
+          <h3>Review summary</h3>
+          <p class="muted small" id="summary-current"></p>
+          <div class="toolbar-actions">
+            <button class="btn" id="btn-gen-summary">Summarise reviews with AI</button>
+            <button class="btn hidden" id="btn-clear-summary">Remove published summary</button>
+          </div>
+          <div class="ai-preview hidden" id="summary-preview">
+            <label class="small" for="summary-text">Summary (editable)</label>
+            <textarea class="input" id="summary-text" rows="3"></textarea>
+            <div class="small" id="summary-lists"></div>
+            <div class="warn-box hidden" id="summary-warnings"></div>
+            <button class="btn btn-cta" id="btn-save-summary">Publish this summary</button>
+          </div>
+        </div>
+
+        <div class="ai-card">
+          <h3>Product description</h3>
+          <p class="muted small" id="description-current"></p>
+          <button class="btn" id="btn-gen-description">Draft a new description with AI</button>
+          <div class="ai-preview hidden" id="description-preview">
+            <label class="small" for="description-text">Draft (editable)</label>
+            <textarea class="input" id="description-text" rows="3"></textarea>
+            <div class="warn-box hidden" id="description-warnings"></div>
+            <button class="btn btn-cta" id="btn-save-description">Replace the description</button>
+          </div>
+        </div>
+        <div class="status" id="content-status"></div>
+      </div>
+
+      <!-- Shopper insights -->
+      <div class="card panel hidden" id="insights-panel">
+        <div class="toolbar">
+          <div>
+            <h2>What shoppers are asking</h2>
+            <p class="muted small">From questions asked to the AI assistant. Questions are stored without any personal details.</p>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn" id="btn-refresh-insights">Refresh</button>
+            <button class="btn" id="btn-clear-log">Clear log</button>
+          </div>
+        </div>
+        <div class="stat-grid" id="stat-grid"></div>
+        <div class="two-col">
+          <div><h3>Most asked-about products</h3><ul class="plain-list" id="top-products"></ul></div>
+          <div><h3>Assistant tools used</h3><ul class="plain-list" id="tool-usage"></ul></div>
+        </div>
+        <div class="ai-card">
+          <h3>AI report</h3>
+          <button class="btn btn-cta" id="btn-gen-report">Summarise what shoppers are asking</button>
+          <div class="ai-preview hidden" id="report-box"></div>
+        </div>
+        <h3 style="margin-top: 16px;">Recent questions</h3>
+        <ul class="plain-list" id="recent-questions"></ul>
+        <div class="status" id="insights-status"></div>
+      </div>
     </section>
 
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="/js/common.js?v=2"></script>
-  <script src="/js/admin.js?v=2"></script>
+  <script src="/js/admin.js?v=3"></script>
+  <script src="/js/admin_ai.js?v=1"></script>
 </body>
 </html>

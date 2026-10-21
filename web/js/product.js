@@ -75,6 +75,12 @@
     $("spec-rows").innerHTML = rows.map(([k, v]) => `<tr><th>${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join("");
     $("feature-list").innerHTML = (specs.features || []).map(f => `<li>${escapeHtml(f)}</li>`).join("");
 
+    const sum = p.aiSummary;
+    if (sum && sum.summary) {
+      const list = (label, items) => items && items.length ? `<div><strong>${label}:</strong> ${items.map(escapeHtml).join(" · ")}</div>` : "";
+      $("ai-summary").innerHTML = `<div class="ai-summary-tag">✨ AI summary of the reviews below</div>${escapeHtml(sum.summary)}${list("Pros", sum.pros)}${list("Cons", sum.cons)}`;
+      $("ai-summary").classList.remove("hidden");
+    }
     const reviews = p.reviews || [];
     $("reviews").innerHTML = reviews.length
       ? reviews.map((r, i) => `<div class="review"><div class="who">Shopper review ${i + 1}</div>${escapeHtml(r)}</div>`).join("")
