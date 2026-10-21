@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/store.css?v=4">
+  <link rel="stylesheet" href="/css/store.css?v=5">
 </head>
 <body>
 
@@ -44,6 +44,34 @@
         <p>Scan any price tag to compare with Amazon, Flipkart and Croma, get AI advice for your needs, and find the exact aisle.</p>
       </div>
       <button class="btn-scan" data-open-scanner>Scan a price tag</button>
+    </section>
+
+    <section class="card assistant-panel" aria-labelledby="assistant-title">
+      <div class="assistant-head">
+        <h2 id="assistant-title">✨ Ask the store assistant <span class="ai-tag">Llama 3.2 · uses live store data</span></h2>
+        <label class="small muted" style="display: flex; align-items: center; gap: 6px;">
+          I am a
+          <select id="persona">
+            <option>General Buyer</option>
+            <option>Budget Shopper</option>
+            <option>Student</option>
+            <option>Tech Enthusiast</option>
+            <option>Fashion Forward</option>
+          </select>
+        </label>
+      </div>
+      <div class="chat-log" id="chat-log" aria-live="polite"></div>
+      <div class="suggestions" id="suggestions">
+        <button class="suggestion">Best earbuds under 1500 and where are they?</button>
+        <button class="suggestion">Which is cheaper, the boAt earbuds or the Bata sandals?</button>
+        <button class="suggestion">What is your return policy for clothes?</button>
+        <button class="suggestion">How do I get to the Nike shoes from Aisle 2?</button>
+      </div>
+      <form class="chat-form" id="chat-form">
+        <label for="chat-input" class="sr-only">Ask the store assistant</label>
+        <input class="input" id="chat-input" placeholder="Ask about products, prices, policies or directions…" autocomplete="off" maxlength="500">
+        <button class="btn btn-brand" type="submit" id="chat-send">Ask</button>
+      </form>
     </section>
 
     <div class="results-bar">
@@ -89,6 +117,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script src="/js/qrEngine.js?v=1"></script>
   <script src="/js/common.js?v=2"></script>
-  <script src="/js/catalog.js?v=4"></script>
+  <script src="/js/chat.js?v=1"></script>
+  <script src="/js/catalog.js?v=5"></script>
 </body>
 </html>

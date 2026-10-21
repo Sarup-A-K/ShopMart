@@ -13,6 +13,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, PatternFill
 from pydantic import BaseModel, Field
 
+import agent
 import assistant
 import llm
 import rag
@@ -68,6 +69,7 @@ class ChatRequest(BaseModel):
     persona: str = "General Buyer"
     history: List[ChatMessage] = []
     product: Optional[dict] = None
+    mode: str = "auto"       # "agent" (always tools), "rag" (single grounded call), "auto" (router decides)
 
 
 @app.get("/api/health")
@@ -354,24 +356,34 @@ def ask_product(req: ChatRequest):
 
 @app.post("/api/chat/stream")
 def chat_stream(req: ChatRequest):
-    """Server-Sent Events: `token` events with text pieces, then one `done` event."""
+    """
+    Server-Sent Events. Events: `tool` (agent called a tool), `token` (answer text piece),
+    `done` (summary), `error`. With no qr_code this is the store-wide assistant.
+    """
     product = resolve_product(req.qr_code, req.product)
     history = [m.model_dump() for m in req.history]
 
     def events():
         started = time.time()
         try:
+            use_agent = req.mode == "agent" or (req.mode == "auto" and agent.needs_agent(req.question, product))
+            if use_agent:
+                for ev in agent.run_agent(req.question, req.persona, history, product):
+                    name = ev.pop("event")
+                    if name == "done":
+                        ev.pop("answer", None)
+                        ev.update(latency_ms=int((time.time() - started) * 1000), model=llm.CHAT_MODEL)
+                    yield sse(name, ev)
+                return
             policies = rag.policy_context(req.question)
             for piece in assistant.stream_answer(product, req.persona, history, req.question, policies):
                 yield sse("token", {"text": piece})
+            yield sse("done", {
+                "latency_ms": int((time.time() - started) * 1000), "model": llm.CHAT_MODEL,
+                "tools": [], "products": [], "fallback": False, "sources": assistant.sources_for(policies),
+            })
         except llm.LLMError as e:
             yield sse("error", {"message": str(e)})
-            return
-        yield sse("done", {
-            "latency_ms": int((time.time() - started) * 1000),
-            "model": llm.CHAT_MODEL,
-            "sources": assistant.sources_for(policies),
-        })
 
     return StreamingResponse(events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 

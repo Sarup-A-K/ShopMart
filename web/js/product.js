@@ -120,108 +120,6 @@
     loadInsight();
   });
 
-  function addMessage(text, kind) {
-    const div = document.createElement("div");
-    div.className = `msg msg-${kind}`;
-    div.textContent = text;
-    $("chat-log").appendChild(div);
-    $("chat-log").scrollTop = $("chat-log").scrollHeight;
-    return div;
-  }
-
-  function addSources(bubble, sources) {
-    const row = document.createElement("div");
-    row.className = "sources";
-    row.append("Sources: ");
-    sources.forEach(src => {
-      const chip = document.createElement("span");
-      chip.className = "source-chip";
-      chip.textContent = src.title;
-      row.appendChild(chip);
-    });
-    bubble.appendChild(row);
-  }
-
-  // Conversation memory: the server receives the recent turns so follow-ups ("and the price?") make sense
-  const history = [];
-
-  function showTyping(el) {
-    el.classList.add("typing");
-    el.textContent = "Thinking…";
-  }
-
-  /** Read a Server-Sent Events response and call onEvent(name, data) for each event. */
-  async function readEvents(response, onEvent) {
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    for (;;) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      let split;
-      while ((split = buffer.indexOf("\n\n")) !== -1) {
-        const raw = buffer.slice(0, split);
-        buffer = buffer.slice(split + 2);
-        const name = (raw.match(/^event: (.*)$/m) || [])[1];
-        const data = (raw.match(/^data: (.*)$/m) || [])[1];
-        if (name && data) onEvent(name, JSON.parse(data));
-      }
-    }
-  }
-
-  async function ask(question) {
-    question = question.trim();
-    if (!question) return;
-    addMessage(question, "user");
-    $("chat-input").value = "";
-    $("chat-send").disabled = true;
-    const bubble = addMessage("", "ai");
-    showTyping(bubble);
-    let text = "";
-    let failed = false;
-    try {
-      const res = await fetch("/api/chat/stream", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_name: product.name, qr_code: product.qrCode, question,
-          persona: personaSelect.value, history: history.slice(-6)
-        })
-      });
-      if (!res.ok || !res.body) throw new Error("bad response");
-      await readEvents(res, (name, data) => {
-        if (name === "token") {
-          if (!text) bubble.classList.remove("typing");
-          text += data.text;
-          bubble.textContent = text;
-          $("chat-log").scrollTop = $("chat-log").scrollHeight;
-        } else if (name === "done") {
-          if (data.sources && data.sources.length) addSources(bubble, data.sources);
-        } else if (name === "error") {
-          failed = true;
-        }
-      });
-    } catch (e) {
-      failed = true;
-    }
-    bubble.classList.remove("typing");
-    if (failed && !text) {
-      bubble.className = "msg msg-error";
-      bubble.textContent = "Sorry, the AI assistant is unavailable right now. Please try again shortly.";
-    } else {
-      history.push({ role: "user", content: question }, { role: "assistant", content: text.trim() });
-    }
-    $("chat-send").disabled = false;
-    $("chat-input").focus();
-  }
-
-  $("chat-form").addEventListener("submit", (e) => { e.preventDefault(); ask($("chat-input").value); });
-  $("suggestions").addEventListener("click", (e) => {
-    const btn = e.target.closest(".suggestion");
-    if (btn) ask(btn.textContent);
-  });
-
   // ---------- Load ----------
   (async () => {
     if (!qrCode) return showNotFound();
@@ -252,7 +150,11 @@
     $("w-aisle").textContent = `📍 ${loc.aisle || "Ask staff"}${loc.section ? ` · ${loc.section}` : ""}`;
     Wayfinding.init({ product, canvas: $("w-map"), select: $("w-near"), stepsEl: $("w-steps"), summaryEl: $("w-summary") });
 
-    addMessage(`Hi! Ask me anything about the ${product.brand} ${product.category ? product.category.toLowerCase() : "product"}: price, fit, or where to find it.`, "ai");
+    OmniChat.create({
+      log: $("chat-log"), form: $("chat-form"), input: $("chat-input"), send: $("chat-send"), suggestions: $("suggestions"),
+      getPayload: () => ({ qr_code: product.qrCode, product_name: product.name, persona: personaSelect.value }),
+      welcome: `Hi! Ask me anything about the ${product.brand} ${product.category ? product.category.toLowerCase() : "product"}: price, specs, how it compares with other items, or where to find it.`
+    });
     loadInsight();
   })();
 })();

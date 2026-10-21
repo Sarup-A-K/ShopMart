@@ -241,13 +241,20 @@ def search_chunks(query, k=4, source_types=None, source_id=None):
     return results
 
 
-def search_products(query, limit=6):
+def search_products(query, limit=6, max_price=None, category=None):
     """
     Semantic product search: embed the query, score product and review chunks, take each
     product's best chunk, then apply the price/category filters parsed from the query.
     Prices come live from the database.
     """
     cleaned, filters = parse_query(query)
+    if max_price:                       # explicit filters (from an agent tool call) win over parsed ones
+        filters["max_price"] = float(max_price)
+    if category:
+        known = {p.get("category") for p in store_db.list_products()}
+        match = next((c for c in known if c and c.lower() == str(category).strip().lower()), None)
+        if match:
+            filters["category"] = match
     semantic_query = cleaned if tokens(cleaned) else query
     products = {p["qrCode"]: p for p in store_db.list_products()}
 

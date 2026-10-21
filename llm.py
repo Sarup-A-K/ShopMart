@@ -80,6 +80,40 @@ def stream_chat(messages, model=None, temperature=0.4, timeout=120):
         res.close()
 
 
+def stream_chat_events(messages, tools=None, model=None, temperature=0.0, timeout=120):
+    """
+    Like stream_chat, but tool-aware. Yields ("text", str) for answer pieces and
+    ("tool_calls", [call, ...]) when the model decides to call tools.
+    """
+    payload = {
+        "model": model or CHAT_MODEL,
+        "messages": messages,
+        "stream": True,
+        "options": {"temperature": temperature, "top_p": 0.9},
+    }
+    if tools:
+        payload["tools"] = tools
+    res = _post("/api/chat", payload, timeout, stream=True)
+    try:
+        for line in res.iter_lines():
+            if not line:
+                continue
+            chunk = json.loads(line)
+            if chunk.get("error"):
+                raise LLMError(f"Ollama error: {chunk['error']}")
+            message = chunk.get("message") or {}
+            if message.get("tool_calls"):
+                yield "tool_calls", message["tool_calls"]
+            if message.get("content"):
+                yield "text", message["content"]
+            if chunk.get("done"):
+                break
+    except requests.RequestException:
+        raise LLMError("The connection to the local LLM was interrupted.")
+    finally:
+        res.close()
+
+
 def generate(system, prompt, format=None, model=None, temperature=0.4):
     """Convenience wrapper: system prompt + one user message, returns the reply text."""
     messages = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]

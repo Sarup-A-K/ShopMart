@@ -142,4 +142,18 @@
     render();
     if (isSemanticQuery(searchInput.value.trim())) runSemanticSearch();
   })();
+
+  // Store-wide assistant (no current product; the backend uses its tools to look things up)
+  const assistantPersona = document.getElementById("persona");
+  try { assistantPersona.value = localStorage.getItem("omnitag_persona") || "General Buyer"; } catch (e) { /* storage blocked */ }
+  assistantPersona.addEventListener("change", () => {
+    try { localStorage.setItem("omnitag_persona", assistantPersona.value); } catch (e) { /* storage blocked */ }
+  });
+  OmniChat.create({
+    log: document.getElementById("chat-log"), form: document.getElementById("chat-form"),
+    input: document.getElementById("chat-input"), send: document.getElementById("chat-send"),
+    suggestions: document.getElementById("suggestions"),
+    getPayload: () => ({ persona: assistantPersona.value }),
+    welcome: "Hi! I can find products, compare prices, check store policies and give you directions inside the store."
+  });
 })();
