@@ -25,7 +25,7 @@ Instead of fighting "showrooming" (shoppers checking online prices in the aisle)
 
 ### Store management
 * **Admin price manager** (`/admin`): Edit store price, M.R.P. and competitor prices in a table (with a live preview of the shopper price) or in bulk through Excel (all-or-nothing validation). Print shelf QR price tags.
-* **SQLite database** (`omnitag.db`), seeded from `seed_products.json`. Price edits show on the next scan.
+* **SQLite database** (`omnitag.db`), seeded from `seed_products.json`: 20 sample products across Electronics, Fashion and Footwear, with 2–4 products per aisle. Prices of the added products are illustrative sample data, not live prices. On start-up, products missing from the database are added; existing rows (and admin price edits) are never overwritten. Price edits show on the next scan.
 
 ---
 

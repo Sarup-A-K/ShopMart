@@ -33,21 +33,21 @@ TOOLS = [
         "name": "get_product",
         "description": "Get full details (price, MRP, online prices, specs, features, warranty, reviews, aisle) of one product.",
         "parameters": {"type": "object", "properties": {
-            "qr_code": {"type": "string", "description": "The product's name as the shopper said it, or a qr_code from the catalogue list. Never guess a code."},
+            "qr_code": {"type": "string", "description": "The product's name as the shopper said it, or a qr_code from an earlier tool result. Never guess a code."},
         }, "required": ["qr_code"]},
     }},
     {"type": "function", "function": {
         "name": "compare_products",
         "description": "Compare two or more products side by side on price, specs and location. Use when asked which is cheaper or better.",
         "parameters": {"type": "object", "properties": {
-            "qr_codes": {"type": "array", "items": {"type": "string"}, "description": "Product names as the shopper said them, or qr_codes from the catalogue list. Never guess a code."},
+            "qr_codes": {"type": "array", "items": {"type": "string"}, "description": "Product names as the shopper said them, or qr_codes from an earlier tool result. Never guess a code."},
         }, "required": ["qr_codes"]},
     }},
     {"type": "function", "function": {
         "name": "get_directions",
         "description": "Get walking directions inside the store to a product, from the entrance or from an aisle.",
         "parameters": {"type": "object", "properties": {
-            "qr_code": {"type": "string", "description": "The product's name as the shopper said it, or a qr_code from the catalogue list. Never guess a code."},
+            "qr_code": {"type": "string", "description": "The product's name as the shopper said it, or a qr_code from an earlier tool result. Never guess a code."},
             "from_checkpoint": {"type": "string", "description": "'entrance' (default) or 'aisle-1' ... 'aisle-6'"},
         }, "required": ["qr_code"]},
     }},
@@ -306,12 +306,12 @@ def system_prompt(persona, product):
         "- Call a tool only when you need it. If the answer is already in 'Product the shopper is viewing', answer directly.\n"
         "- Prices are in Indian Rupees (₹). Never use '$'. Never change or negotiate prices.\n"
         "- Answer in 2-4 short sentences. When you recommend or compare products, give each name, price and aisle.\n"
-        "- Never guess a qr_code. Use the product name as the shopper said it, or a code from the catalogue list below.\n"
+        "- Never guess a qr_code. Use the product name as the shopper said it, or a code from an earlier tool result.\n"
         "- Mention only products that the tools returned. Never invent or suggest products, brands, prices or aisles that are not in the tool results.\n"
         "- If the tools return nothing relevant, say you couldn't find it."
     )
     catalogue = store_db.list_products()[:40]    # a compact index; with a large catalogue the search tool is the way in
-    prompt += "\n\nCatalogue (qr_code = name):\n" + "\n".join(f"{p['qrCode']} = {p['name']}" for p in catalogue)
+    prompt += "\n\nCatalogue (pass the product name to the tools):\n" + "\n".join(f"- {p['name']}" for p in catalogue)
     if product:
         prompt += f"\n\nProduct the shopper is viewing (qr_code {product['qrCode']}):\n{assistant.build_product_context(product)}"
     return prompt

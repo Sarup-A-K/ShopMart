@@ -192,8 +192,8 @@ The full log with numbers is in [`FINDINGS.md`](FINDINGS.md). Summary table:
 ## 8. Evaluation: how we know it works
 
 `eval/run_eval.py` runs a golden set (`eval/golden_set.json`) against the live server:
-- **34 answer cases:** price + aisle, specs, "good deal?", store policies, multi-product agent questions, follow-ups.
-- **12 search queries** (including two nonsense ones), compared with a plain keyword-search baseline.
+- **41 answer cases:** price + aisle, specs, "good deal?", store policies, multi-product agent questions (including products in the same category), follow-ups.
+- **17 search queries** (including two nonsense ones), compared with a plain keyword-search baseline.
 - **18 safety prompts** (attacks and legitimate look-alikes written after the pattern rules) **and a 20-prompt held-out set written before the LLM guard was built**, so the held-out figures are the fair estimate of generalisation.
 - Five configurations to show what each technique adds: *model alone → + product facts → + RAG → + agent → + guardrails and fact-check*, plus an optional 1B-vs-3B model comparison.
 
@@ -213,7 +213,26 @@ The full log with numbers is in [`FINDINGS.md`](FINDINGS.md). Summary table:
 **Limits to state openly:** small sample (one answer is about 3 percentage points), exact-match checks can mark an unusual but correct phrasing wrong, the hallucination checker is the same one used at run time (so it only sees what it can see), and the judge shares the model's biases. Results are indicative, not a benchmark.
 
 <!-- RESULTS:START -->
-### Results (measured; `llama3.2` 3B, GTX 1650)
+### Results on the 20-product catalogue (latest; `llama3.2` 3B, GTX 1650)
+
+The catalogue grew from 6 to 20 products (2-4 per aisle, three categories), and the golden set grew to 41 answer cases and 17 search queries. Two full runs on it are in `eval/results/`: `20261021-163418` (before an agent fix) and **`20261021-172220` (final code, `latest`)**.
+
+| Configuration | Correct answers (final run) | Hallucinated facts (final run) | Median latency |
+|---|---|---|---|
+| Model alone (no store data) | 19.5% | 75.6% | 1.9 s |
+| + product facts in the prompt | 61.0% | 36.6% | 2.1 s |
+| + RAG (store policies) | 68.3% | 24.4% | 2.4 s |
+| + tool-calling agent | 97.6% | 2.4% | 6.9 s |
+| **Full system** (+ guardrails, fact-check, router) | **100.0%** | 2.4% | 4.4 s |
+
+- **The ranking is the same as with 6 products**, so the conclusions hold on a bigger catalogue. What changed: the agent got slower (4.5 s to 6.9 s median) because its prompt and tool results are longer, and search got harder.
+- **Before the agent fix the full system scored 92.7%** (`20261021-163418`). One failure was a real bug: asked "How do I get to the Nike shoes from Aisle 2?" the model called the directions tool with `item-15` (a dress), because it picked a code from the catalogue list in its prompt. The fix was to list product *names* only, so the model passes names and the code resolves them. I tried "name -> code" first; it fixed that case but broke two others, so names only was kept. The fix was developed on the same 15 agent cases it was then scored on, so the final run is **not independent evidence for those cases**. The other two failures in the earlier run were checker problems (an answer that stated the saving but not the price; an unusual but correct "doesn't allow returns").
+- **Semantic search:** recall@3 95.6% vs 85.6% for keyword matching (15 queries). **It got worse at saying "nothing here":** for the nonsense query "laptop" it now returns phones as a confident match (similarity 0.621 against a 0.62 threshold), correct on 1 of 2 nonsense queries vs 2 of 2 with 6 products. I did not tune the threshold to one query; it is a known weakness of a fixed threshold.
+- **Guardrails (unchanged logic):** held-out attacks blocked 11/11 with the LLM guard vs 18.2% by rules alone; 1 of 9 legitimate held-out questions wrongly refused. Structured insights: 40/40 valid JSON.
+- **Manual audit:** I read the 30 agent, deal and policy answers of the final run. No wrong claim was found (all prices, aisles and comparisons match the database). Minor flaws: an irrelevant EMI sentence in a return answer and a loosely worded warranty line. This is the author's reading, not an independent rater.
+- **Known limitation found while expanding:** if a name matches several products (for example "boAt"), the lookup silently picks the first, so the assistant can describe the earbuds when the shopper meant the headphones. Questions that name a distinguishing word ("Rockerz") work.
+
+### Earlier results on the 6-product catalogue (kept for the story of how the system improved)
 
 Two full runs are kept in `eval/results/`: `20261021-140812` (run 1, first measurement) and `20261021-143250` (run 2, after fixes that run 1 suggested, so **not** a held-out result for those fixes). `20261021-144930` is the model-size run. Each folder has `results.csv` (every answer), `summary.md` and charts.
 
@@ -247,7 +266,7 @@ Two full runs are kept in `eval/results/`: `20261021-140812` (run 1, first measu
 - The fact-checker fired 0 times in run 2 and once in run 3; its main demonstrated value comes from the forced-error tests (wrong price, wrong aisle, invented product, wrong time claim).
 - The LLM judge was a weak grader (it rated a refusal as a perfect answer) and should not be quoted as evidence.
 - The attack-compliance figure for the unguarded model is a keyword heuristic that I revised once after reading run 1's outputs.
-- Six products and 34 cases: indicative, not a benchmark.
+- Small catalogue and small test set (20 products, 41 cases): indicative, not a benchmark. The prices of the 14 added products are illustrative sample data.
 <!-- RESULTS:END -->
 
 ## 12. Code map
@@ -271,6 +290,6 @@ Two full runs are kept in `eval/results/`: `20261021-140812` (run 1, first measu
 
 - The model is small. It is the reason for most of the extra machinery, and the evaluation shows where it still fails.
 - Guardrails are pattern-based and the fact-checker is heuristic. They are a strong safety net for the failures seen, not a proof.
-- Only six products, so search and agent results are easier than in a real catalogue. Treat numbers as indicative.
+- Only 20 products, so search and agent results are easier than in a real catalogue. Treat numbers as indicative.
 - The site is HTTP on the local network; the in-page camera scanner needs HTTPS on phones (the phone's own camera app works).
 - Next: a fine-tuned guard classifier (fewer false refusals), larger model, real price feed, human-rated evaluation, multilingual answers.

@@ -36,7 +36,7 @@ def connect():
 
 
 def init_db():
-    """Create the schema and seed it from seed_products.json on first run."""
+    """Create the schema and add any seed products that are missing."""
     with connect() as conn:
         conn.execute("""
             CREATE TABLE IF NOT EXISTS products (
@@ -81,13 +81,19 @@ def init_db():
                 latency_ms  INTEGER
             )
         """)
-        if conn.execute("SELECT COUNT(*) FROM products").fetchone()[0] == 0:
-            seed(conn)
+        seed(conn)
 
 
 def seed(conn):
+    """Insert seed products that are not in the database yet.
+
+    Existing rows are never touched, so prices edited by the admin survive a restart, and new
+    products added to seed_products.json appear in an existing database.
+    """
     with open(SEED_PATH, encoding="utf-8") as f:
         products = json.load(f)
+    have = {r[0] for r in conn.execute("SELECT qr_code FROM products")}
+    products = [p for p in products if p["qrCode"] not in have]
     ts = now_iso()
     for p in products:
         p = dict(p)
@@ -109,7 +115,8 @@ def seed(conn):
             f"INSERT INTO products ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})",
             list(row.values()),
         )
-    print(f"Seeded {len(products)} products into {DB_PATH}")
+    if products:
+        print(f"Seeded {len(products)} new products into {DB_PATH}")
 
 
 def row_to_product(row):
@@ -148,7 +155,7 @@ def row_to_product(row):
 
 def list_products():
     with connect() as conn:
-        rows = conn.execute("SELECT * FROM products ORDER BY qr_code").fetchall()
+        rows = conn.execute("SELECT * FROM products ORDER BY CAST(SUBSTR(qr_code, INSTR(qr_code, '-') + 1) AS INTEGER), qr_code").fetchall()
     return [row_to_product(r) for r in rows]
 
 
@@ -164,7 +171,7 @@ def list_price_rows():
     """Flat rows for the admin table and Excel export."""
     with connect() as conn:
         rows = conn.execute(
-            f"SELECT qr_code, name, brand, {', '.join(PRICE_FIELDS)}, updated_at FROM products ORDER BY qr_code"
+            f"SELECT qr_code, name, brand, {', '.join(PRICE_FIELDS)}, updated_at FROM products ORDER BY CAST(SUBSTR(qr_code, INSTR(qr_code, '-') + 1) AS INTEGER), qr_code"
         ).fetchall()
     return [dict(r) for r in rows]
 

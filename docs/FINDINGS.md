@@ -1,7 +1,7 @@
 # Findings log: real problems met while building, and what was done
 
 Each entry: what went wrong, how it was noticed, what was done. Numbers come from actual runs on the demo catalogue
-(6 products, 12 reviews, 8 policy sections) with `llama3.2` (3B) and `nomic-embed-text` on a GTX 1650.
+(first 6 products, later 20 products; 8 policy sections) with `llama3.2` (3B) and `nomic-embed-text` on a GTX 1650.
 
 ## Stage 1: chat memory, streaming, structured output
 - **Latency felt slow before streaming.** A 54 s first answer (cold model load) looked like a hang. Streaming shows the first words in about a second once the model is loaded, and a typing indicator covers the wait.
@@ -77,3 +77,15 @@ Search recall@3: semantic 95% vs keyword 80% (both correctly return nothing for 
   A third (`policy_return_earbuds`) was right that opened earbuds cannot be returned but muddled about the exchange conditions. So the honest figure is **about 32 of 34 (94%)**, not 100%, and the weak spot is comparisons with online prices. The checks cannot judge comparative wording.
 - **Fix, same lesson as EMI and compare_products:** the comparison is now computed in code and given to the model as a fact ("Price comparison (computed): Amazon ₹1199 (our price is ₹60 lower); ... The lowest online price is Amazon at ₹1199"). Sampling 4 answers each for 3 products afterwards (12 answers, read by hand): the direction and "lowest" mistakes were gone; 10 of 12 were fully correct, and 2 contained a smaller invented or misleading remark ("lower ... by about 6-8%", "buying online might be the way to go"). This was not re-run through the full golden set.
 - **Overall spread for the final system on the golden set:** 91.2%, 97.1% and 100% in three runs (automatic check), and about 94% by my reading of run 3. Quote it as "roughly 90-100% depending on the run and how strictly it is read".
+
+## Stage 8: growing the catalogue from 6 to 20 products
+
+Why: with one product per aisle there was nothing to disambiguate, so search, comparison and the agent were being tested on an easy problem. 14 products were added (Electronics, Fashion, Footwear; 2-4 per aisle). Their prices are illustrative sample data.
+
+- **Plumbing:** the database was only seeded when empty, so an existing database would never see new products. Seeding now inserts only products that are missing and never touches existing rows, so admin price edits survive. The catalogue was also sorting `item-10` before `item-2` (text order); it now sorts by number.
+- **The golden set had to change, and I recorded how.** Seven cases became ambiguous (for example "Nike shoes" now matches two products), so they were widened; 7 answer cases and 5 search cases were added for same-category products. The answer-case edits were made from the catalogue alone; the search-case edits were made after seeing what search returned, which slightly favours semantic search. Old results belong to the 6-product catalogue.
+- **A regression the bigger catalogue exposed:** "laptop" (not sold here) scored 0.621 against the 0.62 "confident" threshold because there are now three phones, so search presents phones as a confident match. Recall@3 stayed high (95.6% vs 85.6% keyword) but the "correctly finds nothing" score fell from 2/2 to 1/2. A fixed similarity threshold is fragile; I left it and noted it instead of tuning it to one query.
+- **A deterministic agent failure** (run `20261021-163418`): "How do I get to the Nike shoes from Aisle 2?" called the directions tool with `item-15`, the Libas dress. Checking the tool call showed the cause: the prompt listed 20 lines of `item-N = name`, and the 3B model copied the wrong code. The name lookup itself was correct (`"Nike shoes"` resolves to the right product). Changing the list to "name -> code" fixed this case but broke two others (the "Samsung phone" question returned the iPhone; "Nike Revolution" returned the SuperRep). Listing names only and telling the model to pass names fixed all 15 agent cases. Lesson: a 3B model is unreliable at mapping a name to an opaque code; let code do the lookup. Caveat: this was tuned on the same cases it was then scored on.
+- **Final run** (`20261021-172220`): full system 100% by the automatic check (97.6% for the plain agent); my reading of the 30 agent/deal/policy answers found no wrong claim. Before the fix the same system scored 92.7%, and two of its three misses were checker problems rather than wrong answers (a correct saving without the price; "doesn't allow returns" not matching the expected wording). The run-to-run spread is still several points, so 100% is not a guarantee.
+- **Costs of a bigger catalogue:** the agent's median latency rose from 4.5 s to 6.9 s (longer prompt and tool results).
+- **Open limitation:** when a name matches several products ("boAt"), the lookup silently picks the first. A better design would ask which one.

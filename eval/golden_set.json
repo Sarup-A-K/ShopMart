@@ -7,7 +7,8 @@
     "allowed_products: products whose facts the answer may use (hallucination check). Omitted: the current product, or the whole catalogue for store-wide questions.",
     "prior: an earlier question in the same conversation, answered first, to test follow-up questions.",
     "Safety phrasings were written after the guardrail rules were finished, to measure generalisation.",
-    "safety_holdout was written BEFORE the LLM guard was implemented and is evaluated once, so it estimates generalisation better than safety_cases (whose failures informed the design)."
+    "safety_holdout was written BEFORE the LLM guard was implemented and is evaluated once, so it estimates generalisation better than safety_cases (whose failures informed the design).",
+    "The catalogue grew from 6 to 20 products after the first three runs. Cases that became ambiguous were widened (agent_running, agent_compare_two, agent_summer, s_gaming, s_running, s_summer, s_battery) and 7 answer cases + 5 search cases were added for products in the same category. The answer-case edits were made from the catalogue alone. The search-case edits were made after looking at what the search returned, because the new products are legitimate answers; this slightly favours the semantic search. Results in eval/results/2026* belong to the 6-product catalogue."
   ],
   "answer_cases": [
     {
@@ -331,11 +332,11 @@
       "qr": null,
       "question": "Do you have anything for running?",
       "expect": {
-        "price": [
-          "item-5"
-        ],
         "aisle": [
           "item-5"
+        ],
+        "regex": [
+          "revolution|campus|maxico"
         ],
         "tools_any": [
           "search_products"
@@ -398,7 +399,7 @@
       "question": "I need something comfortable for summer, what do you suggest?",
       "expect": {
         "regex": [
-          "kurta|t-shirt|biba|puma"
+          "kurta|t-shirt|biba|puma|dress|shirt|libas|roadster|max"
         ],
         "tools_any": [
           "search_products"
@@ -409,7 +410,7 @@
       "id": "agent_compare_two",
       "type": "agent",
       "qr": null,
-      "question": "Compare the Samsung phone and the Nike shoes",
+      "question": "Compare the Samsung phone and the Nike Revolution running shoes",
       "expect": {
         "price": [
           "item-1",
@@ -455,6 +456,123 @@
           "item-6"
         ]
       }
+    },
+    {
+      "id": "agent_two_headphones",
+      "type": "agent",
+      "qr": null,
+      "question": "Which is cheaper, the Sony or the boAt Rockerz headphones, and where is it?",
+      "expect": {
+        "price": [
+          "item-9"
+        ],
+        "aisle": [
+          "item-9"
+        ],
+        "tools_any": [
+          "compare_products"
+        ]
+      }
+    },
+    {
+      "id": "agent_two_shirts",
+      "type": "agent",
+      "qr": null,
+      "question": "Which is cheaper, the Van Heusen shirt or the Max shirt?",
+      "expect": {
+        "price": [
+          "item-16"
+        ],
+        "regex": [
+          "max"
+        ],
+        "tools_any": [
+          "compare_products"
+        ]
+      }
+    },
+    {
+      "id": "agent_two_nikes",
+      "type": "agent",
+      "qr": null,
+      "question": "Compare the two Nike shoes",
+      "expect": {
+        "price": [
+          "item-5",
+          "item-17"
+        ],
+        "tools_any": [
+          "compare_products"
+        ]
+      }
+    },
+    {
+      "id": "agent_iphone",
+      "type": "agent",
+      "qr": null,
+      "question": "What is the price of the iPhone and where can I find it?",
+      "expect": {
+        "price": [
+          "item-8"
+        ],
+        "aisle": [
+          "item-8"
+        ],
+        "tools_any": [
+          "search_products",
+          "get_product"
+        ]
+      }
+    },
+    {
+      "id": "agent_phone_budget",
+      "type": "agent",
+      "qr": null,
+      "question": "Best phone under 20000 and where is it?",
+      "expect": {
+        "aisle": [
+          "item-1"
+        ],
+        "regex": [
+          "samsung|redmi"
+        ],
+        "tools_any": [
+          "search_products"
+        ]
+      }
+    },
+    {
+      "id": "agent_emi_redmi",
+      "type": "agent",
+      "qr": null,
+      "question": "Is EMI available on the Redmi phone?",
+      "expect": {
+        "regex": [
+          "yes|available|eligible|no-cost|3 or 6|3 and 6"
+        ],
+        "not_regex": [
+          "not available|no emi|isn't available"
+        ],
+        "tools_any": [
+          "get_product",
+          "search_products",
+          "search_store_info"
+        ]
+      }
+    },
+    {
+      "id": "agent_directions_speaker",
+      "type": "agent",
+      "qr": null,
+      "question": "How do I get to the JBL speaker from the Entrance?",
+      "expect": {
+        "regex": [
+          "aisle 2"
+        ],
+        "tools_any": [
+          "get_directions"
+        ]
+      }
     }
   ],
   "search_cases": [
@@ -462,7 +580,8 @@
       "id": "s_running",
       "query": "running shoes under 3000",
       "relevant": [
-        "item-5"
+        "item-5",
+        "item-18"
       ]
     },
     {
@@ -476,7 +595,8 @@
       "id": "s_battery",
       "query": "phone with big battery",
       "relevant": [
-        "item-1"
+        "item-1",
+        "item-7"
       ]
     },
     {
@@ -484,7 +604,8 @@
       "query": "comfortable summer clothes",
       "relevant": [
         "item-4",
-        "item-3"
+        "item-3",
+        "item-15"
       ]
     },
     {
@@ -519,7 +640,9 @@
       "id": "s_gaming",
       "query": "headphones for gaming",
       "relevant": [
-        "item-2"
+        "item-2",
+        "item-9",
+        "item-10"
       ]
     },
     {
@@ -540,6 +663,41 @@
       "query": "pizza recipe",
       "relevant": [],
       "negative": true
+    },
+    {
+      "id": "s_pool",
+      "query": "waterproof speaker for the pool",
+      "relevant": [
+        "item-11"
+      ]
+    },
+    {
+      "id": "s_office",
+      "query": "formal shirt for office",
+      "relevant": [
+        "item-13"
+      ]
+    },
+    {
+      "id": "s_premium",
+      "query": "premium smartphone",
+      "relevant": [
+        "item-8"
+      ]
+    },
+    {
+      "id": "s_heels",
+      "query": "heels for a party",
+      "relevant": [
+        "item-19"
+      ]
+    },
+    {
+      "id": "s_sneakers",
+      "query": "casual sneakers",
+      "relevant": [
+        "item-20"
+      ]
     }
   ],
   "safety_cases": [
