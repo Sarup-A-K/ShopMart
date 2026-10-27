@@ -273,6 +273,22 @@ def admin_clear_log(_: str = Depends(require_admin)):
     return {"success": True}
 
 
+class TagBase(BaseModel):
+    base: str = Field(..., max_length=300)
+
+
+@app.get("/api/admin/tag-base")
+def admin_get_tag_base(_: str = Depends(require_admin)):
+    """The website address the QR tags were last generated for (tags go stale when it changes)."""
+    return {"base": store_db.get_setting("tag_base")}
+
+
+@app.put("/api/admin/tag-base")
+def admin_set_tag_base(req: TagBase, _: str = Depends(require_admin)):
+    store_db.set_setting("tag_base", req.base.strip())
+    return {"success": True}
+
+
 # Excel layout: (header, db field, editable)
 EXCEL_COLUMNS = [
     ("QR Code", "qr_code", False),

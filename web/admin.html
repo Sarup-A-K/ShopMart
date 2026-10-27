@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/store.css?v=7">
+  <link rel="stylesheet" href="/css/store.css?v=9">
   <style>
     .login-card { max-width: 380px; margin: 48px auto; padding: 24px; }
     .login-card h1 { font-size: 1.3rem; margin-bottom: 4px; }
@@ -154,6 +154,8 @@
             <button class="btn" id="btn-apply-url">Update tags</button>
           </div>
           <div class="warn-box hidden" id="url-warning"></div>
+          <div class="warn-box hidden" id="url-changed"></div>
+          <p class="muted small" style="margin-top: 8px;">Tags contain this address. Open this admin page from the same network (or tunnel) your shoppers will use, and make the tags only after you are connected. If the network changes, the tags must be made again.</p>
         </div>
         <div class="tag-sheet" id="tag-sheet"></div>
       </div>
@@ -232,7 +234,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="/js/common.js?v=2"></script>
-  <script src="/js/admin.js?v=3"></script>
+  <script src="/js/admin.js?v=7"></script>
   <script src="/js/admin_ai.js?v=1"></script>
 </body>
 </html>

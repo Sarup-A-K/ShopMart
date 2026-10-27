@@ -279,3 +279,9 @@ select:focus, .input:focus { outline: 2px solid #9fd3c4; border-color: var(--bra
 /* ---------- Empty / error states ---------- */
 .empty { text-align: center; padding: 40px 16px; }
 .empty h2 { font-size: 1.2rem; margin-bottom: 6px; }
+
+/* Shoppers on a phone do not need the admin link in the header (it stays in the footer). */
+@media (max-width: 640px) {
+  .site-header .header-link[href="/admin"] { display: none; }
+  .chip, .suggestion { min-height: 40px; }   /* easier to tap */
+}

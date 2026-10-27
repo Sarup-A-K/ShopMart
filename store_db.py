@@ -81,6 +81,7 @@ def init_db():
                 latency_ms  INTEGER
             )
         """)
+        conn.execute("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
         seed(conn)
 
 
@@ -309,3 +310,15 @@ def chat_stats(recent=40):
 def clear_chat_log():
     with connect() as conn:
         conn.execute("DELETE FROM chat_log")
+
+
+def get_setting(key, default=""):
+    with connect() as conn:
+        row = conn.execute("SELECT value FROM settings WHERE key = ?", (key,)).fetchone()
+    return row["value"] if row else default
+
+
+def set_setting(key, value):
+    with connect() as conn:
+        conn.execute("INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                     (key, value))

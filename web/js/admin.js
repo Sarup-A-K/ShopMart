@@ -341,6 +341,7 @@
       tagSheet.textContent = "Could not load products.";
       return;
     }
+    await noteAddressChange(base);
     tagSheet.innerHTML = "";
     products.forEach(p => {
       const url = `${base}/p/${encodeURIComponent(p.qrCode)}`;
@@ -370,11 +371,36 @@
   $("btn-apply-url").addEventListener("click", renderTags);
   $("btn-print").addEventListener("click", () => window.print());
 
-  // Default to the address detected by start.sh, so reprinted tags follow the current network
+  // Which address should the tags point to? The one this admin page was opened from, if phones can reach
+  // it (the laptop's network address or a tunnel address). From "localhost", use the address start.sh detected.
+    const isLocalHost = (h) => h === "localhost" || h === "127.0.0.1" || h === "::1" || h === "[::1]";
+
   async function initBaseUrl() {
-    let base = "";
-    try { base = (await (await fetch(`${API}/api/config`)).json()).public_url || ""; } catch (e) { /* offline */ }
-    baseUrlInput.value = base || window.location.origin;
+    let configured = "";
+    try { configured = (await (await fetch(`${API}/api/config`)).json()).public_url || ""; } catch (e) { /* offline */ }
+    baseUrlInput.value = isLocalHost(window.location.hostname) ? (configured || window.location.origin) : window.location.origin;
+  }
+
+  // Tags printed for an address that no longer exists will not open. Remind the admin when the address changed.
+  let storedBase = null;                     // the address the tags were last made for, kept by the server
+  let staleFrom = "";                        // the older address that earlier tags may still point to
+
+  async function noteAddressChange(base) {
+    const note = $("url-changed");
+    let host = "";
+    try { host = new URL(base).hostname; } catch (e) { /* invalid address, already warned about */ }
+    if (!host || isLocalHost(host)) { note.classList.add("hidden"); return; }   // "localhost" tags are not usable anyway
+    if (storedBase === null) {               // first render after login: ask the server once
+      try { storedBase = (await (await api("/api/admin/tag-base")).json()).base || ""; } catch (e) { storedBase = ""; }
+      if (storedBase && storedBase !== base) staleFrom = storedBase;
+    }
+    const show = staleFrom && staleFrom !== base;
+    note.textContent = show ? `The address changed since you last made tags (it was ${staleFrom}). Tags made earlier will not open on phones; use the new tags below.` : "";
+    note.classList.toggle("hidden", !show);
+    if (storedBase !== base) {
+      storedBase = base;
+      try { await api("/api/admin/tag-base", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ base }) }); } catch (e) { /* not critical */ }
+    }
   }
 
   window.OmniAdmin = { api, setStatus, errorText, fmt };
