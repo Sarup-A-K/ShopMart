@@ -6,7 +6,7 @@
     "price": 15999,
     "originalPrice": 18999,
     "category": "Electronics",
-    "image": "https://images.unsplash.com/photo-1585060544812-6b45742d762f?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-1.svg",
     "description": "A powerful mid-range 5G smartphone with a massive battery and a vibrant Super AMOLED display.",
     "specifications": {
       "warranty": "1 Year Manufacturer Warranty",
@@ -50,7 +50,7 @@
     "price": 1299,
     "originalPrice": 2990,
     "category": "Electronics",
-    "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-2.svg",
     "description": "Lightweight and stylish truly wireless earbuds offering long playtime and clear audio quality.",
     "specifications": {
       "warranty": "1 Year Warranty",
@@ -94,7 +94,7 @@
     "price": 849,
     "originalPrice": 1299,
     "category": "Fashion",
-    "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-3.svg",
     "description": "A comfortable and breathable everyday cotton t-shirt featuring the classic Puma logo.",
     "specifications": {
       "warranty": "Not Available",
@@ -138,7 +138,7 @@
     "price": 1199,
     "originalPrice": 1999,
     "category": "Fashion",
-    "image": "https://images.unsplash.com/photo-1583391733958-d25e07fac0fa?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-4.svg",
     "description": "An elegant cotton straight kurta with vibrant prints, perfect for casual and festive wear.",
     "specifications": {
       "warranty": "Not Available",
@@ -182,7 +182,7 @@
     "price": 2795,
     "originalPrice": 3695,
     "category": "Footwear",
-    "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-5.svg",
     "description": "Versatile and comfortable running shoes designed for maximum cushioning and flexibility.",
     "specifications": {
       "warranty": "30 Days Manufacturer Warranty",
@@ -226,7 +226,7 @@
     "price": 699,
     "originalPrice": 999,
     "category": "Footwear",
-    "image": "https://images.unsplash.com/photo-1603487742131-4160ec999306?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-6.svg",
     "description": "Stylish and durable sandals featuring a comfortable footbed for all-day wear.",
     "specifications": {
       "warranty": "90 Days Warranty",
@@ -270,7 +270,7 @@
     "price": 17499,
     "originalPrice": 21999,
     "category": "Electronics",
-    "image": "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-7.svg",
     "description": "A slim 5G smartphone with a bright AMOLED display and a 108MP main camera for everyday photography.",
     "specifications": {
       "warranty": "1 Year Manufacturer Warranty",
@@ -314,7 +314,7 @@
     "price": 49900,
     "originalPrice": 59900,
     "category": "Electronics",
-    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-8.svg",
     "description": "Apple's dual-camera smartphone with the A15 Bionic chip, a Super Retina XDR display and all-day battery life.",
     "specifications": {
       "warranty": "1 Year Apple Limited Warranty",
@@ -358,7 +358,7 @@
     "price": 1699,
     "originalPrice": 3990,
     "category": "Electronics",
-    "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-9.svg",
     "description": "Foldable on-ear wireless headphones with 40mm drivers and a padded headband for long listening sessions.",
     "specifications": {
       "warranty": "1 Year Warranty",
@@ -402,7 +402,7 @@
     "price": 4490,
     "originalPrice": 5990,
     "category": "Electronics",
-    "image": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-10.svg",
     "description": "Lightweight wireless headphones with very long battery life and clear, balanced sound.",
     "specifications": {
       "warranty": "1 Year Manufacturer Warranty",
@@ -446,7 +446,7 @@
     "price": 9999,
     "originalPrice": 14999,
     "category": "Electronics",
-    "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-11.svg",
     "description": "A rugged portable speaker with powerful sound, deep bass and an IP67 waterproof and dustproof body.",
     "specifications": {
       "warranty": "1 Year Warranty",
@@ -490,7 +490,7 @@
     "price": 2399,
     "originalPrice": 4299,
     "category": "Fashion",
-    "image": "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-12.svg",
     "description": "Classic slim-fit jeans in stretch denim that stays comfortable through the day.",
     "specifications": {
       "warranty": "No warranty (7 day exchange for size)",
@@ -534,7 +534,7 @@
     "price": 1199,
     "originalPrice": 2199,
     "category": "Fashion",
-    "image": "https://images.unsplash.com/photo-1603252109303-2751441dd157?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-13.svg",
     "description": "A crisp white formal shirt with a slim cut, ideal for office and occasions.",
     "specifications": {
       "warranty": "No warranty",
@@ -578,7 +578,7 @@
     "price": 399,
     "originalPrice": 799,
     "category": "Fashion",
-    "image": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-14.svg",
     "description": "A soft cotton round neck t-shirt with a minimal graphic print for casual wear.",
     "specifications": {
       "warranty": "No warranty",
@@ -622,7 +622,7 @@
     "price": 1499,
     "originalPrice": 2999,
     "category": "Fashion",
-    "image": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-15.svg",
     "description": "A flowing red maxi dress in lightweight georgette with a flared hem, made for parties and festive evenings.",
     "specifications": {
       "warranty": "No warranty",
@@ -666,7 +666,7 @@
     "price": 799,
     "originalPrice": 1299,
     "category": "Fashion",
-    "image": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-16.svg",
     "description": "A relaxed printed cotton shirt that works as a layer or on its own for everyday wear.",
     "specifications": {
       "warranty": "No warranty",
@@ -710,7 +710,7 @@
     "price": 8995,
     "originalPrice": 10995,
     "category": "Footwear",
-    "image": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-17.svg",
     "description": "Training shoes built for gym workouts, with a stable base and a flexible forefoot for jumps and lifts.",
     "specifications": {
       "warranty": "6 Months Manufacturer Warranty",
@@ -754,7 +754,7 @@
     "price": 1399,
     "originalPrice": 2499,
     "category": "Footwear",
-    "image": "https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-18.svg",
     "description": "Budget-friendly running shoes with a cushioned sole and breathable mesh for daily jogs and walks.",
     "specifications": {
       "warranty": "3 Months Manufacturer Warranty",
@@ -798,7 +798,7 @@
     "price": 1799,
     "originalPrice": 2999,
     "category": "Footwear",
-    "image": "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-19.svg",
     "description": "Statement stiletto heels with a bold floral print for parties and special occasions.",
     "specifications": {
       "warranty": "No warranty (exchange within 10 days)",
@@ -842,7 +842,7 @@
     "price": 4999,
     "originalPrice": 5999,
     "category": "Footwear",
-    "image": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=600&auto=format&fit=crop",
+    "image": "/img/products/item-20.svg",
     "description": "Classic low-top skate sneakers with a durable canvas and suede upper and the signature side stripe.",
     "specifications": {
       "warranty": "No warranty (exchange within 10 days)",

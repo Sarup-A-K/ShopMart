@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Metro Women&#x27;s Printed Stiletto Heels">
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7f6ef"/><stop offset="1" stop-color="#c9ebdb"/></linearGradient></defs>
+<rect width="600" height="600" fill="url(#g)"/>
+<g transform="translate(130 40) scale(3.4)"><path d="M14 28 L30 28 C42 46 62 58 90 64 C99 66 99 76 90 77 C68 79 44 72 26 58 L14 28 Z" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M22 56 L20 94" fill="none" stroke="#10243a" stroke-width="5" stroke-linecap="round"/>
+      <path d="M34 34 C46 50 64 60 88 66" fill="none" stroke="#ffc233" stroke-width="4.5" stroke-linecap="round"/></g>
+<text x="300" y="424" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="#10243a" opacity=".6">METRO</text>
+<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Printed Stiletto Heels</text>
+<text x="300" y="556" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" fill="#10243a" opacity=".72">3.5 inches  ·  Fabric upper  ·  Synthetic</text>
+</svg>

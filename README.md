@@ -82,7 +82,7 @@ The token is a secret (anyone with it can run a tunnel to your domain): keep it 
 * **Shoppers:** open the printed address on a phone, or scan a QR price tag with the phone's camera app. The tag opens that product's page directly, even if the site isn't open yet.
 * **Admin:** `<address>/admin`. Edit prices, use Excel, and under **QR price tags** print the shelf tags.
 * **This laptop:** `http://localhost:8000`.
-* **Product photos:** the sample photos are stock images and are labelled "Illustrative image" on product pages. In **Admin → Photos** upload the real photo of each product (JPG, PNG or WebP) or paste an image link; the note disappears for that product. Uploaded photos are stored in `uploads/` (not committed to git).
+* **Product photos:** the sample products use generated illustration cards (a drawing of the product type, the real brand and model, and key specs from the catalogue; regenerate with `python3 tools/make_product_cards.py`), labelled "Illustrative image" on product pages. Stock photos were dropped because a photo of "a phone" always looks like some specific, different model. In **Admin → Photos** upload the real photo of each product (JPG, PNG or WebP) or paste an image link; the note disappears for that product. Uploaded photos are stored in `uploads/` (not committed to git).
 * **Store name:** the demo storefront is branded *ShopMart* (the project itself is called OmniTag).
 
 **If the laptop's address changes** (e.g. after reconnecting to the hotspot), run `./start.sh` again and reprint the tags, because the address is inside the QR codes.

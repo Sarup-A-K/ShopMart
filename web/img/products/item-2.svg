@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="boAt Airdopes 141 Bluetooth Truly Wireless in Ear Earbuds">
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9f2fd"/><stop offset="1" stop-color="#cfe2f8"/></linearGradient></defs>
+<rect width="600" height="600" fill="url(#g)"/>
+<g transform="translate(130 40) scale(3.4)"><rect x="20" y="50" width="60" height="38" rx="15" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="20" y1="64" x2="80" y2="64" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="50" cy="57" r="2.4" fill="#ffc233" stroke="none"/>
+      <circle cx="32" cy="26" r="10" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><rect x="38" y="28" width="6" height="20" rx="3" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="68" cy="26" r="10" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><rect x="56" y="28" width="6" height="20" rx="3" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="300" y="424" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="#10243a" opacity=".6">BOAT</text>
+<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Airdopes 141</text>
+<text x="300" y="556" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" fill="#10243a" opacity=".72">Up to 42 hours  ·  8mm  ·  5.1</text>
+</svg>

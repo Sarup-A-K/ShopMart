@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="boAt Rockerz 450 Bluetooth On Ear Headphones">
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9f2fd"/><stop offset="1" stop-color="#cfe2f8"/></linearGradient></defs>
+<rect width="600" height="600" fill="url(#g)"/>
+<g transform="translate(130 40) scale(3.4)"><path d="M20 60 C20 14 80 14 80 60" fill="none" stroke="#10243a" stroke-width="5" stroke-linecap="round"/>
+      <rect x="11" y="52" width="18" height="32" rx="9" fill="#ffc233" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><rect x="71" y="52" width="18" height="32" rx="9" fill="#ffc233" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="300" y="424" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="#10243a" opacity=".6">BOAT</text>
+<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Rockerz 450 Headphones</text>
+<text x="300" y="556" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" fill="#10243a" opacity=".72">Up to 15 hours  ·  40mm  ·  5.0</text>
+</svg>
