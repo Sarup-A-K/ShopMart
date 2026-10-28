@@ -17,14 +17,14 @@
     grid.innerHTML = products.map(p => `
       <div class="photo-card" data-qr="${escapeHtml(p.qrCode)}">
         <img src="${escapeHtml(p.image || "")}" alt="" onerror="Omni.imageFallback(this)">
-        <div class="photo-name">${escapeHtml(p.qrCode)} · ${escapeHtml(p.name.slice(0, 48))}</div>
+        <div class="photo-name">${escapeHtml(p.qrCode)} · ${escapeHtml(p.name)}</div>
         <div class="small muted">${p.imageCustom ? "✓ Your photo" : "Illustrative image"}</div>
         <div class="row">
           <label class="btn" style="cursor:pointer;">Upload photo<input type="file" accept="image/jpeg,image/png,image/webp" hidden data-act="file"></label>
           ${p.imageCustom ? '<button class="btn" data-act="reset">Reset</button>' : ""}
         </div>
         <div class="row">
-          <input class="input" placeholder="…or paste image link (https://…)" data-act="url">
+          <input class="input" placeholder="Paste image link" data-act="url">
           <button class="btn" data-act="link">Use link</button>
         </div>
       </div>`).join("");

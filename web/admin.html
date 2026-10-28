@@ -20,6 +20,9 @@
     .tab.active { color: var(--text); border-bottom-color: var(--cta); }
     .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
     .toolbar h2 { font-size: 1.15rem; }
+    .toolbar > label { max-width: 100%; min-width: 0; }
+    #content-product { max-width: 100%; min-width: 0; text-overflow: ellipsis; }
+    @media (max-width: 640px) { .toolbar > label { width: 100%; } #content-product { flex: 1; } }
     .toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
     table.price-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: #fff; }
@@ -52,12 +55,13 @@
     .warn-box { background: var(--warn-bg); color: #6b4b00; border: 1px solid #f3dc9b; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 0.88rem; margin: 10px 0; }
 
     /* Printable price tags */
-    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
-    .photo-card { border: 1px solid var(--line, #dde3ea); border-radius: 10px; padding: 10px; display: grid; gap: 8px; }
-    .photo-card img { width: 100%; height: 150px; object-fit: contain; background: #f4f6f8; border-radius: 8px; }
-    .photo-card .row { display: flex; gap: 6px; }
-    .photo-card .row .input { flex: 1; min-width: 0; }
-    .photo-name { font-weight: 600; font-size: 0.9rem; }
+    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 14px; margin-top: 14px; }
+    .photo-card { border: 1px solid var(--line, #dde3ea); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; overflow: hidden; }
+    .photo-card img { display: block; width: 100%; max-width: 100%; height: 160px; object-fit: contain; background: #f4f6f8; border-radius: 8px; }
+    .photo-card .row { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+    .photo-card .row .input { flex: 1 1 140px; min-width: 0; width: auto; }
+    .photo-card .row .btn { flex: 0 0 auto; }
+    .photo-name { font-weight: 600; font-size: 0.9rem; line-height: 1.3; overflow-wrap: anywhere; flex: 1; }
     .tag-sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-top: 14px; }
     .price-tag { border: 1.5px dashed #9aa5b1; border-radius: 10px; padding: 12px; background: #fff; display: grid; grid-template-columns: 1fr auto; gap: 10px; break-inside: avoid; }
     .price-tag .t-brand { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
@@ -255,6 +259,6 @@
   <script src="/js/common.js?v=3"></script>
   <script src="/js/admin.js?v=8"></script>
   <script src="/js/admin_ai.js?v=1"></script>
-  <script src="/js/admin_images.js?v=1"></script>
+  <script src="/js/admin_images.js?v=3"></script>
 </body>
 </html>
