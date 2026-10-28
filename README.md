@@ -67,7 +67,16 @@ This detects the laptop's network address (e.g. `http://192.168.43.10:8000`), st
 ```bash
 ./start.sh --tunnel
 ```
-This also opens a free Cloudflare tunnel and prints an `https://….trycloudflare.com` address. Any phone on any network can open it, QR tags use it, and the in-page camera scanner works because the page is HTTPS. The address changes every time. While the tunnel runs, anyone with the link can use the site, so stop it when you are done: `docker rm -f omnitag_tunnel`. Some networks (for example a campus Wi-Fi) block the tunnel; the script then continues with the local address only.
+This also opens a Cloudflare tunnel and prints an `https://` address. Any phone on any network can open it, QR tags use it, and the in-page camera scanner works because the page is HTTPS. Without any setup the address is random and changes every run (`https://….trycloudflare.com`). While the tunnel runs, anyone with the link can use the site, so stop it when you are done: `docker rm -f omnitag_tunnel`. Some networks (for example a campus Wi-Fi) block the tunnel; the script then continues with the local address only.
+
+**Fixed address on your own domain** (QR tags never go stale, and you choose the words, e.g. `shop.yourdomain.com`):
+1. Create a free Cloudflare account and add a domain you own to it (a domain costs a few hundred rupees a year; Cloudflare Registrar sells them at cost).
+2. In the Cloudflare dashboard open **Zero Trust → Networks → Tunnels → Create a tunnel → Cloudflared**, name it, and copy the **token**. (Cloudflare may ask for a payment method to verify the free plan.)
+3. In the same tunnel, add a **public hostname**: subdomain `shop`, your domain, service type **HTTP**, URL `localhost:8000`.
+4. Add two lines to `.env` (see `.env.example`): `CLOUDFLARE_TUNNEL_TOKEN=<the token>` and `PUBLIC_HOSTNAME=shop.yourdomain.com`.
+5. Run `./start.sh --tunnel`. It now prints your fixed address.
+
+The token is a secret (anyone with it can run a tunnel to your domain): keep it only in `.env`.
 
 ### 2. Use it
 * **Shoppers:** open the printed address on a phone, or scan a QR price tag with the phone's camera app. The tag opens that product's page directly, even if the site isn't open yet.
