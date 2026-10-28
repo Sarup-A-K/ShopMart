@@ -90,3 +90,15 @@ Why: with one product per aisle there was nothing to disambiguate, so search, co
 - **Costs of a bigger catalogue:** the agent's median latency rose from 4.5 s to 6.9 s (longer prompt and tool results).
 - **Open limitation:** when a name matches several products ("boAt"), the lookup silently picks the first. A better design would ask which one.
 - **Misleading product photos.** The sample images were stock photos: the Galaxy M34 page showed an S21 Ultra box, and the replacement generic phone looked like an iPhone; the boAt earbuds looked like AirPods. Exact photos of most of these models are not available under an open licence. Fix: generated illustration cards (`tools/make_product_cards.py`) that show a drawing of the product type plus the real brand, model and key specs from the catalogue data, so they cannot show the wrong product. Real photos can be uploaded per product in the admin Photos tab (stored outside git).
+
+## Stage 9: a catalogue where every product has a real photo
+
+Why: the generated illustration cards were honest but looked unfinished, and a stock photo of "a phone" kept showing a different model. The reviewer would see the catalogue first, so the products were changed to ones whose official photos could be downloaded.
+
+- **What was kept and what was replaced:** the 7 electronics with real photos (Samsung M34, iPhone 13, Redmi Note 13, two boAt, Sony, JBL) were kept. The 13 products with no obtainable photo (Puma, Biba, Nike x2, Bata, Levi's, Van Heusen, Roadster, Libas dress, Max, Campus Maxico, Metro, Vans) were replaced by 12 products from stores that publish their catalogue feed (Snitch, Libas, Campus). Codes were renumbered to item-1..item-19.
+- **Where photos could not be fetched:** Samsung, Apple, Sony, JBL, Nike, Vans and Amazon/Flipkart refuse scripted downloads; Wikimedia has no photos of these models; Pinterest was not used because pins are often mislabelled (the original problem). Sources are listed in `docs/PHOTO_CREDITS.md`.
+- **Names changed to match the photos:** Redmi Note 13 became "Stealth Black" and the iPhone 13 "Blue", because those were the colours of the real photos available.
+- **Product data:** prices of the new products follow the brand stores' real prices; MRP, competitor prices and reviews are illustrative.
+- **The golden set was rewritten, not just edited.** Same case types and counts, written from the catalogue data without looking at model outputs. Policy and safety cases are unchanged, except one phrasing that named a removed product. The new run (`20261028-172320`) has the same ranking of techniques, with the full system at 92.9% by the automatic check and about 90% by my own reading.
+- **New failures that the manual read found** (not caught by the automatic check): competitor prices swapped in a deal answer, a women's sneaker listed as a men's, and a muddled EMI sentence.
+- **Copyright:** the photos belong to the brands, so they are kept in `uploads/` and are not committed.

@@ -116,8 +116,8 @@ button { font: inherit; cursor: pointer; }
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 .product-card:hover { text-decoration: none; box-shadow: 0 6px 18px rgba(15, 23, 32, 0.12); transform: translateY(-1px); }
-.product-card .thumb { aspect-ratio: 1 / 1; background: #f7f8fa; display: grid; place-items: center; padding: 12px; }
-.product-card .thumb img { max-height: 100%; object-fit: contain; border-radius: 4px; }
+.product-card .thumb { position: relative; aspect-ratio: 1 / 1; background: #f7f8fa; overflow: hidden; }
+.product-card .thumb img { position: absolute; inset: 12px; width: calc(100% - 24px); height: calc(100% - 24px); object-fit: contain; border-radius: 4px; }
 .product-card .body { padding: 10px 12px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .product-card .brand { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
 .product-card .name {

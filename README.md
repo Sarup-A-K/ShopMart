@@ -25,7 +25,7 @@ Instead of fighting "showrooming" (shoppers checking online prices in the aisle)
 
 ### Store management
 * **Admin price manager** (`/admin`): Edit store price, M.R.P. and competitor prices in a table (with a live preview of the shopper price) or in bulk through Excel (all-or-nothing validation). Print shelf QR price tags.
-* **SQLite database** (`omnitag.db`), seeded from `seed_products.json`: 20 sample products across Electronics, Fashion and Footwear, with 2–4 products per aisle. Prices of the added products are illustrative sample data, not live prices. On start-up, products missing from the database are added; existing rows (and admin price edits) are never overwritten. Price edits show on the next scan.
+* **SQLite database** (`omnitag.db`), seeded from `seed_products.json`: 19 sample products across Electronics, Fashion and Footwear, with 3–4 products per aisle. Every product has a real, official product photo (see `docs/PHOTO_CREDITS.md`). The prices of the clothing and footwear, and all competitor prices and reviews, are illustrative sample data, not live prices. On start-up, products missing from the database are added; existing rows (and admin price edits) are never overwritten. Price edits show on the next scan.
 
 ---
 
@@ -82,7 +82,7 @@ The token is a secret (anyone with it can run a tunnel to your domain): keep it 
 * **Shoppers:** open the printed address on a phone, or scan a QR price tag with the phone's camera app. The tag opens that product's page directly, even if the site isn't open yet.
 * **Admin:** `<address>/admin`. Edit prices, use Excel, and under **QR price tags** print the shelf tags.
 * **This laptop:** `http://localhost:8000`.
-* **Product photos:** the sample products use generated illustration cards (a drawing of the product type, the real brand and model, and key specs from the catalogue; regenerate with `python3 tools/make_product_cards.py`), labelled "Illustrative image" on product pages. Stock photos were dropped because a photo of "a phone" always looks like some specific, different model. In **Admin → Photos** upload the real photo of each product (JPG, PNG or WebP) or paste an image link; the note disappears for that product. Uploaded photos are stored in `uploads/` (not committed to git).
+* **Product photos:** every product has its official product photo, stored in `uploads/` (not committed, because the pictures belong to the brands; sources are listed in `docs/PHOTO_CREDITS.md`). If a photo is missing the page falls back to a generated illustration card labelled "Illustrative image" (`python3 tools/make_product_cards.py` regenerates the cards). In **Admin → Photos** you can upload a photo (JPG, PNG or WebP) or paste an image link for any product; "reset" returns to the card.
 * **Store name:** the demo storefront is branded *ShopMart* (the project itself is called OmniTag).
 
 **If the laptop's address changes** (e.g. after reconnecting to the hotspot), run `./start.sh` again and reprint the tags, because the address is inside the QR codes.

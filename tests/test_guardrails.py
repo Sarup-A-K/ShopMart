@@ -71,28 +71,28 @@ class InputChecks(unittest.TestCase):
 class OutputChecks(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # item-2 boAt earbuds (Aisle 2), item-6 Bata sandals (Aisle 6), item-5 Nike (Aisle 5)
-        cls.allowed = guardrails.build_allowed(["item-2", "item-6"], question="Which is cheaper, the earbuds or the sandals?")
+        # item-2 boAt earbuds (Aisle 2), item-16 Campus NORIKA running shoes (Aisle 5)
+        cls.allowed = guardrails.build_allowed(["item-2", "item-16"], question="Which is cheaper, the earbuds or the running shoes?")
 
     def check(self, answer, allowed=None):
         return guardrails.verify_answer(answer, allowed or self.allowed)
 
     def test_correct_answer_passes(self):
-        issues, checked = self.check("The Bata Women's Fashion Sandals are cheaper at ₹664 (Aisle 6), "
-                                     "which is ₹570 less than the boAt Airdopes 141 earbuds at ₹1234 (Aisle 2).")
+        issues, checked = self.check("The Campus NORIKA Women's Running Shoes are cheaper at ₹759 (Aisle 5), "
+                                     "which is ₹475 less than the boAt Airdopes 141 earbuds at ₹1234 (Aisle 2).")
         self.assertEqual(issues, [])
         self.assertGreaterEqual(checked, 4)
 
     def test_wrong_price_is_caught(self):
-        issues, _ = self.check("The sandals cost ₹499 in Aisle 6.")
+        issues, _ = self.check("The running shoes cost ₹499 in Aisle 5.")
         self.assertTrue(any("499" in i for i in issues), issues)
 
     def test_wrong_aisle_is_caught(self):
-        issues, _ = self.check("You can find the sandals in Aisle 3.")
+        issues, _ = self.check("You can find the running shoes in Aisle 3.")
         self.assertTrue(any("Aisle 3" in i for i in issues), issues)
 
     def test_invented_product_is_caught(self):
-        issues, _ = self.check("Another option is the Adidas Ultraboost 22 Running Shoes at ₹664.")
+        issues, _ = self.check("Another option is the Adidas Ultraboost 22 Running Shoes at ₹759.")
         self.assertTrue(any("Adidas" in i for i in issues), issues)
 
     def test_invented_product_with_a_valid_price_is_caught(self):
@@ -116,10 +116,10 @@ class OutputChecks(unittest.TestCase):
 
     def test_safe_answer_uses_database_values(self):
         import store_db
-        text = guardrails.safe_answer([store_db.get_product("item-6")])
-        self.assertIn("Bata", text)
-        self.assertIn("Aisle 6", text)
-        issues, _ = guardrails.verify_answer(text, guardrails.build_allowed(["item-6"]))
+        text = guardrails.safe_answer([store_db.get_product("item-16")])
+        self.assertIn("NORIKA", text)
+        self.assertIn("Aisle 5", text)
+        issues, _ = guardrails.verify_answer(text, guardrails.build_allowed(["item-16"]))
         self.assertEqual(issues, [])
 
 
@@ -127,18 +127,18 @@ class OutputChecksFoundByEvaluation(unittest.TestCase):
     """Regression tests for gaps the first full evaluation revealed."""
 
     def test_singular_of_a_product_word_is_not_flagged(self):
-        allowed = guardrails.build_allowed(["item-6"], question="How high is the heel?")
-        issues, _ = guardrails.verify_answer("The heel of the Bata Women's Fashion Sandal is 1.5 inches.", allowed)
+        allowed = guardrails.build_allowed(["item-19"], question="Is the sole thick?")
+        issues, _ = guardrails.verify_answer("The Campus AZURA Women's Sneaker has a chunky EVA sole.", allowed)
         self.assertEqual(issues, [])
 
     def test_wrong_time_claim_is_caught(self):
         # The policy says 10 days; the model once answered "7 days"
-        allowed = guardrails.build_allowed(["item-3"], question="Can I return this?", extra_text="Returns and exchanges")
+        allowed = guardrails.build_allowed(["item-10"], question="Can I return this?", extra_text="Returns and exchanges")
         issues, _ = guardrails.verify_answer("You can return this t-shirt within 7 days of purchase.", allowed)
         self.assertTrue(any("7 days" in i for i in issues), issues)
 
     def test_working_days_are_a_different_unit(self):
-        allowed = guardrails.build_allowed(["item-3"], question="How long do refunds take?", extra_text="Returns and exchanges")
+        allowed = guardrails.build_allowed(["item-10"], question="How long do refunds take?", extra_text="Returns and exchanges")
         issues, _ = guardrails.verify_answer("Refunds reach you in 5 to 7 working days.", allowed)
         self.assertEqual(issues, [])
         issues, _ = guardrails.verify_answer("Refunds reach you in 7 days.", allowed)
@@ -150,7 +150,7 @@ class OutputChecksFoundByEvaluation(unittest.TestCase):
         self.assertEqual(issues, [])
 
     def test_correct_time_claim_passes(self):
-        allowed = guardrails.build_allowed(["item-3"], question="Can I return this?", extra_text="Returns and exchanges")
+        allowed = guardrails.build_allowed(["item-10"], question="Can I return this?", extra_text="Returns and exchanges")
         issues, _ = guardrails.verify_answer("Yes, you can return it within 10 days with the original bill.", allowed)
         self.assertEqual(issues, [])
 
@@ -211,9 +211,9 @@ class ComputedFacts(unittest.TestCase):
 
     def test_price_comparison_is_computed(self):
         import assistant, store_db
-        text = assistant.build_product_context(store_db.get_product("item-4"))
-        self.assertIn("our price is ₹60 lower", text)               # vs Amazon ₹1199
-        self.assertIn("The lowest online price is Amazon at ₹1199", text)
+        text = assistant.build_product_context(store_db.get_product("item-8"))
+        self.assertIn("our price is ₹68 lower", text)               # vs Amazon ₹1349
+        self.assertIn("The lowest online price is Amazon at ₹1349", text)
 
     def test_emi_eligibility_is_computed(self):
         import assistant, store_db

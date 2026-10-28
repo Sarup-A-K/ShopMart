@@ -89,188 +89,12 @@
   },
   {
     "qrCode": "item-3",
-    "name": "Puma Men's Regular Fit T-Shirt",
-    "brand": "Puma",
-    "price": 849,
-    "originalPrice": 1299,
-    "category": "Fashion",
-    "image": "/img/products/item-3.svg",
-    "description": "A comfortable and breathable everyday cotton t-shirt featuring the classic Puma logo.",
-    "specifications": {
-      "warranty": "Not Available",
-      "qualityScore": "B+",
-      "keySpecs": {
-        "Material": "100% Cotton",
-        "Fit": "Regular Fit",
-        "Neck Style": "Crew Neck",
-        "Sleeve": "Short Sleeve"
-      },
-      "features": [
-        "Soft and breathable fabric",
-        "Durable stitching",
-        "Easy machine wash"
-      ]
-    },
-    "reviews": [
-      "Perfect fit and the material feels very soft. Good value for money.",
-      "Color fades slightly after a few washes, but still looks good."
-    ],
-    "location": {
-      "aisle": "Aisle 3",
-      "section": "Men's Apparel",
-      "guidance": "Aisle 3, front display.",
-      "coordinates": {
-        "x": 13.33,
-        "y": 0,
-        "z": 2
-      }
-    },
-    "competitorPrices": {
-      "Amazon": 849,
-      "Flipkart": 849,
-      "Croma": null
-    }
-  },
-  {
-    "qrCode": "item-4",
-    "name": "Biba Women's Cotton Straight Printed Kurta",
-    "brand": "Biba",
-    "price": 1199,
-    "originalPrice": 1999,
-    "category": "Fashion",
-    "image": "/img/products/item-4.svg",
-    "description": "An elegant cotton straight kurta with vibrant prints, perfect for casual and festive wear.",
-    "specifications": {
-      "warranty": "Not Available",
-      "qualityScore": "A",
-      "keySpecs": {
-        "Material": "Cotton",
-        "Style": "Straight",
-        "Length": "Calf Length",
-        "Pattern": "Printed"
-      },
-      "features": [
-        "Lightweight and comfortable",
-        "Vibrant, fade-resistant prints",
-        "Easy to style"
-      ]
-    },
-    "reviews": [
-      "Beautiful print and exact fitting. The cotton is of premium quality.",
-      "Very comfortable for summer wear. Looks exactly like the picture."
-    ],
-    "location": {
-      "aisle": "Aisle 4",
-      "section": "Women's Apparel",
-      "guidance": "Aisle 4, middle section.",
-      "coordinates": {
-        "x": 20.0,
-        "y": 0,
-        "z": 10
-      }
-    },
-    "competitorPrices": {
-      "Amazon": 1199,
-      "Flipkart": 1299,
-      "Croma": null
-    }
-  },
-  {
-    "qrCode": "item-5",
-    "name": "Nike Men's Revolution 6 Running Shoes",
-    "brand": "Nike",
-    "price": 2795,
-    "originalPrice": 3695,
-    "category": "Footwear",
-    "image": "/img/products/item-5.svg",
-    "description": "Versatile and comfortable running shoes designed for maximum cushioning and flexibility.",
-    "specifications": {
-      "warranty": "30 Days Manufacturer Warranty",
-      "qualityScore": "A",
-      "keySpecs": {
-        "Outer": "Mesh",
-        "Sole": "Rubber",
-        "Closure": "Lace-Up",
-        "Width": "Regular"
-      },
-      "features": [
-        "Breathable mesh upper",
-        "Foam midsole",
-        "Recycled materials"
-      ]
-    },
-    "reviews": [
-      "Extremely lightweight and great for daily jogging. True to size.",
-      "Good support for the arch, but needs a few days to break in."
-    ],
-    "location": {
-      "aisle": "Aisle 5",
-      "section": "Sports Footwear",
-      "guidance": "Aisle 5, back wall.",
-      "coordinates": {
-        "x": 26.66,
-        "y": 0,
-        "z": 20
-      }
-    },
-    "competitorPrices": {
-      "Amazon": 2795,
-      "Flipkart": 2995,
-      "Croma": null
-    }
-  },
-  {
-    "qrCode": "item-6",
-    "name": "Bata Women's Fashion Sandals",
-    "brand": "Bata",
-    "price": 699,
-    "originalPrice": 999,
-    "category": "Footwear",
-    "image": "/img/products/item-6.svg",
-    "description": "Stylish and durable sandals featuring a comfortable footbed for all-day wear.",
-    "specifications": {
-      "warranty": "90 Days Warranty",
-      "qualityScore": "B+",
-      "keySpecs": {
-        "Material": "Synthetic",
-        "Sole": "Polyurethane",
-        "Heel": "1.5 inches",
-        "Closure": "Buckle"
-      },
-      "features": [
-        "Cushioned footbed",
-        "Anti-slip sole",
-        "Elegant design"
-      ]
-    },
-    "reviews": [
-      "Very soft and comfortable for daily wear. Fits perfectly.",
-      "Looks stylish and the quality is excellent for the price."
-    ],
-    "location": {
-      "aisle": "Aisle 6",
-      "section": "Women's Footwear",
-      "guidance": "Aisle 6, near checkout.",
-      "coordinates": {
-        "x": 33.33,
-        "y": 0,
-        "z": 10
-      }
-    },
-    "competitorPrices": {
-      "Amazon": 699,
-      "Flipkart": 749,
-      "Croma": null
-    }
-  },
-  {
-    "qrCode": "item-7",
     "name": "Redmi Note 13 5G (Stealth Black, 8GB RAM, 128GB Storage)",
     "brand": "Redmi",
     "price": 17499,
     "originalPrice": 21999,
     "category": "Electronics",
-    "image": "/img/products/item-7.svg",
+    "image": "/img/products/item-3.svg",
     "description": "A slim 5G smartphone with a bright AMOLED display and a 108MP main camera for everyday photography.",
     "specifications": {
       "warranty": "1 Year Manufacturer Warranty",
@@ -308,13 +132,13 @@
     }
   },
   {
-    "qrCode": "item-8",
+    "qrCode": "item-4",
     "name": "Apple iPhone 13 (Blue, 128GB)",
     "brand": "Apple",
     "price": 49900,
     "originalPrice": 59900,
     "category": "Electronics",
-    "image": "/img/products/item-8.svg",
+    "image": "/img/products/item-4.svg",
     "description": "Apple's dual-camera smartphone with the A15 Bionic chip, a Super Retina XDR display and all-day battery life.",
     "specifications": {
       "warranty": "1 Year Apple Limited Warranty",
@@ -352,13 +176,13 @@
     }
   },
   {
-    "qrCode": "item-9",
+    "qrCode": "item-5",
     "name": "boAt Rockerz 450 Bluetooth On Ear Headphones",
     "brand": "boAt",
     "price": 1699,
     "originalPrice": 3990,
     "category": "Electronics",
-    "image": "/img/products/item-9.svg",
+    "image": "/img/products/item-5.svg",
     "description": "Foldable on-ear wireless headphones with 40mm drivers and a padded headband for long listening sessions.",
     "specifications": {
       "warranty": "1 Year Warranty",
@@ -396,13 +220,13 @@
     }
   },
   {
-    "qrCode": "item-10",
+    "qrCode": "item-6",
     "name": "Sony WH-CH520 Wireless Bluetooth Headphones",
     "brand": "Sony",
     "price": 4490,
     "originalPrice": 5990,
     "category": "Electronics",
-    "image": "/img/products/item-10.svg",
+    "image": "/img/products/item-6.svg",
     "description": "Lightweight wireless headphones with very long battery life and clear, balanced sound.",
     "specifications": {
       "warranty": "1 Year Manufacturer Warranty",
@@ -440,13 +264,13 @@
     }
   },
   {
-    "qrCode": "item-11",
+    "qrCode": "item-7",
     "name": "JBL Flip 6 Portable Waterproof Bluetooth Speaker",
     "brand": "JBL",
     "price": 9999,
     "originalPrice": 14999,
     "category": "Electronics",
-    "image": "/img/products/item-11.svg",
+    "image": "/img/products/item-7.svg",
     "description": "A rugged portable speaker with powerful sound, deep bass and an IP67 waterproof and dustproof body.",
     "specifications": {
       "warranty": "1 Year Warranty",
@@ -484,120 +308,120 @@
     }
   },
   {
-    "qrCode": "item-12",
-    "name": "Levi's Men's 511 Slim Fit Jeans (Dark Blue)",
-    "brand": "Levi's",
-    "price": 2399,
-    "originalPrice": 4299,
+    "qrCode": "item-8",
+    "name": "Snitch Textured Slim Fit Shirt (Green)",
+    "brand": "Snitch",
+    "price": 1399,
+    "originalPrice": 1999,
     "category": "Fashion",
-    "image": "/img/products/item-12.svg",
-    "description": "Classic slim-fit jeans in stretch denim that stays comfortable through the day.",
-    "specifications": {
-      "warranty": "No warranty (7 day exchange for size)",
-      "qualityScore": "A",
-      "keySpecs": {
-        "Fit": "Slim",
-        "Fabric": "98% Cotton, 2% Elastane",
-        "Rise": "Mid rise",
-        "Wash": "Machine wash cold"
-      },
-      "features": [
-        "Stretch denim",
-        "Five-pocket styling",
-        "Zip fly with button closure"
-      ]
-    },
-    "reviews": [
-      "Fits well and the stretch makes them comfortable all day.",
-      "Colour stays dark after many washes. Size runs slightly small."
-    ],
-    "location": {
-      "aisle": "Aisle 3",
-      "section": "Men's Apparel",
-      "guidance": "Aisle 3, middle shelf.",
-      "coordinates": {
-        "x": 14.5,
-        "y": 0,
-        "z": 12
-      }
-    },
-    "competitorPrices": {
-      "Amazon": 2299,
-      "Flipkart": 2449,
-      "Croma": null
-    }
-  },
-  {
-    "qrCode": "item-13",
-    "name": "Van Heusen Men's Slim Fit Formal Shirt (White)",
-    "brand": "Van Heusen",
-    "price": 1199,
-    "originalPrice": 2199,
-    "category": "Fashion",
-    "image": "/img/products/item-13.svg",
-    "description": "A crisp white formal shirt with a slim cut, ideal for office and occasions.",
+    "image": "/img/products/item-8.svg",
+    "description": "A slim-fit full-sleeve shirt in a soft cotton-lyocell blend with a subtle texture, smart enough for work and relaxed enough for outings.",
     "specifications": {
       "warranty": "No warranty",
       "qualityScore": "A",
       "keySpecs": {
-        "Fit": "Slim",
-        "Fabric": "100% Cotton",
+        "Fit": "Slim fit",
+        "Fabric": "Cotton blend",
         "Sleeves": "Full sleeve",
         "Wash": "Machine wash"
       },
       "features": [
-        "Wrinkle-resistant finish",
-        "Spread collar",
-        "Regular length"
+        "51% cotton, 44% lyocell, 5% viscose",
+        "Soft and breathable",
+        "Textured design for casual or smart wear"
       ]
     },
     "reviews": [
-      "Looks sharp and stays crisp through a full workday.",
-      "Good fabric for the price, but order a size up if you like a relaxed fit."
+      "Fabric feels premium and the slim fit looks sharp.",
+      "Slightly long in the sleeves, but the texture looks great."
     ],
     "location": {
       "aisle": "Aisle 3",
       "section": "Men's Apparel",
-      "guidance": "Aisle 3, formal wear rack.",
+      "guidance": "Aisle 3, front display.",
       "coordinates": {
-        "x": 15.5,
+        "x": 13.5,
         "y": 0,
-        "z": 20
+        "z": 4
       }
     },
     "competitorPrices": {
-      "Amazon": 1299,
-      "Flipkart": 1349,
+      "Amazon": 1349,
+      "Flipkart": 1449,
       "Croma": null
     }
   },
   {
-    "qrCode": "item-14",
-    "name": "Roadster Men's Black Graphic Print Round Neck T-Shirt",
-    "brand": "Roadster",
-    "price": 399,
-    "originalPrice": 799,
+    "qrCode": "item-9",
+    "name": "Snitch Regular Fit Washed Jeans (Grey)",
+    "brand": "Snitch",
+    "price": 1999,
+    "originalPrice": 2999,
     "category": "Fashion",
-    "image": "/img/products/item-14.svg",
-    "description": "A soft cotton round neck t-shirt with a minimal graphic print for casual wear.",
+    "image": "/img/products/item-9.svg",
+    "description": "Washed grey denim jeans in a comfortable regular fit with straight legs and classic five-pocket styling.",
+    "specifications": {
+      "warranty": "No warranty",
+      "qualityScore": "A",
+      "keySpecs": {
+        "Fit": "Regular fit",
+        "Fabric": "100% cotton",
+        "Rise": "Mid rise",
+        "Pockets": "Five pocket"
+      },
+      "features": [
+        "100% cotton denim",
+        "Straight legs",
+        "Subtle whiskering for a worn-in look"
+      ]
+    },
+    "reviews": [
+      "Comfortable denim and the wash looks just like the photos.",
+      "Good length, but a little stiff for the first few wears."
+    ],
+    "location": {
+      "aisle": "Aisle 3",
+      "section": "Men's Apparel",
+      "guidance": "Aisle 3, denim rack.",
+      "coordinates": {
+        "x": 14.5,
+        "y": 0,
+        "z": 14
+      }
+    },
+    "competitorPrices": {
+      "Amazon": 2099,
+      "Flipkart": 1999,
+      "Croma": null
+    }
+  },
+  {
+    "qrCode": "item-10",
+    "name": "Snitch Slim Fit Stretch Printed T-Shirt (Black)",
+    "brand": "Snitch",
+    "price": 1099,
+    "originalPrice": 1599,
+    "category": "Fashion",
+    "image": "/img/products/item-10.svg",
+    "description": "A slim-fit crew-neck T-shirt with a bold graphic print, made from a stretchy rayon-cotton-spandex blend.",
     "specifications": {
       "warranty": "No warranty",
       "qualityScore": "B+",
       "keySpecs": {
-        "Fit": "Regular",
-        "Fabric": "100% Cotton",
-        "Neck": "Round neck",
+        "Fit": "Slim fit",
+        "Fabric": "Rayon blend",
+        "Neck": "Crew neck",
         "Wash": "Machine wash"
       },
       "features": [
-        "Soft jersey cotton",
-        "Short sleeves",
-        "Lightweight everyday wear"
+        "47% rayon, 46% cotton, 7% spandex",
+        "Stretches with you",
+        "Bold graphic print"
       ]
     },
     "reviews": [
-      "Great price and soft fabric, wears well for casual days.",
-      "Colour fades a little after several washes, but fit is good."
+      "Stretchy and comfortable, the print is sharp.",
+      "Runs a bit snug, so order a size up for a relaxed fit."
     ],
     "location": {
       "aisle": "Aisle 3",
@@ -606,42 +430,42 @@
       "coordinates": {
         "x": 13.8,
         "y": 0,
-        "z": 27
+        "z": 24
       }
     },
     "competitorPrices": {
-      "Amazon": 449,
-      "Flipkart": 429,
+      "Amazon": 1049,
+      "Flipkart": 1149,
       "Croma": null
     }
   },
   {
-    "qrCode": "item-15",
-    "name": "Libas Women's Georgette Flared Maxi Dress (Red)",
+    "qrCode": "item-11",
+    "name": "Libas Lavender Embellished Silk Blend Co-Ord Set",
     "brand": "Libas",
-    "price": 1499,
-    "originalPrice": 2999,
+    "price": 2619,
+    "originalPrice": 10999,
     "category": "Fashion",
-    "image": "/img/products/item-15.svg",
-    "description": "A flowing red maxi dress in lightweight georgette with a flared hem, made for parties and festive evenings.",
+    "image": "/img/products/item-11.svg",
+    "description": "A lavender-gold silk blend co-ord set with a straight-fit V-neck tunic and matching palazzos, finished with gold beadwork.",
     "specifications": {
       "warranty": "No warranty",
       "qualityScore": "A",
       "keySpecs": {
-        "Fit": "Fit and flare",
-        "Fabric": "Georgette with lining",
-        "Length": "Maxi",
-        "Wash": "Dry clean recommended"
+        "Set": "Tunic + palazzo",
+        "Fabric": "Silk blend",
+        "Neck": "V-neck",
+        "Sleeve": "3/4 sleeve"
       },
       "features": [
-        "Flared hem",
-        "Fully lined",
-        "Back zip closure"
+        "Shimmering ombre effect",
+        "Gold beadwork on the tunic",
+        "Matching palazzos"
       ]
     },
     "reviews": [
-      "The colour is stunning and the flare looks lovely when you walk.",
-      "Fabric is light and comfortable, but needs careful ironing."
+      "Looks rich and the beadwork is neat. Perfect for festive days.",
+      "Fabric is a little warm, but the fit is lovely."
     ],
     "location": {
       "aisle": "Aisle 4",
@@ -654,214 +478,346 @@
       }
     },
     "competitorPrices": {
-      "Amazon": 1399,
-      "Flipkart": 1449,
+      "Amazon": 2799,
+      "Flipkart": 2699,
       "Croma": null
     }
   },
   {
-    "qrCode": "item-16",
-    "name": "Max Women's Printed Casual Shirt (Blue)",
-    "brand": "Max",
-    "price": 799,
-    "originalPrice": 1299,
+    "qrCode": "item-12",
+    "name": "Libas Rust Brown Embellished Tissue Salwar Suit Set",
+    "brand": "Libas",
+    "price": 2599,
+    "originalPrice": 6999,
     "category": "Fashion",
-    "image": "/img/products/item-16.svg",
-    "description": "A relaxed printed cotton shirt that works as a layer or on its own for everyday wear.",
+    "image": "/img/products/item-12.svg",
+    "description": "A rust brown embellished tissue suit set with a straight kurta, salwar and dupatta, made for weddings and festive occasions.",
+    "specifications": {
+      "warranty": "No warranty",
+      "qualityScore": "A",
+      "keySpecs": {
+        "Set": "Kurta+salwar",
+        "Fabric": "Tissue",
+        "Colour": "Rust brown",
+        "Dupatta": "Included"
+      },
+      "features": [
+        "Embellished tissue fabric",
+        "Straight kurta with salwar",
+        "Dupatta included"
+      ]
+    },
+    "reviews": [
+      "Beautiful colour and the embellishment looks exactly like the photo.",
+      "Dupatta is light, and the whole set drapes well."
+    ],
+    "location": {
+      "aisle": "Aisle 4",
+      "section": "Women's Apparel",
+      "guidance": "Aisle 4, middle section.",
+      "coordinates": {
+        "x": 22.0,
+        "y": 0,
+        "z": 12
+      }
+    },
+    "competitorPrices": {
+      "Amazon": 2499,
+      "Flipkart": 2649,
+      "Croma": null
+    }
+  },
+  {
+    "qrCode": "item-13",
+    "name": "Campus Women's Black Printed V-Neck T-Shirt",
+    "brand": "Campus",
+    "price": 899,
+    "originalPrice": 1199,
+    "category": "Fashion",
+    "image": "/img/products/item-13.svg",
+    "description": "A sporty dry-fit V-neck tee with a pink graphic print, made from breathable mesh with 2-way stretch and quick-dry performance.",
     "specifications": {
       "warranty": "No warranty",
       "qualityScore": "B+",
       "keySpecs": {
-        "Fit": "Relaxed",
-        "Fabric": "Cotton blend",
-        "Sleeves": "Full sleeve",
-        "Wash": "Machine wash"
+        "Neck": "V-neck",
+        "Fabric": "Dry-fit mesh",
+        "Stretch": "2-way",
+        "Colour": "Black"
       },
       "features": [
-        "Printed pattern",
-        "Button-down front",
-        "Easy care fabric"
+        "Quick-dry performance",
+        "Breathable mesh",
+        "Antimicrobial finish"
       ]
     },
     "reviews": [
-      "Comfortable and easy to style, good for office casual days.",
-      "Print is nice, but the fabric creases easily."
+      "Light and breathable, great for the gym or a run.",
+      "The print is bold. Fits true to size."
     ],
     "location": {
       "aisle": "Aisle 4",
       "section": "Women's Apparel",
       "guidance": "Aisle 4, back shelf.",
       "coordinates": {
-        "x": 22.5,
+        "x": 22.8,
         "y": 0,
-        "z": 18
+        "z": 20
       }
     },
     "competitorPrices": {
-      "Amazon": 849,
-      "Flipkart": 899,
+      "Amazon": 899,
+      "Flipkart": 949,
       "Croma": null
     }
   },
   {
-    "qrCode": "item-17",
-    "name": "Nike Men's SuperRep Go 3 Training Shoes (Volt)",
-    "brand": "Nike",
-    "price": 8995,
-    "originalPrice": 10995,
+    "qrCode": "item-14",
+    "name": "Campus PROVE Men's Running Shoes (Navy)",
+    "brand": "Campus",
+    "price": 1499,
+    "originalPrice": 2499,
     "category": "Footwear",
-    "image": "/img/products/item-17.svg",
-    "description": "Training shoes built for gym workouts, with a stable base and a flexible forefoot for jumps and lifts.",
+    "image": "/img/products/item-14.svg",
+    "description": "Navy running shoes with a breathable mesh upper, Nitrofly insole cushioning and an anti-slip TPR outsole for everyday runs.",
     "specifications": {
-      "warranty": "6 Months Manufacturer Warranty",
+      "warranty": "No warranty (exchange within 10 days)",
       "qualityScore": "A",
       "keySpecs": {
-        "Use": "Gym and training",
-        "Upper": "Flyknit mesh",
-        "Sole": "Rubber",
+        "Use": "Running",
+        "Upper": "Mesh",
+        "Insole": "Nitrofly",
         "Closure": "Lace-up"
       },
       "features": [
-        "Breathable Flyknit upper",
-        "Wide stable base",
-        "Flexible forefoot"
+        "Breathable mesh upper",
+        "Nitrofly cushioned insole",
+        "Anti-slip TPR outsole"
       ]
     },
     "reviews": [
-      "Very stable for gym work and really breathable.",
-      "Bright colour turns heads. Expensive, but good build quality."
+      "Very light and the cushioning is great for daily runs.",
+      "Good grip, but a bit narrow for wide feet."
     ],
     "location": {
       "aisle": "Aisle 5",
       "section": "Sports Footwear",
       "guidance": "Aisle 5, front wall.",
       "coordinates": {
-        "x": 28,
+        "x": 27.5,
         "y": 0,
-        "z": 6
+        "z": 5
       }
     },
     "competitorPrices": {
-      "Amazon": 8495,
-      "Flipkart": 8795,
+      "Amazon": 1399,
+      "Flipkart": 1449,
       "Croma": null
     }
   },
   {
-    "qrCode": "item-18",
-    "name": "Campus Men's Maxico Running Shoes (Black)",
+    "qrCode": "item-15",
+    "name": "Campus RAKE Men's Running Shoes (Navy)",
     "brand": "Campus",
-    "price": 1399,
-    "originalPrice": 2499,
+    "price": 931,
+    "originalPrice": 2299,
     "category": "Footwear",
-    "image": "/img/products/item-18.svg",
-    "description": "Budget-friendly running shoes with a cushioned sole and breathable mesh for daily jogs and walks.",
+    "image": "/img/products/item-15.svg",
+    "description": "Lightweight navy running shoes with a mesh upper, EVA midsole cushioning and an anti-slip TPR outsole.",
     "specifications": {
-      "warranty": "3 Months Manufacturer Warranty",
+      "warranty": "No warranty (exchange within 10 days)",
       "qualityScore": "B+",
       "keySpecs": {
-        "Use": "Running and walking",
+        "Use": "Running",
         "Upper": "Mesh",
-        "Sole": "EVA",
+        "Midsole": "EVA",
         "Closure": "Lace-up"
       },
       "features": [
-        "Cushioned EVA midsole",
-        "Breathable mesh",
-        "Lightweight"
+        "Breathable mesh upper",
+        "Lightweight EVA midsole",
+        "Anti-slip TPR outsole"
       ]
     },
     "reviews": [
-      "Great value for daily walks and light jogs, very light.",
-      "Sole grip is average on wet floors, but comfortable for the price."
+      "Great value and very light on the foot.",
+      "Comfortable for walks and short runs, not for long distances."
+    ],
+    "location": {
+      "aisle": "Aisle 5",
+      "section": "Sports Footwear",
+      "guidance": "Aisle 5, middle of the wall.",
+      "coordinates": {
+        "x": 28.2,
+        "y": 0,
+        "z": 15
+      }
+    },
+    "competitorPrices": {
+      "Amazon": 949,
+      "Flipkart": 999,
+      "Croma": null
+    }
+  },
+  {
+    "qrCode": "item-16",
+    "name": "Campus NORIKA Women's Running Shoes (Black)",
+    "brand": "Campus",
+    "price": 854,
+    "originalPrice": 1119,
+    "category": "Footwear",
+    "image": "/img/products/item-16.svg",
+    "description": "Black women's running shoes with pink accents, a breathable mesh upper, a segmented EVA sole and a memory insole.",
+    "specifications": {
+      "warranty": "No warranty (exchange within 10 days)",
+      "qualityScore": "B+",
+      "keySpecs": {
+        "Use": "Running",
+        "Upper": "Mesh",
+        "Sole": "Segmented EVA",
+        "Insole": "Memory foam"
+      },
+      "features": [
+        "Breathable mesh upper",
+        "Memory insole with PilloFoam",
+        "Flexible segmented sole"
+      ]
+    },
+    "reviews": [
+      "Soft and light, perfect for daily walks and the gym.",
+      "The pink accents look nice and the price is good."
     ],
     "location": {
       "aisle": "Aisle 5",
       "section": "Sports Footwear",
       "guidance": "Aisle 5, near the back.",
       "coordinates": {
-        "x": 28.5,
+        "x": 28.8,
         "y": 0,
-        "z": 27
+        "z": 25
       }
     },
     "competitorPrices": {
-      "Amazon": 1349,
-      "Flipkart": 1399,
+      "Amazon": 799,
+      "Flipkart": 849,
+      "Croma": null
+    }
+  },
+  {
+    "qrCode": "item-17",
+    "name": "Campus LUCK Men's Sneakers (Black)",
+    "brand": "Campus",
+    "price": 1499,
+    "originalPrice": 2499,
+    "category": "Footwear",
+    "image": "/img/products/item-17.svg",
+    "description": "Black casual sneakers with a mesh and PU upper, a geometric print, a Bubble Yoga Max insole and a rubber outsole.",
+    "specifications": {
+      "warranty": "No warranty (exchange within 10 days)",
+      "qualityScore": "A",
+      "keySpecs": {
+        "Use": "Casual wear",
+        "Upper": "PU and mesh",
+        "Insole": "Bubble Yoga",
+        "Closure": "Lace-up"
+      },
+      "features": [
+        "Breathable mesh and PU upper",
+        "Cushioned Bubble Yoga Max insole",
+        "Anti-slip rubber outsole"
+      ]
+    },
+    "reviews": [
+      "Looks stylish with jeans and is comfortable all day.",
+      "Sole grips well, but they take a few days to soften."
+    ],
+    "location": {
+      "aisle": "Aisle 6",
+      "section": "Casual Footwear",
+      "guidance": "Aisle 6, front display.",
+      "coordinates": {
+        "x": 34.5,
+        "y": 0,
+        "z": 5
+      }
+    },
+    "competitorPrices": {
+      "Amazon": 1549,
+      "Flipkart": 1499,
+      "Croma": null
+    }
+  },
+  {
+    "qrCode": "item-18",
+    "name": "Campus SCALE CS Men's Sneakers (Green)",
+    "brand": "Campus",
+    "price": 1799,
+    "originalPrice": 2999,
+    "category": "Footwear",
+    "image": "/img/products/item-18.svg",
+    "description": "Hunter green and off-white colour-blocked sneakers with suede overlays, a PU foam insole and an anti-slip sole.",
+    "specifications": {
+      "warranty": "No warranty (exchange within 10 days)",
+      "qualityScore": "A",
+      "keySpecs": {
+        "Use": "Casual wear",
+        "Upper": "Mesh and suede",
+        "Insole": "PU foam",
+        "Closure": "Lace-up"
+      },
+      "features": [
+        "Colour-blocked mesh upper",
+        "Suede overlays",
+        "Support-Tech anti-slip sole"
+      ]
+    },
+    "reviews": [
+      "The green is eye-catching and the sneakers are very comfortable.",
+      "Good cushioning. The off-white parts need regular cleaning."
+    ],
+    "location": {
+      "aisle": "Aisle 6",
+      "section": "Casual Footwear",
+      "guidance": "Aisle 6, middle of the wall.",
+      "coordinates": {
+        "x": 35.0,
+        "y": 0,
+        "z": 14
+      }
+    },
+    "competitorPrices": {
+      "Amazon": 1699,
+      "Flipkart": 1749,
       "Croma": null
     }
   },
   {
     "qrCode": "item-19",
-    "name": "Metro Women's Printed Stiletto Heels",
-    "brand": "Metro",
-    "price": 1799,
-    "originalPrice": 2999,
+    "name": "Campus AZURA Women's Sneakers (Navy)",
+    "brand": "Campus",
+    "price": 1249,
+    "originalPrice": 1699,
     "category": "Footwear",
     "image": "/img/products/item-19.svg",
-    "description": "Statement stiletto heels with a bold floral print for parties and special occasions.",
-    "specifications": {
-      "warranty": "No warranty (exchange within 10 days)",
-      "qualityScore": "B+",
-      "keySpecs": {
-        "Heel Height": "3.5 inches",
-        "Material": "Fabric upper",
-        "Sole": "Synthetic",
-        "Closure": "Slip-on"
-      },
-      "features": [
-        "Printed fabric upper",
-        "Cushioned insole",
-        "Slip-resistant sole"
-      ]
-    },
-    "reviews": [
-      "The print is gorgeous and goes with plain outfits.",
-      "Pretty and fairly comfortable for a few hours, but not for all-day wear."
-    ],
-    "location": {
-      "aisle": "Aisle 6",
-      "section": "Women's Footwear",
-      "guidance": "Aisle 6, front display.",
-      "coordinates": {
-        "x": 34.5,
-        "y": 0,
-        "z": 4
-      }
-    },
-    "competitorPrices": {
-      "Amazon": 1899,
-      "Flipkart": 1999,
-      "Croma": null
-    }
-  },
-  {
-    "qrCode": "item-20",
-    "name": "Vans Unisex Old Skool Casual Sneakers (Maroon)",
-    "brand": "Vans",
-    "price": 4999,
-    "originalPrice": 5999,
-    "category": "Footwear",
-    "image": "/img/products/item-20.svg",
-    "description": "Classic low-top skate sneakers with a durable canvas and suede upper and the signature side stripe.",
+    "description": "Trend-forward navy and sky blue sneakers with a structured PVC upper, a chunky EVA sole and a memory foam insole.",
     "specifications": {
       "warranty": "No warranty (exchange within 10 days)",
       "qualityScore": "A",
       "keySpecs": {
-        "Upper": "Canvas and suede",
-        "Sole": "Rubber waffle",
-        "Closure": "Lace-up",
-        "Use": "Casual wear"
+        "Use": "Casual wear",
+        "Upper": "PVC",
+        "Sole": "Chunky EVA",
+        "Insole": "Memory foam"
       },
       "features": [
-        "Padded collar",
-        "Waffle outsole for grip",
-        "Signature side stripe"
+        "Structured full-PVC upper",
+        "Chunky EVA sole",
+        "Soft memory foam insole"
       ]
     },
     "reviews": [
-      "Iconic look and built to last, goes with everything.",
-      "Stiff at first and takes a week to break in, then very comfortable."
+      "Looks super trendy and is comfortable for all-day wear.",
+      "The chunky sole adds height and the colours are lovely."
     ],
     "location": {
       "aisle": "Aisle 6",
@@ -870,12 +826,12 @@
       "coordinates": {
         "x": 35.5,
         "y": 0,
-        "z": 22
+        "z": 24
       }
     },
     "competitorPrices": {
-      "Amazon": 4799,
-      "Flipkart": 4999,
+      "Amazon": 1299,
+      "Flipkart": 1349,
       "Croma": null
     }
   }

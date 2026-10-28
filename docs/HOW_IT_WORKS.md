@@ -110,7 +110,7 @@ Code: `chat_service.run()` is exactly this flow. Read it first; it is about 100 
 - **Details worth knowing (all found by testing):**
   - Vector search *always* returns something, so we added a minimum score and a "no exact match, closest items" label (`MIN_SCORE`, `CONFIDENT_SCORE`).
   - One similarity threshold could not separate relevant from irrelevant policy sections; the rule is "strong score, or moderate score plus a shared content word" (`policy_context`).
-- **Demo:** type "running shoes under 3000" in the search box (Nike only, with "understood: under ₹3,000 · Footwear"); type "laptop" (honest "no exact match").
+- **Demo:** type "running shoes under 3000" in the search box (the three Campus running shoes, with "understood: under ₹3,000 · Footwear"); type "laptop" (honest "no exact match").
 
 ### 4.6 Agents and tool calling
 - **What:** Instead of a fixed prompt, the model is given a list of *tools* (functions with descriptions). It replies "call `compare_products` with these arguments"; our code runs the function and returns the result; the model reads it and writes the answer. This loop can repeat (max 4 rounds).
@@ -119,7 +119,7 @@ Code: `chat_service.run()` is exactly this flow. Read it first; it is about 100 
 - **Catalogue index in the prompt:** the agent once guessed product codes (`item-1`, `item-2`) and compared the wrong products. The system prompt now lists `qr_code = name` for the catalogue (up to 40 products) and tells it never to guess; with a big catalogue the search tool is the way in.
 - **Robustness code:** the model sometimes sends a list as a JSON *string*, writes the tool call as plain text, invents product codes, or repeats a call. `_as_list`, `_calls_from_text`, `resolve_product` (fuzzy name match), valid-code hints in errors and duplicate-call detection handle these. If the loop gives no answer, a RAG-only fallback answers (`fallback: true`).
 - **Code-computed conclusions:** `tool_compare_products` writes the comparison sentence in Python ("cheapest is X at ₹664, ₹570 less than Y") and the model only rephrases it. Before this the model once said a listed product was "not available".
-- **Demo:** on the home page ask "Which is cheaper, the boAt earbuds or the Bata sandals, and where is the cheaper one?" and show the tool chips (🔧 Compared 2 products) and the product links.
+- **Demo:** on the home page ask "Which is cheaper, the boAt earbuds or the Campus NORIKA running shoes, and where is the cheaper one?" and show the tool chips (🔧 Compared 2 products) and the product links.
 
 ### 4.7 Guardrails and fact-checking (the "trust" layer)
 Three layers, all outside the answering model's own judgement:
@@ -213,60 +213,39 @@ The full log with numbers is in [`FINDINGS.md`](FINDINGS.md). Summary table:
 **Limits to state openly:** small sample (one answer is about 3 percentage points), exact-match checks can mark an unusual but correct phrasing wrong, the hallucination checker is the same one used at run time (so it only sees what it can see), and the judge shares the model's biases. Results are indicative, not a benchmark.
 
 <!-- RESULTS:START -->
-### Results on the 20-product catalogue (latest; `llama3.2` 3B, GTX 1650)
+### Results on the 19-product catalogue with real photos (latest; `llama3.2` 3B, GTX 1650)
 
-The catalogue grew from 6 to 20 products (2-4 per aisle, three categories), and the golden set grew to 41 answer cases and 17 search queries. Two full runs on it are in `eval/results/`: `20261021-163418` (before an agent fix) and **`20261021-172220` (final code, `latest`)**.
+The catalogue was rebuilt so every product has a real, downloadable photo (6 -> 20 -> 19 products; 3-4 per aisle). The golden set was rewritten for the new products (42 answer cases, 17 search queries). **These numbers are not directly comparable with the 20-product run below**, because the questions and products differ. Run: **`eval/results/20261028-172320` (`latest`, `latest-final`)**.
 
-| Configuration | Correct answers (final run) | Hallucinated facts (final run) | Median latency |
+| Configuration | Correct answers | Hallucinated facts (final) | Median latency |
 |---|---|---|---|
-| Model alone (no store data) | 19.5% | 75.6% | 1.9 s |
-| + product facts in the prompt | 61.0% | 36.6% | 2.1 s |
-| + RAG (store policies) | 68.3% | 24.4% | 2.4 s |
-| + tool-calling agent | 97.6% | 2.4% | 6.9 s |
-| **Full system** (+ guardrails, fact-check, router) | **100.0%** | 2.4% | 4.4 s |
+| Model alone (no store data) | 7.1% | 78.6% | 2.1 s |
+| + product facts in the prompt | 54.8% | 35.7% | 2.3 s |
+| + RAG (store policies) | 64.3% | 31.0% | 2.4 s |
+| + tool-calling agent | 90.5% | 4.8% | 7.6 s |
+| **Full system** (+ guardrails, fact-check, router) | **92.9%** | 2.4% | 4.8 s |
 
-- **The ranking is the same as with 6 products**, so the conclusions hold on a bigger catalogue. What changed: the agent got slower (4.5 s to 6.9 s median) because its prompt and tool results are longer, and search got harder.
-- **Before the agent fix the full system scored 92.7%** (`20261021-163418`). One failure was a real bug: asked "How do I get to the Nike shoes from Aisle 2?" the model called the directions tool with `item-15` (a dress), because it picked a code from the catalogue list in its prompt. The fix was to list product *names* only, so the model passes names and the code resolves them. I tried "name -> code" first; it fixed that case but broke two others, so names only was kept. The fix was developed on the same 15 agent cases it was then scored on, so the final run is **not independent evidence for those cases**. The other two failures in the earlier run were checker problems (an answer that stated the saving but not the price; an unusual but correct "doesn't allow returns").
-- **Semantic search:** recall@3 95.6% vs 85.6% for keyword matching (15 queries). **It got worse at saying "nothing here":** for the nonsense query "laptop" it now returns phones as a confident match (similarity 0.621 against a 0.62 threshold), correct on 1 of 2 nonsense queries vs 2 of 2 with 6 products. I did not tune the threshold to one query; it is a known weakness of a fixed threshold.
-- **Guardrails (unchanged logic):** held-out attacks blocked 11/11 with the LLM guard vs 18.2% by rules alone; 1 of 9 legitimate held-out questions wrongly refused. Structured insights: 40/40 valid JSON.
-- **Manual audit:** I read the 30 agent, deal and policy answers of the final run. No wrong claim was found (all prices, aisles and comparisons match the database). Minor flaws: an irrelevant EMI sentence in a return answer and a loosely worded warranty line. This is the author's reading, not an independent rater.
-- **Known limitation found while expanding:** if a name matches several products (for example "boAt"), the lookup silently picks the first, so the assistant can describe the earbuds when the shopper meant the headphones. Questions that name a distinguishing word ("Rockerz") work.
+- **The ranking is the same as in every earlier run**, so the conclusions hold: each technique adds accuracy, and the agent is the biggest jump (and the slowest).
+- **This set was written without tuning on it, so 92.9% is the more honest figure.** The earlier 100% came from a set that the agent prompt had been tuned against. Run-to-run noise is several points; one answer is 2.4 points.
+- **Failures of the full system (3 of 42 by the automatic check):** `spec_14` (the fact-checker replaced a plausible answer about the outsole with a generic "here is what I can confirm" line), `policy_delivery` (the same safe fallback, "I couldn't verify that answer"), and `policy_return_ok` (the answer was right in substance but did not contain the checker's expected words).
+- **My manual read of the 31 agent, deal, spec and policy answers found problems the automatic check missed:** `deal_9` swapped the two competitors ("₹200 lower than Flipkart's ₹2099 and ₹100 lower than Amazon's ₹2099"; Flipkart is ₹1999); `agent_sneakers` listed a women's sneaker under "sneakers for men"; and `policy_emi_no` gave a muddled sentence about EMI. Counting those, about **28 to 29 of 31 are right (roughly 90%)**. This is the author's reading, not an independent rater. The wrong-competitor error is the same weak spot as before: comparisons with online prices. The comparison is computed in code and given to the model correctly; the model garbled it when writing the answer.
+- **Semantic search:** recall@3 85.6% vs 74.4% for keyword matching (15 queries), and it correctly finds nothing for both nonsense queries ("laptop", "pizza recipe"; the "laptop" weakness of the 20-product catalogue did not appear with this one, which I did not tune for).
+- **Guardrails (logic unchanged):** held-out attacks blocked 11/11 with the LLM guard vs 18.2% by rules alone; 1 of 9 legitimate held-out questions wrongly refused (a "pay half now and half later" question was read as price negotiation); on the design set 2 of 6 legitimate questions were wrongly refused ("Is the price negotiable?", "What is the best price you have for earbuds?"). Structured insights: 38/38 valid JSON.
+- Small catalogue and small test set (19 products, 42 cases): indicative, not a benchmark. Prices of the clothing and footwear and all competitor prices are illustrative sample data.
 
-### Earlier results on the 6-product catalogue (kept for the story of how the system improved)
+### Earlier run on the 20-product catalogue (stock-photo catalogue; `20261021-172220`)
 
-Two full runs are kept in `eval/results/`: `20261021-140812` (run 1, first measurement) and `20261021-143250` (run 2, after fixes that run 1 suggested, so **not** a held-out result for those fixes). `20261021-144930` is the model-size run. Each folder has `results.csv` (every answer), `summary.md` and charts.
-
-| Configuration | Correct answers (run 1 / run 2) | Hallucinated facts (run 1 / run 2) | Median latency (run 2) |
+| Configuration | Correct answers | Hallucinated facts | Median latency |
 |---|---|---|---|
-| Model alone (no store data) | 17.6% / 17.6% | 85% / 88% | 1.4 s |
-| + product facts in the prompt | 67.6% / 61.8% | 21% / 27% | 1.6 s |
-| + RAG (store policies) | 79.4% / 76.5% | 21% / 18% | 2.1 s |
-| + tool-calling agent | 91.2% / 91.2% | 0% / 3% | 4.5 s |
-| **Full system** (+ guardrails, fact-check, router) | 91.2% / 97.1% | 3% / 0% | 3.0 s |
+| Model alone | 19.5% | 75.6% | 1.9 s |
+| + product facts | 61.0% | 36.6% | 2.1 s |
+| + RAG | 68.3% | 24.4% | 2.4 s |
+| + agent | 97.6% | 2.4% | 6.9 s |
+| Full system | 100.0% | 2.4% | 4.4 s |
 
-![Correct and hallucinated answers by configuration](../eval/results/20261021-143250/accuracy_and_hallucination.png)
-![Accuracy by question type](../eval/results/20261021-143250/accuracy_by_type.png)
-
-- **Each technique helps in the place you would expect:** product facts fix prices, aisles and specs; RAG fixes policy questions; the agent fixes questions about several products (comparison, search, directions, which RAG alone cannot answer: 0% on those).
-- **Semantic search finds more than keyword search:** recall@3 95% vs 80% on 10 queries; both correctly return nothing for 2 nonsense queries.
-- **Guardrails** (11 held-out attacks, 9 legitimate questions): pattern rules alone blocked 2 of 11 attacks; adding the LLM guard blocked 11 of 11 and wrongly refused 1 of 9 legitimate questions. Without any guardrail, prompt injection succeeded against the model (it printed its own instructions). Cost about 0.5 s per message.
-
-![Attacks blocked](../eval/results/20261021-143250/guardrails.png)
-![Semantic vs keyword search](../eval/results/20261021-143250/search_quality.png)
-
-- **Model size** (full system): llama3.2 1B scored 73.5% correct, 14.7% hallucinated, 75% correct tool choice, against 91.2% / 0% / 100% for the 3B model on the same run. The 1B latency (15.7 s) is inflated by GPU memory swapping between models and is not a fair speed comparison.
-
-![Model size](../eval/results/20261021-144930/model_size.png)
-
-**Run 3 (final code, full system only, `eval/results/20261021-150754`):** 34/34 correct by the automatic check, 3.1 s median latency, 100% of 11 held-out attacks blocked, 1 of 9 legitimate held-out questions wrongly refused. **But reading all 34 answers myself, two were wrong although every number in them was real** (a "higher than Croma" claim that was false, and the wrong retailer named as cheapest), so the honest figure is about 94%. The cause: comparisons with online prices. The fix, applied afterwards, computes the comparison in code and gives it to the model; spot-checking 12 answers by hand showed those errors gone (this fix was not re-run through the whole golden set).
-
-**Read these numbers carefully.**
-- Noise: the full system scored 91.2%, 97.1% and 100% in three runs (automatic check). Differences below about 6 percentage points are not meaningful with 34 cases.
-- The automatic check only looks for expected numbers and keywords, so it can pass a wrong sentence made of real numbers. That is why run 3's "100%" is about 94% when read by hand.
-- The fact-checker fired 0 times in run 2 and once in run 3; its main demonstrated value comes from the forced-error tests (wrong price, wrong aisle, invented product, wrong time claim).
-- The LLM judge was a weak grader (it rated a refusal as a perfect answer) and should not be quoted as evidence.
-- The attack-compliance figure for the unguarded model is a keyword heuristic that I revised once after reading run 1's outputs.
-- Small catalogue and small test set (20 products, 41 cases): indicative, not a benchmark. The prices of the 14 added products are illustrative sample data.
+- **Before an agent fix the full system scored 92.7%** (`20261021-163418`). One failure was a real bug: asked "How do I get to the Nike shoes from Aisle 2?" the model called the directions tool with `item-15` (a dress), because it picked a code from the catalogue list in its prompt. The fix was to list product *names* only, so the model passes names and the code resolves them. I tried "name -> code" first; it fixed that case but broke two others, so names only was kept. The fix was developed on the same 15 agent cases it was then scored on, so that 100% is **not independent evidence for those cases**.
+- Semantic search recall@3 was 95.6% vs 85.6% for keyword matching; "laptop" returned phones as a confident match (similarity 0.621 against a 0.62 threshold).
+- **Manual audit of that run:** 30 agent, deal and policy answers, no wrong claim found (author's reading).
 <!-- RESULTS:END -->
 
 ## 12. Code map
@@ -290,6 +269,6 @@ Two full runs are kept in `eval/results/`: `20261021-140812` (run 1, first measu
 
 - The model is small. It is the reason for most of the extra machinery, and the evaluation shows where it still fails.
 - Guardrails are pattern-based and the fact-checker is heuristic. They are a strong safety net for the failures seen, not a proof.
-- Only 20 products, so search and agent results are easier than in a real catalogue. Treat numbers as indicative.
+- Only 19 products, so search and agent results are easier than in a real catalogue. Treat numbers as indicative.
 - The site is HTTP on the local network; the in-page camera scanner needs HTTPS on phones (the phone's own camera app works).
 - Next: a fine-tuned guard classifier (fewer false refusals), larger model, real price feed, human-rated evaluation, multilingual answers.
