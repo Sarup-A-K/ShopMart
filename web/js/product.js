@@ -14,17 +14,18 @@
   function showNotFound() {
     $("loading").classList.add("hidden");
     $("not-found").classList.remove("hidden");
-    document.title = "Tag not found | OmniTag Mall";
+    document.title = "Tag not found | ShopMart";
   }
 
   // ---------- Header, price and comparison ----------
   function renderHead(p) {
-    document.title = `${p.name} | OmniTag Mall`;
+    document.title = `${p.name} | ShopMart`;
     $("crumb-category").textContent = p.category || "Products";
     $("crumb-brand").textContent = p.brand || "";
     $("p-image").onerror = () => Omni.imageFallback($("p-image"));
     $("p-image").src = p.image;
     $("p-image").alt = p.name;
+    $("p-image-note").classList.toggle("hidden", !!p.imageCustom);
     $("p-brand").textContent = `Brand: ${p.brand}`;
     $("p-brand").href = `/?q=${encodeURIComponent(p.brand || "")}`;
     $("p-name").textContent = p.name;
@@ -50,7 +51,7 @@
   function renderCompare(p) {
     const priced = p.competitors.filter(c => typeof c.price === "number");
     const cheapest = priced.length ? Math.min(...priced.map(c => c.price)) : null;
-    const rows = [`<tr class="ours"><td>OmniTag Mall (this store)</td><td>₹${inr(p.price)}</td></tr>`];
+    const rows = [`<tr class="ours"><td>ShopMart (this store)</td><td>₹${inr(p.price)}</td></tr>`];
     p.competitors.forEach(c => {
       if (typeof c.price === "number") {
         const tag = c.price === cheapest ? `<span class="cheapest-tag">lowest online</span>` : "";

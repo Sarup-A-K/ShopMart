@@ -171,7 +171,7 @@ GENERIC_WORDS = set("""
 the a an and or but so yes no ok okay sure please sorry thanks thank hello hi hey welcome great good best better fair nice
 deal price prices cheap cheaper cheapest store mall shop aisle aisles section here there this that these those you your
 we our us it its they their i my me would could should can will may might also however another other more less
-omnitag amazon flipkart croma upi emi mrp inr rs rupees gst sms ac
+omnitag shopmart amazon flipkart croma upi emi mrp inr rs rupees gst sms ac
 india indian monday tuesday wednesday thursday friday saturday sunday diwali eid christmas
 general buyer budget shopper student tech enthusiast fashion forward
 """.split())

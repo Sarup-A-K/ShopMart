@@ -4,3 +4,4 @@ __pycache__/
 .env
 eval_results.csv
 omnitag.db
+uploads/

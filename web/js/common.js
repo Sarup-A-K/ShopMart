@@ -1,5 +1,5 @@
 /**
- * Shared helpers for the OmniTag Mall pages: API calls, formatting,
+ * Shared helpers for the ShopMart pages: API calls, formatting,
  * QR link parsing and the "Scan a price tag" modal in the header.
  */
 const Omni = (() => {
@@ -31,7 +31,7 @@ const Omni = (() => {
   const PLACEHOLDER_IMG = "data:image/svg+xml," + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#eef1f4"/>' +
     '<path d="M60 135l30-38 22 27 15-18 23 29z" fill="#c3cbd4"/><circle cx="128" cy="72" r="12" fill="#c3cbd4"/>' +
-    '<text x="100" y="168" font-family="sans-serif" font-size="13" fill="#7b8794" text-anchor="middle">No image</text></svg>');
+    '<text x="100" y="168" font-family="sans-serif" font-size="13" fill="#7b8794" text-anchor="middle">Photo coming soon</text></svg>');
 
   function imageFallback(img) {
     img.onerror = null;

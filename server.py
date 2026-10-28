@@ -1,6 +1,7 @@
 import os
 import io
 import json
+import re
 import secrets
 import time
 from typing import Optional, Any, List
@@ -36,6 +37,9 @@ MAX_UPLOAD_BYTES = 2 * 1024 * 1024
 # Address phones use to reach this server (printed into QR codes), e.g. http://192.168.43.10:8000
 PUBLIC_URL = os.environ.get("PUBLIC_URL", "").rstrip("/")
 WEB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web")
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")   # product photos added by the admin
+MAX_IMAGE_BYTES = 4 * 1024 * 1024
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Slow down password guessing: max failed logins per client per window
 LOGIN_MAX_FAILURES = 5
@@ -289,6 +293,78 @@ def admin_set_tag_base(req: TagBase, _: str = Depends(require_admin)):
     return {"success": True}
 
 
+# ---- Product photos (the admin supplies the real photo of each product) ----
+def _image_type(data: bytes):
+    """Identify an image by its first bytes, never by the file name the client sent."""
+    if data.startswith(b"\xff\xd8\xff"):
+        return "jpg"
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "webp"
+    return None
+
+
+def _remove_uploaded_image(product):
+    path = str((product or {}).get("image") or "")
+    if path.startswith("/uploads/"):
+        full = os.path.join(UPLOAD_DIR, os.path.basename(path))     # basename: never leave the uploads folder
+        if os.path.isfile(full):
+            os.remove(full)
+
+
+def _seed_image(qr_code):
+    with open(store_db.SEED_PATH, encoding="utf-8") as f:
+        for p in json.load(f):
+            if p["qrCode"] == qr_code:
+                return p.get("image", "")
+    return ""
+
+
+@app.post("/api/admin/products/{qr_code}/image")
+async def admin_upload_image(qr_code: str, file: UploadFile = File(...), _: str = Depends(require_admin)):
+    product = store_db.get_product(qr_code)
+    if not product:
+        raise HTTPException(status_code=404, detail="Unknown product.")
+    data = await file.read()
+    if len(data) > MAX_IMAGE_BYTES:
+        raise HTTPException(status_code=400, detail="The photo is too large (max 4 MB).")
+    ext = _image_type(data)
+    if not ext:
+        raise HTTPException(status_code=400, detail="Please upload a JPG, PNG or WebP photo.")
+    name = f"{qr_code}-{secrets.token_hex(4)}.{ext}"
+    with open(os.path.join(UPLOAD_DIR, name), "wb") as out:
+        out.write(data)
+    _remove_uploaded_image(product)
+    updated = store_db.update_details(qr_code, {"image": f"/uploads/{name}", "imageCustom": True})
+    return {"success": True, "product": updated}
+
+
+class ImageLink(BaseModel):
+    url: str = Field(..., max_length=500)
+
+
+@app.put("/api/admin/products/{qr_code}/image")
+def admin_set_image_link(qr_code: str, req: ImageLink, _: str = Depends(require_admin)):
+    product = store_db.get_product(qr_code)
+    if not product:
+        raise HTTPException(status_code=404, detail="Unknown product.")
+    url = req.url.strip()
+    if not re.match(r"^https?://[^\s]+$", url):
+        raise HTTPException(status_code=400, detail="Enter a full image link starting with http:// or https://")
+    _remove_uploaded_image(product)
+    return {"success": True, "product": store_db.update_details(qr_code, {"image": url, "imageCustom": True})}
+
+
+@app.delete("/api/admin/products/{qr_code}/image")
+def admin_reset_image(qr_code: str, _: str = Depends(require_admin)):
+    product = store_db.get_product(qr_code)
+    if not product:
+        raise HTTPException(status_code=404, detail="Unknown product.")
+    _remove_uploaded_image(product)
+    return {"success": True, "product": store_db.update_details(qr_code, {"image": _seed_image(qr_code), "imageCustom": None})}
+
+
 # Excel layout: (header, db field, editable)
 EXCEL_COLUMNS = [
     ("QR Code", "qr_code", False),
@@ -501,6 +577,7 @@ def admin_page():
 
 
 # Only the web/ folder is served, so the database and source files are never exposed
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")
 
 

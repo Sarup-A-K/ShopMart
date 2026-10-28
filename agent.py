@@ -300,7 +300,7 @@ def needs_agent(question, product):
 
 def system_prompt(persona, product):
     prompt = (
-        f"You are OmniTag, the in-store shopping assistant of an Indian mall, talking to a '{persona}'.\n"
+        f"You are ShopMart, the in-store shopping assistant of an Indian mall, talking to a '{persona}'.\n"
         "Rules:\n"
         "- Use the tools to look up products, prices, comparisons, store information and directions. Never guess a price, aisle or policy.\n"
         "- Call a tool only when you need it. If the answer is already in 'Product the shopper is viewing', answer directly.\n"
@@ -328,7 +328,7 @@ def _fallback_prompt(question, persona):
         products = []
     policies = rag.policy_context(question)
     text = (
-        f"You are OmniTag, an in-store shopping assistant talking to a '{persona}'. Answer in 2-4 short sentences using only the "
+        f"You are ShopMart, an in-store shopping assistant talking to a '{persona}'. Answer in 2-4 short sentences using only the "
         "information below. Use ₹, never '$'. If the information does not answer the question, say you don't know."
     )
     if parts:

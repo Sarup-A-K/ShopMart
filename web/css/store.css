@@ -1,4 +1,4 @@
-/* OmniTag Mall: light e-commerce theme, mobile first */
+/* ShopMart: light e-commerce theme, mobile first */
 :root {
   --header-bg: #10243a;
   --subnav-bg: #1b3653;
@@ -285,3 +285,5 @@ select:focus, .input:focus { outline: 2px solid #9fd3c4; border-color: var(--bra
   .site-header .header-link[href="/admin"] { display: none; }
   .chip, .suggestion { min-height: 40px; }   /* easier to tap */
 }
+
+.image-note { margin: 8px 4px 0; text-align: center; }

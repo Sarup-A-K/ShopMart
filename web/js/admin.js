@@ -1,5 +1,5 @@
 /**
- * OmniTag Admin: log in, edit prices in a table or via Excel, and print QR price tags.
+ * ShopMart Admin: log in, edit prices in a table or via Excel, and print QR price tags.
  */
 (() => {
   const API = ""; // same origin: the backend serves this page
@@ -248,7 +248,7 @@
       const blob = await res.blob();
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `omnitag_prices_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      a.download = `shopmart_prices_${new Date().toISOString().slice(0, 10)}.xlsx`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -302,7 +302,7 @@
   document.querySelectorAll(".tab").forEach(tab => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === tab));
-      ["prices-panel", "tags-panel", "content-panel", "insights-panel"].forEach(id => $(id).classList.toggle("hidden", id !== tab.dataset.tab));
+      ["prices-panel", "tags-panel", "images-panel", "content-panel", "insights-panel"].forEach(id => $(id).classList.toggle("hidden", id !== tab.dataset.tab));
       document.dispatchEvent(new CustomEvent("admin:tab", { detail: tab.dataset.tab }));
     });
   });

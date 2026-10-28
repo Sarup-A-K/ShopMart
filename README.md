@@ -63,10 +63,18 @@ You need [Docker](https://www.docker.com/) installed. The site runs on your lapt
 ```
 This detects the laptop's network address (e.g. `http://192.168.43.10:8000`), starts Ollama (pulling **Llama 3.2** on first run) and the FastAPI server on port `8000`, and prints the addresses to use. On first run it creates `.env` with a random admin password (`ADMIN_PASSWORD`).
 
+**Public HTTPS address (works from any network):**
+```bash
+./start.sh --tunnel
+```
+This also opens a free Cloudflare tunnel and prints an `https://….trycloudflare.com` address. Any phone on any network can open it, QR tags use it, and the in-page camera scanner works because the page is HTTPS. The address changes every time. While the tunnel runs, anyone with the link can use the site, so stop it when you are done: `docker rm -f omnitag_tunnel`. Some networks (for example a campus Wi-Fi) block the tunnel; the script then continues with the local address only.
+
 ### 2. Use it
 * **Shoppers:** open the printed address on a phone, or scan a QR price tag with the phone's camera app. The tag opens that product's page directly, even if the site isn't open yet.
 * **Admin:** `<address>/admin`. Edit prices, use Excel, and under **QR price tags** print the shelf tags.
 * **This laptop:** `http://localhost:8000`.
+* **Product photos:** the sample photos are stock images and are labelled "Illustrative image" on product pages. In **Admin → Photos** upload the real photo of each product (JPG, PNG or WebP) or paste an image link; the note disappears for that product. Uploaded photos are stored in `uploads/` (not committed to git).
+* **Store name:** the demo storefront is branded *ShopMart* (the project itself is called OmniTag).
 
 **If the laptop's address changes** (e.g. after reconnecting to the hotspot), run `./start.sh` again and reprint the tags, because the address is inside the QR codes.
 

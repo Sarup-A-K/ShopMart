@@ -152,7 +152,7 @@ def clean_history(history):
 def chat_system_prompt(product, persona, policies=()):
     """`policies` are store-information chunks retrieved by rag.policy_context for this question."""
     prompt = (
-        f"You are OmniTag, a helpful in-store shopping assistant in an Indian mall, talking to a '{persona}'. "
+        f"You are ShopMart, a helpful in-store shopping assistant in an Indian mall, talking to a '{persona}'. "
         "Answer in 2-4 short sentences, tailored to that shopper. "
         "Use only the product facts and store information below for prices, specs, policies and location; "
         "if something is not covered there, say you don't know. "

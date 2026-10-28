@@ -52,7 +52,7 @@ def _regenerate(question, persona, products, issues, model=None):
     """One non-streaming retry that is told exactly what was wrong and given only the verified facts."""
     facts = "\n\n".join(assistant.build_product_context(p) for p in products) or "(no product facts available)"
     system = (
-        f"You are OmniTag, an in-store shopping assistant talking to a '{persona}'. Answer in 2-4 short sentences using ONLY the "
+        f"You are ShopMart, an in-store shopping assistant talking to a '{persona}'. Answer in 2-4 short sentences using ONLY the "
         "facts below. Use ₹, never '$'. Do not mention any product, price or aisle that is not in the facts.\n\nFacts:\n" + facts
     )
     note = "Your previous answer contained errors: " + "; ".join(issues) + ". Answer again correctly."

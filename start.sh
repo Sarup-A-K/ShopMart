@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# Start OmniTag Mall so phones on the same network (e.g. your phone's hotspot) can open it.
-# Detects this laptop's network address, uses it for QR codes, and creates an admin password on first run.
+# Start ShopMart so phones can open it.
+#   ./start.sh            phones on the same network (e.g. your phone's hotspot) use this laptop's address
+#   ./start.sh --tunnel   also opens a public https:// address through a free Cloudflare tunnel, so any phone on
+#                         any network can open it (and the in-page camera scanner works). Stop it with
+#                         `docker rm -f omnitag_tunnel` when you are done: while it runs, anyone with the link can use the site.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -23,11 +26,35 @@ if [ ! -f .env ] || ! grep -q '^ADMIN_PASSWORD=' .env; then
 fi
 
 export PUBLIC_URL="http://$IP:$PORT"
+
+if [ "${1:-}" = "--tunnel" ]; then
+  docker rm -f omnitag_tunnel >/dev/null 2>&1 || true
+  start_tunnel() {   # $1: extra cloudflared flags
+    docker rm -f omnitag_tunnel >/dev/null 2>&1 || true
+    docker run -d --name omnitag_tunnel --network host cloudflare/cloudflared:latest \
+      tunnel --no-autoupdate $1 --url "http://localhost:$PORT" >/dev/null
+    for _ in $(seq 1 25); do
+      docker logs omnitag_tunnel 2>&1 | grep -q "Registered tunnel connection" && return 0
+      sleep 2
+    done
+    return 1
+  }
+  echo "Opening the public tunnel (about 20 seconds)..."
+  if ! start_tunnel "" && ! start_tunnel "--protocol http2"; then
+    echo "Could not open the tunnel (the network may block it). Continuing with the local address only." >&2
+    docker rm -f omnitag_tunnel >/dev/null 2>&1 || true
+  else
+    TUNNEL_URL=$(docker logs omnitag_tunnel 2>&1 | grep -o 'https://[a-zA-Z0-9-]*\.trycloudflare\.com' | head -1)
+    [ -n "$TUNNEL_URL" ] && export PUBLIC_URL="$TUNNEL_URL"
+  fi
+fi
+
 docker compose up -d
 
 echo
-echo "OmniTag Mall is starting:"
-echo "  Shoppers (phones on this network): $PUBLIC_URL"
+echo "ShopMart is starting:"
+echo "  Shoppers (phones): $PUBLIC_URL"
+if [ "$PUBLIC_URL" != "http://$IP:$PORT" ]; then echo "  Same Wi-Fi/hotspot only:           http://$IP:$PORT"; fi
 echo "  This laptop:                       http://localhost:$PORT"
 echo "  Admin:                             $PUBLIC_URL/admin   (password: see ADMIN_PASSWORD in .env)"
 echo
