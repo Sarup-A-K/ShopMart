@@ -11,7 +11,7 @@ Instead of fighting "showrooming" (shoppers checking online prices in the aisle)
 ## 🌟 Key Features
 
 ### Shopping
-* **Scan-to-product pages**: Each shelf price tag has a QR code linking to `/p/<code>`. Any phone camera opens the product page directly: price vs M.R.P., online price comparison, directions to the aisle, AI advice, specs and reviews. Light, mobile-first design with a searchable catalogue and an in-page QR scanner (jsQR).
+* **Scan-to-product pages**: Each shelf tag has a QR code linking to `/p/<code>?scan=1` (the tags carry no prices, so they never go out of date; the page shows today's price). Any phone camera opens the product page directly: price vs M.R.P., online price comparison, directions to the aisle, AI advice, specs and reviews. Light, mobile-first design with a searchable catalogue and an in-page QR scanner (jsQR).
 * **Dynamic price matching**: Shoppers see a price ~5% below the cheapest online price entered by the admin, never above the store's own price.
 * **Indoor wayfinding**: Map with an "I'm near" selector (Entrance or Aisle 1-6), route along the corridor and up the aisle, step-by-step directions with distances.
 
@@ -24,7 +24,7 @@ Instead of fighting "showrooming" (shoppers checking online prices in the aisle)
 * **GenAI for store staff**: Review summaries and product descriptions drafted by the model (previewed, edited and approved by staff), and a "what are shoppers asking" report with suggested actions.
 
 ### Store management
-* **Admin price manager** (`/admin`): Edit store price, M.R.P. and competitor prices in a table (with a live preview of the shopper price) or in bulk through Excel (all-or-nothing validation). Print shelf QR price tags.
+* **Admin price manager** (`/admin`): Edit store price, M.R.P. and competitor prices in a table (with a live preview of the shopper price) or in bulk through Excel (all-or-nothing validation). Print shelf QR tags.
 * **SQLite database** (`omnitag.db`), seeded from `seed_products.json`: 19 sample products across Electronics, Fashion and Footwear, with 3–4 products per aisle. Every product has a real, official product photo (see `docs/PHOTO_CREDITS.md`). The prices of the clothing and footwear, and all competitor prices and reviews, are illustrative sample data, not live prices. On start-up, products missing from the database are added; existing rows (and admin price edits) are never overwritten. Price edits show on the next scan.
 
 ---
@@ -79,8 +79,9 @@ This also opens a Cloudflare tunnel and prints an `https://` address. Any phone 
 The token is a secret (anyone with it can run a tunnel to your domain): keep it only in `.env`.
 
 ### 2. Use it
-* **Shoppers:** open the printed address on a phone, or scan a QR price tag with the phone's camera app. The tag opens that product's page directly, even if the site isn't open yet.
-* **Admin:** `<address>/admin`. Edit prices, use Excel, and under **QR price tags** print the shelf tags.
+* **Shoppers:** open the printed address on a phone, or scan a QR tag with the phone's camera app. The tag opens that product's page directly, even if the site isn't open yet.
+* **Where am I?** The **Master QR** (print it for the entrance) opens the home page and sets the shopper's location to the Entrance; scanning a shelf tag sets it to that product's aisle. Searching for another product then shows how far it is from there, its page gives step-by-step directions from that spot, and the AI assistant's directions start there too. Shoppers can also pick their spot by hand.
+* **Admin:** `<address>/admin`. Edit prices, use Excel, and under **QR tags** print the shelf tags.
 * **This laptop:** `http://localhost:8000`.
 * **Product photos:** every product has its official product photo, stored in `uploads/` (not committed, because the pictures belong to the brands; sources are listed in `docs/PHOTO_CREDITS.md`). If a photo is missing the page falls back to a generated illustration card labelled "Illustrative image" (`python3 tools/make_product_cards.py` regenerates the cards). In **Admin → Photos** you can upload a photo (JPG, PNG or WebP) or paste an image link for any product; "reset" returns to the card.
 * **Store name:** the demo storefront is branded *ShopMart* (the project itself is called OmniTag).

@@ -22,6 +22,7 @@ import guardrails
 import llm
 import rag
 import store_db
+import wayfinding
 
 BASELINE_SYSTEM = (
     "You are a helpful shopping assistant in an Indian mall. Answer in 2-4 short sentences. Use Indian Rupees (₹), never '$'."
@@ -48,9 +49,11 @@ def _stream_single(mode, product, persona, history, question, model=None):
     yield "sources", assistant.sources_for(policies)
 
 
-def _regenerate(question, persona, products, issues, model=None):
+def _regenerate(question, persona, products, issues, model=None, route_facts=None):
     """One non-streaming retry that is told exactly what was wrong and given only the verified facts."""
     facts = "\n\n".join(assistant.build_product_context(p) for p in products) or "(no product facts available)"
+    if route_facts:
+        facts += "\n\n" + "\n".join(route_facts) + "\nWhen the shopper asks how to get somewhere, list these steps. Do not estimate walking time."
     system = (
         f"You are ShopMart, an in-store shopping assistant talking to a '{persona}'. Answer in 2-4 short sentences using ONLY the "
         "facts below. Use ₹, never '$'. Do not mention any product, price or aisle that is not in the facts."
@@ -63,8 +66,9 @@ def _regenerate(question, persona, products, issues, model=None):
                     temperature=0.0, model=model)["content"].strip()
 
 
-def run(question, persona="General Buyer", history=None, product=None, mode="auto", guard=True, debug_append=None, model=None):
+def run(question, persona="General Buyer", history=None, product=None, mode="auto", guard=True, debug_append=None, model=None, location=None):
     started = time.time()
+    location = wayfinding.normalise_checkpoint(location) if location else None   # only 'entrance' / 'aisle-N' ever reach the prompt
     qr_code = product["qrCode"] if product else None
     history = history or []
 
@@ -88,7 +92,7 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
     use_agent = mode == "agent" or (mode == "auto" and agent.needs_agent(question, product))
     parts, info = [], {"tools": [], "products": [], "sources": [], "fallback": False}
     if use_agent:
-        for ev in agent.run_agent(question, persona, history, product, model=model):
+        for ev in agent.run_agent(question, persona, history, product, model=model, location=location):
             kind = ev.pop("event")
             if kind == "token":
                 parts.append(ev["text"])
@@ -97,7 +101,7 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
             elif kind == "tool":
                 yield "tool", ev
             elif kind == "done":
-                info.update(tools=ev["tools"], products=ev["products"], sources=ev["sources"], fallback=ev["fallback"])
+                info.update(tools=ev["tools"], products=ev["products"], sources=ev["sources"], fallback=ev["fallback"], route_facts=ev.get("route_facts"))
         used_mode = "agent"
     else:
         used_mode = "baseline" if mode == "baseline" else "context" if mode == "context" else "rag"
@@ -122,13 +126,15 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
     qrs = list(dict.fromkeys(([qr_code] if qr_code else []) + info["products"]))
     if guard:
         source_titles = " ".join(s["title"] for s in info["sources"])
-        allowed = guardrails.build_allowed(qrs, question, _plain_history_text(history), source_titles)
+        # Aisles the shopper is standing in or walking through ("From Aisle 2, walk ...") are facts from the scan and the route tool
+        where = ("" if not location or location == "entrance" else f"Aisle {location.split('-')[-1]}") + " " + " ".join(info.get("route_facts") or [])
+        allowed = guardrails.build_allowed(qrs, question, _plain_history_text(history) + " " + where, source_titles)
         issues, checked = guardrails.verify_answer(text, allowed)
         verified = not issues
         if issues:
             corrected = True
             try:
-                retry = _regenerate(question, persona, allowed["products"], issues, model)
+                retry = _regenerate(question, persona, allowed["products"], issues, model, info.get("route_facts"))
                 retry_issues, _ = guardrails.verify_answer(retry, allowed)
             except llm.LLMError:
                 retry, retry_issues = "", ["retry failed"]
@@ -141,10 +147,10 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
     yield "done", finish(info)
 
 
-def answer_once(question, persona="General Buyer", history=None, product=None, mode="auto", guard=True, debug_append=None, model=None):
+def answer_once(question, persona="General Buyer", history=None, product=None, mode="auto", guard=True, debug_append=None, model=None, location=None):
     """Non-streaming helper (used by /api/ask and the evaluation). Returns the final text plus the done summary."""
     text, done, tool_events = "", {}, []
-    for kind, data in run(question, persona, history, product, mode, guard, debug_append, model):
+    for kind, data in run(question, persona, history, product, mode, guard, debug_append, model, location):
         if kind == "token":
             text += data["text"]
         elif kind == "replace":

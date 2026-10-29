@@ -16,6 +16,11 @@
   const params = new URLSearchParams(window.location.search);
   searchInput.value = params.get("q") || "";
 
+  function awayText(p) {
+    const meters = Wayfinding.distance(p, Omni.where.checkpoint());
+    return meters == null ? "" : meters < 3 ? " · you're here" : ` · ${meters} m from you`;
+  }
+
   function cardHtml(p) {
     const off = discountPercent(p);
     const loc = p.location || {};
@@ -30,7 +35,7 @@
             ${priceHtml(p.price)}
             ${p.originalPrice && p.originalPrice > p.price ? `<span class="mrp">M.R.P. <s>₹${inr(p.originalPrice)}</s></span><span class="off">${off}% off</span>` : ""}
           </div>
-          ${loc.aisle ? `<span class="aisle">📍 ${escapeHtml(loc.aisle)} · ${escapeHtml(loc.section || "")}</span>` : ""}
+          ${loc.aisle ? `<span class="aisle">📍 ${escapeHtml(loc.aisle)} · ${escapeHtml(loc.section || "")}${awayText(p)}</span>` : ""}
         </div>
       </a>`;
   }
@@ -125,6 +130,34 @@
     });
   }
 
+  // "You are here" bar: set by the Entrance QR, by scanning a shelf tag, or by hand
+  const whereText = document.getElementById("where-text");
+  const whereSub = document.getElementById("where-sub");
+  const whereSelect = document.getElementById("where-select");
+  const whereBar = document.getElementById("where-bar");
+  function renderWhere() {
+    const w = Omni.where.get();
+    const scanned = Omni.where.justScanned();
+    whereSelect.value = Omni.where.checkpoint();
+    whereBar.classList.toggle("just-scanned", !!scanned);
+    if (scanned === "master") {
+      whereText.textContent = "Welcome to ShopMart! You're at the Entrance.";
+      whereSub.textContent = "Search for what you want below. Every result shows how far it is from here, and its page gives step-by-step directions.";
+    } else if (scanned === "product") {
+      whereText.textContent = `You're near ${w.note || "this product"} (${w.label}).`;
+      whereSub.textContent = "Search for the next item: directions will start from here.";
+    } else if (w) {
+      whereText.textContent = `You're at ${w.label}.`;
+      whereSub.textContent = "Directions start from here. Scan the Entrance code or a shelf tag to update.";
+    } else {
+      whereText.textContent = "Where are you in the store?";
+      whereSub.textContent = "Scan the Entrance code or a shelf tag, or pick your spot. Until then directions start at the Entrance.";
+    }
+    if (products.length) render();
+  }
+  whereSelect.addEventListener("change", () => { Omni.where.set(whereSelect.value, "manual"); });
+  document.addEventListener("shopmart:where", renderWhere);
+
   searchForm.addEventListener("submit", (e) => { e.preventDefault(); clearTimeout(searchTimer); runSemanticSearch(); });
   searchInput.addEventListener("input", onSearchInput);
 
@@ -139,6 +172,7 @@
     }
     products = res.body.products || [];
     renderChips();
+    renderWhere();
     render();
     if (isSemanticQuery(searchInput.value.trim())) runSemanticSearch();
   })();
@@ -153,7 +187,7 @@
     log: document.getElementById("chat-log"), form: document.getElementById("chat-form"),
     input: document.getElementById("chat-input"), send: document.getElementById("chat-send"),
     suggestions: document.getElementById("suggestions"),
-    getPayload: () => ({ persona: assistantPersona.value }),
+    getPayload: () => ({ persona: assistantPersona.value, location: Omni.where.checkpoint() }),
     welcome: "Hi! I can find products, compare prices, check store policies and give you directions inside the store."
   });
 })();

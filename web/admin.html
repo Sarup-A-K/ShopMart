@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/store.css?v=12">
+  <link rel="stylesheet" href="/css/store.css?v=13">
   <style>
     .login-card { max-width: 380px; margin: 48px auto; padding: 24px; }
     .login-card h1 { font-size: 1.3rem; margin-bottom: 4px; }
@@ -66,8 +66,9 @@
     .price-tag { border: 1.5px dashed #9aa5b1; border-radius: 10px; padding: 12px; background: #fff; display: grid; grid-template-columns: 1fr auto; gap: 10px; break-inside: avoid; }
     .price-tag .t-brand { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
     .price-tag .t-name { font-size: 0.85rem; font-weight: 600; line-height: 1.3; margin: 2px 0 6px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .price-tag .t-price { font-size: 1.5rem; font-weight: 800; }
-    .price-tag .t-mrp { font-size: 0.75rem; color: var(--text-dim); }
+    .price-tag .t-code { font-size: 0.7rem; font-family: monospace; color: var(--text-muted); margin-top: 4px; }
+    .price-tag.master-tag { border-style: solid; border-color: #0a6ebd; background: #f2f8fd; }
+    .price-tag.master-tag .t-name { font-size: 1rem; }
     .price-tag .t-aisle { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
     .price-tag .t-qr { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .price-tag .t-qr img, .price-tag .t-qr canvas { width: 96px !important; height: 96px !important; }
@@ -99,7 +100,7 @@
     <!-- Login -->
     <section class="card login-card" id="login-view">
       <h1>Store admin</h1>
-      <p class="muted small">Sign in to manage prices and print QR price tags.</p>
+      <p class="muted small">Sign in to manage prices and print QR tags.</p>
       <form id="login-form">
         <label for="input-password" class="sr-only">Admin password</label>
         <input type="password" id="input-password" class="input" placeholder="Admin password" autocomplete="current-password" required>
@@ -111,7 +112,7 @@
     <section class="hidden" id="manager-view">
       <div class="tabs no-print" role="tablist">
         <button class="tab active" data-tab="prices-panel" role="tab">Prices</button>
-        <button class="tab" data-tab="tags-panel" role="tab">QR price tags</button>
+        <button class="tab" data-tab="tags-panel" role="tab">QR tags</button>
         <button class="tab" data-tab="images-panel" role="tab">🖼 Photos</button>
         <button class="tab" data-tab="content-panel" role="tab">✨ AI content</button>
         <button class="tab" data-tab="insights-panel" role="tab">✨ Shopper insights</button>
@@ -147,12 +148,12 @@
         <p class="muted small" style="margin-top: 10px;">Leave a competitor price empty if that store doesn't sell the product. For bulk edits, download the Excel file, change the price columns and upload it back. Rows are matched by QR code, and nothing is saved if any row has an error.</p>
       </div>
 
-      <!-- QR price tags -->
+      <!-- QR tags -->
       <div class="card panel hidden" id="tags-panel">
         <div class="toolbar no-print">
           <div>
-            <h2>QR price tags</h2>
-            <p class="muted small">Print these and place them on the shelves. Scanning a tag with any phone camera opens that product's page.</p>
+            <h2>QR tags</h2>
+            <p class="muted small">Print these. The <strong>Master QR</strong> goes at the entrance: it opens the store and sets the shopper's location to the Entrance. Each <strong>shelf tag</strong> goes on its product: it opens that product's page with today's price and sets the shopper's location to that aisle. Tags show no prices, so they never go out of date.</p>
           </div>
           <div class="toolbar-actions">
             <button class="btn btn-cta" id="btn-print">🖨 Print tags</button>
@@ -256,7 +257,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <script src="/js/common.js?v=3"></script>
+  <script src="/js/common.js?v=4"></script>
   <script src="/js/admin.js?v=8"></script>
   <script src="/js/admin_ai.js?v=1"></script>
   <script src="/js/admin_images.js?v=3"></script>

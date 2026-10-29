@@ -175,5 +175,11 @@ const Wayfinding = (() => {
     update();
   }
 
-  return { init };
+  /** Walking distance in metres from a checkpoint ('entrance' or 'aisle-N') to a product, or null. */
+  function distance(product, checkpoint) {
+    const route = computeRoute(product, checkpointCoords(checkpoint));
+    return route ? route.meters : null;
+  }
+
+  return { init, distance };
 })();

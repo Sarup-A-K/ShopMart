@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/store.css?v=12">
+  <link rel="stylesheet" href="/css/store.css?v=13">
 </head>
 <body>
 
@@ -35,7 +35,7 @@
     <p class="muted" id="loading">Loading product…</p>
 
     <div class="empty card hidden" id="not-found">
-      <h2>We couldn't find that price tag</h2>
+      <h2>We couldn't find that tag</h2>
       <p class="muted">The tag code may be wrong or the product is no longer sold here.</p>
       <p style="margin-top: 14px;"><a class="btn btn-cta" href="/">Browse all products</a></p>
     </div>
@@ -75,6 +75,7 @@
           <section class="card panel" id="find" aria-labelledby="find-title">
             <h2 id="find-title">Find it in this store</h2>
             <span class="aisle-badge" id="w-aisle"></span>
+            <p class="muted small where-note" id="w-where-note"></p>
             <div class="near-row">
               <label for="w-near">I'm near:</label>
               <select id="w-near">
@@ -155,7 +156,7 @@
   <div class="modal hidden" id="scan-modal" role="dialog" aria-modal="true" aria-labelledby="scan-title">
     <div class="modal-box">
       <div class="modal-top">
-        <h2 id="scan-title">Scan a price tag</h2>
+        <h2 id="scan-title">Scan a QR tag</h2>
         <button class="icon-btn" id="scan-close" aria-label="Close">×</button>
       </div>
       <div class="scan-view" id="scan-view">
@@ -174,9 +175,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script src="/js/qrEngine.js?v=1"></script>
-  <script src="/js/common.js?v=3"></script>
+  <script src="/js/common.js?v=4"></script>
   <script src="/js/chat.js?v=3"></script>
-  <script src="/js/wayfinding.js?v=2"></script>
-  <script src="/js/product.js?v=7"></script>
+  <script src="/js/wayfinding.js?v=3"></script>
+  <script src="/js/product.js?v=8"></script>
 </body>
 </html>

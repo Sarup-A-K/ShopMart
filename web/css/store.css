@@ -287,3 +287,12 @@ select:focus, .input:focus { outline: 2px solid #9fd3c4; border-color: var(--bra
 }
 
 .image-note { margin: 8px 4px 0; text-align: center; }
+
+/* "You are here" bar on the home page and the location note on product pages */
+.where-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 16px; margin-bottom: 16px; border-left: 4px solid #0a6ebd; }
+.where-bar .where-main { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 260px; }
+.where-bar .where-main > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.where-bar .where-pin { font-size: 1.4rem; }
+.where-bar .where-pick { display: flex; align-items: center; gap: 6px; }
+.where-bar.just-scanned { border-left-color: #0b8a6f; background: #eefaf6; }
+.where-note { margin: 4px 0 8px; }

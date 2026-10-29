@@ -319,7 +319,7 @@ def _named_products(question):
     return found
 
 
-def plan_calls(question, product):
+def plan_calls(question, product, location=None):
     """[(tool_name, args)] that can be decided without the model, or []."""
     named = _named_products(question)
     specific = [p for p, distinct, _ in named if distinct]
@@ -333,12 +333,17 @@ def plan_calls(question, product):
         if len(codes) >= 2:
             return [("compare_products", {"qr_codes": codes})]
     if DIRECTIONS_RE.search(question) and len(specific) == 1:
-        origin = "entrance"
         m = re.search(r"from aisle\s*(\d)", question, re.I)
         if m:
             origin = f"aisle-{m.group(1)}"
+        elif re.search(r"\bfrom (?:the )?entrance\b", question, re.I):
+            origin = "entrance"
+        elif location:                       # the scanned tag says where the shopper is
+            origin = location
         elif product and re.search(r"\bfrom (?:here|this)\b", question, re.I):
             origin = (product.get("location") or {}).get("aisle") or "entrance"
+        else:
+            origin = "entrance"
         return [("get_directions", {"qr_code": specific[0]["qrCode"], "from_checkpoint": origin})]
     return []
 
@@ -360,7 +365,7 @@ def needs_agent(question, product):
 # The loop
 # ---------------------------------------------------------------------------
 
-def system_prompt(persona, product):
+def system_prompt(persona, product, location=None):
     prompt = (
         f"You are ShopMart, the in-store shopping assistant of an Indian mall, talking to a '{persona}'.\n"
         "Rules:\n"
@@ -374,14 +379,19 @@ def system_prompt(persona, product):
     )
     catalogue = store_db.list_products()[:40]    # a compact index; with a large catalogue the search tool is the way in
     prompt += "\n\nCatalogue (pass the product name to the tools):\n" + "\n".join(f"- {p['name']}" for p in catalogue)
+    if location:
+        label = "the Entrance" if location == "entrance" else f"Aisle {location.split('-')[-1]}"
+        prompt += (f"\n\nThe shopper is currently at {label} (from the tag they scanned). Directions start there unless they name another "
+                   f"starting point: call get_directions with from_checkpoint='{location}'. List the steps from the tool result and do not estimate walking time.")
     if product:
         aisle = (product.get("location") or {}).get("aisle") or ""
         num = re.search(r"\d+", aisle)
-        if num:
+        if num and not location:
             prompt += (f"\n\nThe shopper is standing in {aisle} next to this product. When they ask for directions 'from here', call "
                        f"get_directions with from_checkpoint='aisle-{num.group(0)}'. When you give directions, list the steps from the tool result "
-                       "and do not estimate walking time. Words like 'this' or 'it' mean this product, so include its qr_code "
-                       f"({product['qrCode']}) whenever you compare it with something else.")
+                       "and do not estimate walking time.")
+        prompt += (f"\n\nWords like 'this' or 'it' mean this product, so include its qr_code ({product['qrCode']}) "
+                   "whenever you compare it with something else.")
         prompt += f"\n\nProduct the shopper is viewing (qr_code {product['qrCode']}):\n{assistant.build_product_context(product)}"
     return prompt
 
@@ -407,21 +417,28 @@ def _fallback_prompt(question, persona):
     return text, products, assistant.sources_for(policies)
 
 
-def run_agent(question, persona="General Buyer", history=None, product=None, max_rounds=MAX_ROUNDS, model=None):
-    messages = [{"role": "system", "content": system_prompt(persona, product)}]
+def _note_route(route_facts, tool_name, result):
+    """Keep the walking steps of a get_directions call, so a corrected answer can still include them."""
+    if tool_name == "get_directions" and isinstance(result, dict) and result.get("steps"):
+        route_facts.append(f"Directions to {result.get('product')}: " + " ".join(result["steps"]))
+
+
+def run_agent(question, persona="General Buyer", history=None, product=None, max_rounds=MAX_ROUNDS, model=None, location=None):
+    messages = [{"role": "system", "content": system_prompt(persona, product, location)}]
     messages += assistant.clean_history(history)
     messages.append({"role": "user", "content": question.strip()})
 
-    tools_used, products, sources = [], [], []
+    tools_used, products, sources, route_facts = [], [], [], []
     final_text, seen_calls, rounds = "", set(), 0
 
-    planned = plan_calls(question, product)
+    planned = plan_calls(question, product, location)
     if planned:
         messages.append({"role": "assistant", "content": "", "tool_calls": [
             {"function": {"name": name, "arguments": args}} for name, args in planned]})
         for name, args in planned:
             seen_calls.add((name, json.dumps(args, sort_keys=True)))
             result, label, qrs, srcs = execute_tool(name, args)
+            _note_route(route_facts, name, result)
             tools_used.append(name)
             yield {"event": "tool", "name": name, "args": args, "label": label}
             products += [q for q in qrs if q not in products]
@@ -464,6 +481,7 @@ def run_agent(question, persona="General Buyer", history=None, product=None, max
             else:
                 seen_calls.add(key)
                 result, label, qrs, srcs = execute_tool(c["name"], c["args"])
+                _note_route(route_facts, c["name"], result)
                 tools_used.append(c["name"])
                 yield {"event": "tool", "name": c["name"], "args": c["args"], "label": label}
             products += [q for q in qrs if q not in products]
@@ -489,5 +507,5 @@ def run_agent(question, persona="General Buyer", history=None, product=None, max
             final_text += piece
             yield {"event": "token", "text": piece}
 
-    yield {"event": "done", "tools": tools_used, "products": products, "sources": sources,
+    yield {"event": "done", "tools": tools_used, "products": products, "sources": sources, "route_facts": route_facts,
            "fallback": fallback, "rounds": rounds, "answer": final_text.strip()}

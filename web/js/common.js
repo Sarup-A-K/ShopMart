@@ -1,6 +1,6 @@
 /**
  * Shared helpers for the ShopMart pages: API calls, formatting,
- * QR link parsing and the "Scan a price tag" modal in the header.
+ * QR link parsing and the "Scan a QR tag" modal in the header.
  */
 const Omni = (() => {
   async function api(path, options = {}) {
@@ -42,6 +42,59 @@ const Omni = (() => {
     return `/p/${encodeURIComponent(qrCode)}`;
   }
 
+  // ---- Where the shopper is ----
+  // The Entrance (master) QR sets it to the Entrance; a shelf tag sets it to that product's aisle (the product page does this
+  // when the tag's link carries ?scan=1); the shopper can also pick it by hand. Directions everywhere start from it.
+  const WHERE_KEY = "shopmart_where";
+  const WHERE_TTL_MS = 4 * 60 * 60 * 1000;
+  let memoryWhere = null;                     // used when browser storage is blocked
+
+  function readWhere() {
+    let value = memoryWhere;
+    try { const raw = localStorage.getItem(WHERE_KEY); if (raw) value = JSON.parse(raw); } catch (e) { /* storage blocked */ }
+    return value && Date.now() - value.at < WHERE_TTL_MS ? value : null;
+  }
+
+  function setWhere(checkpoint, source, note) {
+    const n = parseInt(String(checkpoint).replace(/\D/g, ""), 10);
+    const cp = n >= 1 && n <= 6 ? `aisle-${n}` : "entrance";
+    const value = { checkpoint: cp, label: cp === "entrance" ? "Entrance" : `Aisle ${n}`, source, note: note || "", at: Date.now() };
+    memoryWhere = value;
+    try { localStorage.setItem(WHERE_KEY, JSON.stringify(value)); } catch (e) { /* storage blocked */ }
+    document.dispatchEvent(new CustomEvent("shopmart:where", { detail: value }));
+    return value;
+  }
+
+  const where = {
+    get: readWhere,
+    set: setWhere,
+    checkpoint: () => (readWhere() || {}).checkpoint || "entrance",
+    /** "master" or "product" if the shopper scanned a tag in the last 30 seconds (used for the welcome line), else "". */
+    justScanned: () => { const v = readWhere(); return v && v.source !== "manual" && Date.now() - v.at < 30000 ? v.source : ""; }
+  };
+
+  // The master QR opens "/?at=entrance"
+  (function readEntranceLink() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("at") !== "entrance") return;
+    setWhere("entrance", "master");
+    params.delete("at");
+    const rest = params.toString();
+    try { history.replaceState(null, "", window.location.pathname + (rest ? `?${rest}` : "") + window.location.hash); } catch (e) { /* ignore */ }
+  })();
+
+  /** Where to go for scanned or typed text: the home page for the master QR, otherwise the product page (marked as scanned). */
+  function tagTarget(text) {
+    const raw = String(text || "").trim();
+    if (/^(master|entrance)$/i.test(raw)) return "/?at=entrance";
+    try {
+      const url = new URL(raw);
+      if (url.searchParams.get("at") === "entrance" && !/\/p\//.test(url.pathname)) return "/?at=entrance";
+    } catch (e) { /* not a URL */ }
+    const code = codeFromQR(raw);
+    return code ? `${productUrl(code)}?scan=1` : "";
+  }
+
   /**
    * QR codes contain a product link like http://192.168.43.10:8000/p/item-1.
    * Older tags may contain just the code ("item-1"); both are accepted.
@@ -69,12 +122,12 @@ const Omni = (() => {
 
     window.qrEngine.init(video, canvas, (data) => {
       if (handled) return;
-      const code = codeFromQR(data);
-      if (!code) return;
+      const target = tagTarget(data);
+      if (!target) return;
       handled = true;
-      msg.textContent = `Found ${code}, opening…`;
+      msg.textContent = target.startsWith("/?at=") ? "Found the Entrance code, opening…" : `Found ${codeFromQR(data)}, opening…`;
       window.qrEngine.stopCamera();
-      window.location.href = productUrl(code);
+      window.location.href = target;
     });
 
     async function open() {
@@ -89,7 +142,7 @@ const Omni = (() => {
         return;
       }
       view.classList.remove("hidden");
-      msg.textContent = "Point your camera at the QR code on the price tag.";
+      msg.textContent = "Point your camera at the QR code on the tag (a shelf tag, or the Entrance code).";
       const started = await window.qrEngine.startCamera();
       if (!started) {
         view.classList.add("hidden");
@@ -110,12 +163,12 @@ const Omni = (() => {
 
     document.getElementById("manual-form").addEventListener("submit", (e) => {
       e.preventDefault();
-      const code = codeFromQR(document.getElementById("manual-code").value);
-      if (code) window.location.href = productUrl(code);
+      const target = tagTarget(document.getElementById("manual-code").value);
+      if (target) window.location.href = target;
     });
   }
 
   document.addEventListener("DOMContentLoaded", initScanner);
 
-  return { api, escapeHtml, inr, priceHtml, discountPercent, productUrl, codeFromQR, imageFallback };
+  return { api, escapeHtml, inr, priceHtml, discountPercent, productUrl, codeFromQR, imageFallback, where, tagTarget };
 })();

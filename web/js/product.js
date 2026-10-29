@@ -155,11 +155,30 @@
 
     const loc = product.location || {};
     $("w-aisle").textContent = `📍 ${loc.aisle || "Ask staff"}${loc.section ? ` · ${loc.section}` : ""}`;
-    Wayfinding.init({ product, canvas: $("w-map"), select: $("w-near"), stepsEl: $("w-steps"), summaryEl: $("w-summary") });
+    // A scanned shelf tag (link ends in ?scan=1) tells us the shopper is at this product's aisle
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("scan")) {
+      Omni.where.set(loc.aisle || "entrance", "product", product.name);
+      params.delete("scan");
+      const rest = params.toString();
+      try { history.replaceState(null, "", window.location.pathname + (rest ? `?${rest}` : "")); } catch (e) { /* ignore */ }
+    }
+    const nearSelect = $("w-near");
+    nearSelect.value = Omni.where.checkpoint();
+    function showWhereNote() {
+      const w = Omni.where.get();
+      $("w-where-note").textContent = !w ? "Not scanned yet: scan the Entrance QR or a shelf tag, or pick where you are."
+        : w.source === "master" ? "You scanned the Entrance code, so directions start at the Entrance."
+        : w.source === "product" ? `You scanned the tag of ${w.note}, so directions start from ${w.label}.`
+        : `Directions start from the place you picked (${w.label}).`;
+    }
+    nearSelect.addEventListener("change", () => { Omni.where.set(nearSelect.value, "manual"); showWhereNote(); });
+    showWhereNote();
+    Wayfinding.init({ product, canvas: $("w-map"), select: nearSelect, stepsEl: $("w-steps"), summaryEl: $("w-summary") });
 
     OmniChat.create({
       log: $("chat-log"), form: $("chat-form"), input: $("chat-input"), send: $("chat-send"), suggestions: $("suggestions"),
-      getPayload: () => ({ qr_code: product.qrCode, product_name: product.name, persona: personaSelect.value }),
+      getPayload: () => ({ qr_code: product.qrCode, product_name: product.name, persona: personaSelect.value, location: Omni.where.checkpoint() }),
       welcome: `Hi! Ask me anything about the ${product.brand} ${product.category ? product.category.toLowerCase() : "product"}: price, specs, how it compares with other items, or where to find it.`
     });
     loadInsight();

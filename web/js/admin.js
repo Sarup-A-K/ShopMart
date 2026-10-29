@@ -1,5 +1,5 @@
 /**
- * ShopMart Admin: log in, edit prices in a table or via Excel, and print QR price tags.
+ * ShopMart Admin: log in, edit prices in a table or via Excel, and print QR tags.
  */
 (() => {
   const API = ""; // same origin: the backend serves this page
@@ -307,7 +307,7 @@
     });
   });
 
-  // ---- QR price tags ----
+  // ---- QR tags ----
   const baseUrlInput = $("input-base-url");
   const tagSheet = $("tag-sheet");
   const urlWarning = $("url-warning");
@@ -343,28 +343,44 @@
     }
     await noteAddressChange(base);
     tagSheet.innerHTML = "";
-    products.forEach(p => {
-      const url = `${base}/p/${encodeURIComponent(p.qrCode)}`;
+
+    function addTag({ html, url, hint, className }) {
       const tag = document.createElement("div");
-      tag.className = "price-tag";
-      const loc = p.location || {};
-      tag.innerHTML = `
-        <div>
-          <div class="t-brand">${Omni.escapeHtml(p.brand)}</div>
-          <div class="t-name">${Omni.escapeHtml(p.name)}</div>
-          <div class="t-price">₹${Omni.inr(p.price)}</div>
-          ${p.originalPrice && p.originalPrice > p.price ? `<div class="t-mrp">M.R.P. <s>₹${Omni.inr(p.originalPrice)}</s></div>` : ""}
-          ${loc.aisle ? `<div class="t-aisle">${Omni.escapeHtml(loc.aisle)} · ${Omni.escapeHtml(loc.section || "")}</div>` : ""}
-        </div>
-        <div class="t-qr">
-          <div class="qr"></div>
-          <div class="t-hint">Scan to compare online prices &amp; ask AI</div>
-        </div>`;
+      tag.className = `price-tag ${className || ""}`.trim();
+      tag.innerHTML = `${html}<div class="t-qr"><div class="qr"></div><div class="t-hint">${hint}</div></div>`;
       tagSheet.appendChild(tag);
       if (window.QRCode) {
         new window.QRCode(tag.querySelector(".qr"), { text: url, width: 192, height: 192, correctLevel: window.QRCode.CorrectLevel.M });
       }
       tag.title = url;
+    }
+
+    // The master QR: goes on the door or the entrance board. It opens the store's home page and tells the site the shopper is at the Entrance.
+    addTag({
+      className: "master-tag",
+      url: `${base}/?at=entrance`,
+      hint: "Scan when you walk in",
+      html: `<div>
+          <div class="t-brand">ShopMart</div>
+          <div class="t-name">Welcome! Scan to start</div>
+          <div class="t-aisle">Opens the store, finds products and shows the way from the Entrance.</div>
+          <div class="t-aisle"><strong>Master QR · Entrance</strong></div>
+        </div>`
+    });
+
+    // Shelf tags carry no prices (prices change; the page shows today's price). ?scan=1 tells the site where the shopper is standing.
+    products.forEach(p => {
+      const loc = p.location || {};
+      addTag({
+        url: `${base}/p/${encodeURIComponent(p.qrCode)}?scan=1`,
+        hint: "Scan for today's price, directions &amp; AI help",
+        html: `<div>
+          <div class="t-brand">${Omni.escapeHtml(p.brand)}</div>
+          <div class="t-name">${Omni.escapeHtml(p.name)}</div>
+          ${loc.aisle ? `<div class="t-aisle">${Omni.escapeHtml(loc.aisle)} · ${Omni.escapeHtml(loc.section || "")}</div>` : ""}
+          <div class="t-code">${Omni.escapeHtml(p.qrCode)}</div>
+        </div>`
+      });
     });
   }
 
