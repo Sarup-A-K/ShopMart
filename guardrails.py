@@ -130,6 +130,13 @@ def _has_shopping_signal(text):
     return False
 
 
+GRANT_SIGNAL = re.compile(
+    r"\b(give|giving|lower|reduce|cut|knock|waive|drop|slash|shave|match|negotiat\w*|bargain|haggle|discount me|"
+    r"make it|sell (?:it|this|them) to me|free|manager|owner|friend|loyal\w*|approve|special (?:price|deal|rate)|off|"
+    r"lowest you|best you can|round\w*|staff|employee|cousin|brother|sister|uncle|aunt|relative|last price|final price|go down)\b|"
+    r"[%₹]|\bfor (?:rs\.?|inr)?\s?\d|\bonly\s+\d", _I)
+
+
 def check_input_llm(question, context=""):
     """
     Return {"category", "reply"} if the classifier flags the message, else None (also None if the model is unavailable).
@@ -147,6 +154,10 @@ def check_input_llm(question, context=""):
         # The 3B classifier called legitimate shopping questions off-topic ("Is the Bata sandal cheaper than this?"). Off-topic is the
         # least harmful category (the answering model deflects on its own), so it only counts when there is no shopping signal at all.
         return None
+    if category == "negotiation" and not GRANT_SIGNAL.search(question):
+        # "Is this a good deal?" / "Is the price fair?" ask for an opinion, not for a price cut. The 3B classifier confused them,
+        # and a message with none of the words people use to ask for a better price is never a negotiation attempt.
+        return None
     return {"category": category, "reply": REPLIES[category]} if category else None
 
 
@@ -155,7 +166,9 @@ def check_input_llm(question, context=""):
 # ---------------------------------------------------------------------------
 
 RUPEE_RE = re.compile(r"(?:₹|\bRs\.?|\bINR)\s?(\d[\d,]*(?:\.\d+)?)", _I)
-AISLE_RE = re.compile(r"\bAisles?\s+((?:\d\s*(?:,|and|&|or|to|-)?\s*)+)", _I)
+# "Aisle 1", "Aisles 1 and 2". The digits must be joined by a separator, otherwise "Aisle 1\n2. Next item" in a numbered list
+# would be read as aisles 1 and 2.
+AISLE_RE = re.compile(r"\bAisles?\s+(\d+(?:[ \t]*(?:,|and|&|or|to|-)[ \t]*\d+)*)", _I)
 PHRASE_RE = re.compile(r"[A-Z][A-Za-z0-9'’\-]*(?:\s+[A-Z0-9][A-Za-z0-9'’\-]*)+")
 NUMBER_RE = re.compile(r"\d[\d,]*(?:\.\d+)?")
 # Time claims ("7 days", "5 to 7 working days", "1 year", "42 hours"): the number AND its unit must be stated in the
@@ -294,7 +307,7 @@ def verify_answer(answer, allowed):
             issues.append(f"₹{m.group(1)} is not a price from the store data")
 
     for m in AISLE_RE.finditer(answer):
-        for d in re.findall(r"\d", m.group(1)):
+        for d in re.findall(r"\d+", m.group(1)):
             checked += 1
             if int(d) not in allowed["aisles"]:
                 issues.append(f"Aisle {d} is not where these products are")

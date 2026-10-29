@@ -291,6 +291,58 @@ def _mentions_other_product(question, product):
     return False
 
 
+# ---------------------------------------------------------------------------
+# Obvious tool calls made in code
+# ---------------------------------------------------------------------------
+# A 3B model often picks the wrong arguments for the two most common shop-floor questions (it compared the wrong pair of shoes,
+# or walked "from the entrance" when the shopper was standing in an aisle). When the question names its products, the call is
+# made here and its result is handed to the model, which only has to put it into words. Anything less clear goes to the model.
+
+DIRECTIONS_RE = re.compile(r"\b(how (?:do|can|should) i (?:get|go|reach)|directions?|way to|take me|navigate|where (?:is|are|can i find|do i find))\b", re.I)
+COMPARE_RE = re.compile(r"\b(cheaper|cheapest|costlier|compare|comparison|versus|vs|difference|more expensive|which is better)\b", re.I)
+THIS_RE = re.compile(r"\b(this|it|these|that one)\b", re.I)
+NAME_NOISE = {"men", "mens", "women", "womens", "shoe", "shoes", "running", "sneaker", "sneakers", "shirt", "jeans", "with", "wireless",
+              "bluetooth", "regular", "fit", "slim", "black", "navy", "blue", "green", "grey", "gray", "white", "silver", "pink",
+              "ear", "earbuds", "headphones", "speaker", "portable", "truly", "waterproof", "set", "suit", "the", "and"}
+
+
+def _named_products(question):
+    """Products the question names by a model word or brand: [(product, distinctive_words_hit)]."""
+    q = set(re.findall(r"[a-z0-9]+", question.lower()))
+    brands = {(p.get("brand") or "").lower() for p in store_db.list_products()}
+    found = []
+    for p in store_db.list_products():
+        words = set(re.findall(r"[a-z0-9]{3,}", f"{p.get('brand') or ''} {p['name']}".lower())) - NAME_NOISE
+        hits = words & q
+        if hits:
+            found.append((p, hits - brands, len(hits)))
+    return found
+
+
+def plan_calls(question, product):
+    """[(tool_name, args)] that can be decided without the model, or []."""
+    named = _named_products(question)
+    specific = [p for p, distinct, _ in named if distinct]
+    if product:
+        specific = [p for p in specific if p["qrCode"] != product["qrCode"]]
+    if COMPARE_RE.search(question):
+        codes = [p["qrCode"] for p in specific]
+        if product and THIS_RE.search(question):
+            codes.insert(0, product["qrCode"])
+        codes = list(dict.fromkeys(codes))
+        if len(codes) >= 2:
+            return [("compare_products", {"qr_codes": codes})]
+    if DIRECTIONS_RE.search(question) and len(specific) == 1:
+        origin = "entrance"
+        m = re.search(r"from aisle\s*(\d)", question, re.I)
+        if m:
+            origin = f"aisle-{m.group(1)}"
+        elif product and re.search(r"\bfrom (?:here|this)\b", question, re.I):
+            origin = (product.get("location") or {}).get("aisle") or "entrance"
+        return [("get_directions", {"qr_code": specific[0]["qrCode"], "from_checkpoint": origin})]
+    return []
+
+
 def needs_agent(question, product):
     """
     Route a question: the agent for anything that involves other products, search or directions; the single-call
@@ -323,6 +375,13 @@ def system_prompt(persona, product):
     catalogue = store_db.list_products()[:40]    # a compact index; with a large catalogue the search tool is the way in
     prompt += "\n\nCatalogue (pass the product name to the tools):\n" + "\n".join(f"- {p['name']}" for p in catalogue)
     if product:
+        aisle = (product.get("location") or {}).get("aisle") or ""
+        num = re.search(r"\d+", aisle)
+        if num:
+            prompt += (f"\n\nThe shopper is standing in {aisle} next to this product. When they ask for directions 'from here', call "
+                       f"get_directions with from_checkpoint='aisle-{num.group(0)}'. When you give directions, list the steps from the tool result "
+                       "and do not estimate walking time. Words like 'this' or 'it' mean this product, so include its qr_code "
+                       f"({product['qrCode']}) whenever you compare it with something else.")
         prompt += f"\n\nProduct the shopper is viewing (qr_code {product['qrCode']}):\n{assistant.build_product_context(product)}"
     return prompt
 
@@ -355,6 +414,19 @@ def run_agent(question, persona="General Buyer", history=None, product=None, max
 
     tools_used, products, sources = [], [], []
     final_text, seen_calls, rounds = "", set(), 0
+
+    planned = plan_calls(question, product)
+    if planned:
+        messages.append({"role": "assistant", "content": "", "tool_calls": [
+            {"function": {"name": name, "arguments": args}} for name, args in planned]})
+        for name, args in planned:
+            seen_calls.add((name, json.dumps(args, sort_keys=True)))
+            result, label, qrs, srcs = execute_tool(name, args)
+            tools_used.append(name)
+            yield {"event": "tool", "name": name, "args": args, "label": label}
+            products += [q for q in qrs if q not in products]
+            sources += [s for s in srcs if s not in sources]
+            messages.append({"role": "tool", "tool_name": name, "content": json.dumps(result, ensure_ascii=False)[:3500]})
 
     for rounds in range(1, max_rounds + 1):
         text_parts, raw_calls, buffering, started = [], [], False, False

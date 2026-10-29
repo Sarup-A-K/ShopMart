@@ -121,7 +121,7 @@ const OmniChat = (() => {
 
     async function decorate(bubble, info) {
       if (info.corrected) {
-        bubble.appendChild(el("div", "verify warn", "⚠ Corrected using store data"));
+        bubble.appendChild(el("div", "verify ok", "✓ Checked against store data (the first draft had an error and was corrected)"));
       } else if (info.verified && info.facts_checked > 0) {
         bubble.appendChild(el("div", "verify ok", "✓ Prices and locations checked against store data"));
       }

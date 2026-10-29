@@ -50,7 +50,8 @@ def build_product_context(product):
         if product["price"] >= EMI_MIN_PRICE:
             lines.append("EMI: eligible (no-cost EMI for 3 or 6 months with selected credit cards)")
         else:
-            lines.append(f"EMI: not available for this product (its price is below the ₹{EMI_MIN_PRICE:,} minimum)")
+            lines.append(f"EMI: NOT available for this product (its price is below the ₹{EMI_MIN_PRICE:,} minimum). "
+                         "Tell the shopper EMI is not available; they can pay by UPI, debit or credit card with no extra charge.")
     priced = [c for c in (product.get("competitors") or []) if isinstance(c.get("price"), (int, float))]
     if priced:
         lines.append("Online prices: " + ", ".join(f"{c['name']} ₹{c['price']:.0f}" for c in priced))
