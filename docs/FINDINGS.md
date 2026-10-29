@@ -102,3 +102,13 @@ Why: the generated illustration cards were honest but looked unfinished, and a s
 - **The golden set was rewritten, not just edited.** Same case types and counts, written from the catalogue data without looking at model outputs. Policy and safety cases are unchanged, except one phrasing that named a removed product. The new run (`20261028-172320`) has the same ranking of techniques, with the full system at 92.9% by the automatic check and about 90% by my own reading.
 - **New failures that the manual read found** (not caught by the automatic check): competitor prices swapped in a deal answer, a women's sneaker listed as a men's, and a muddled EMI sentence.
 - **Copyright:** the photos belong to the brands, so they are kept in `uploads/` and are not committed.
+
+## Stage 10: making the demo reliable
+
+A walk through every planned demo question (29 Oct 2026) found problems that the evaluation sets had not covered:
+
+- "Is this a good deal?" was refused as price negotiation. The 3B classifier confused an opinion question with a request for a discount. Fix: its negotiation label only counts when the message contains a word that asks for a price to be granted (give, lower, round, staff, lowest you can go...). All three labelled sets still pass, and the legitimate-question over-blocking measured earlier went to 0.
+- The answer sometimes changed in front of the shopper: it streamed, failed the fact-check, and was replaced. The cause of most failures was the checker itself reading "Aisle 1 / 2. Redmi" in a numbered list as aisles 1 and 2. Fix: aisle numbers must be joined by a separator; and the server now sends only the checked answer.
+- "Best mobiles" left out the iPhone: search covered all Electronics (headphones took slots) and the model picked the cheapest. Fix: search restricts to the shelf the query names, and recommendation answers must cover every product.
+- Directions had no steps and "this vs the Campus shoes" compared the wrong pair: the model picked bad tool arguments. Fix: when the question names its products, the call is made in code and the model only words the result.
+- Re-run (`20261029-074632`): same 92.9% automatic accuracy, first-draft errors down from 31.0% to 11.9%, no legitimate question wrongly blocked. A manual read still finds about 6 flawed answers in 33 (see `docs/HOW_IT_WORKS.md`); the clearest one quotes the MRP as the price.

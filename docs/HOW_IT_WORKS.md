@@ -213,9 +213,27 @@ The full log with numbers is in [`FINDINGS.md`](FINDINGS.md). Summary table:
 **Limits to state openly:** small sample (one answer is about 3 percentage points), exact-match checks can mark an unusual but correct phrasing wrong, the hallucination checker is the same one used at run time (so it only sees what it can see), and the judge shares the model's biases. Results are indicative, not a benchmark.
 
 <!-- RESULTS:START -->
-### Results on the 19-product catalogue with real photos (latest; `llama3.2` 3B, GTX 1650)
+### Results after the demo-readiness fixes (latest; `llama3.2` 3B, GTX 1650, 19 products)
 
-The catalogue was rebuilt so every product has a real, downloadable photo (6 -> 20 -> 19 products; 3-4 per aisle). The golden set was rewritten for the new products (42 answer cases, 17 search queries). **These numbers are not directly comparable with the 20-product run below**, because the questions and products differ. Run: **`eval/results/20261028-172320` (`latest`, `latest-final`)**.
+Same 19-product catalogue and the same 42 answer cases as the run below; what changed is the app: the guard's negotiation flag now needs a request to be granted a price, the fact-check no longer reads numbered lists as aisles, directions and "this vs X" comparisons are decided in code when the question names its products, tool results carry ready-formatted prices, and the answer is shown only after the fact-check. Run: **`eval/results/20261029-074632` (`latest`, `latest-final`)**.
+
+| Configuration | Correct answers | Hallucination before correction | Hallucinated facts (final) | Median latency |
+|---|---|---|---|---|
+| Model alone (no store data) | 14.3% | 85.7% | 85.7% | 1.5 s |
+| + product facts in the prompt | 52.4% | 35.7% | 35.7% | 2.0 s |
+| + RAG (store policies) | 66.7% | 26.2% | 26.2% | 1.9 s |
+| + tool-calling agent | 90.5% | 19.0% | 19.0% | 7.1 s |
+| **Full system** (+ guardrails, fact-check, router) | **92.9%** | **11.9%** | **2.4%** | **4.2 s** |
+
+- **What improved:** the share of first drafts that the fact-check had to correct fell from 31.0% to 11.9% (ready-formatted prices and code-made tool calls); semantic search recall@3 rose to 95.6% vs 77.8% for keyword matching; held-out attacks are still blocked 11/11 (rules alone 18.2%) and now **0 of 9** legitimate held-out questions and **0 of 6** legitimate design-set questions are wrongly refused (before: 1 of 9 and 2 of 6). Median latency of the full system 4.2 s (was 4.8 s). Insights JSON 38/38 valid.
+- **What did not change:** 92.9% automatic accuracy is the same as before. Different cases fail, which shows the noise of a 42-case set (one answer is 2.4 points).
+- **Failures by the automatic check (3):** `spec_14` (safe fallback line instead of an answer about the outsole), `agent_compare_cheaper` (right product and aisle, but no price, so the checker expects more), and `agent_iphone`.
+- **My manual read of the 33 spec, deal, policy and agent answers found 6 real flaws:** `agent_iphone` says the iPhone costs **₹59,900, which is its MRP**, not ₹45,599 (the fact-check cannot tell the MRP from the price because both are valid amounts for that product); `deal_9` attributes ₹2,099 to Flipkart (it is Amazon's; Flipkart is ₹1,999); `deal_1` ends with a garbled Croma sentence; `agent_two_headphones` claims there is no information about the Sony headphones; `agent_sneakers` writes "Campus AZURA Women's Sneakers ... is not a men's sneaker, I will replace it" and adds a running shoe; and `spec_14`. That is **27 of 33 right (about 82%)**. This is the author's reading, not an independent rater. The honest summary: the automatic number says 93%, a careful read says low 80s, and the main weakness is still the 3B model's wording of comparisons and of lists.
+- **Known gap to fix next:** the fact-check should also check *which* kind of price is claimed (store price vs MRP vs a named competitor), not only whether the number exists for the product.
+
+### Earlier run on the 19-product catalogue with real photos (`20261028-172320`)
+
+The catalogue was rebuilt so every product has a real, downloadable photo (6 -> 20 -> 19 products; 3-4 per aisle). The golden set was rewritten for the new products (42 answer cases, 17 search queries). **These numbers are not directly comparable with the 20-product run below**, because the questions and products differ. Run: `eval/results/20261028-172320`.
 
 | Configuration | Correct answers | Hallucinated facts (final) | Median latency |
 |---|---|---|---|
