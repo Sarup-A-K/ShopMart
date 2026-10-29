@@ -53,7 +53,10 @@ def _regenerate(question, persona, products, issues, model=None):
     facts = "\n\n".join(assistant.build_product_context(p) for p in products) or "(no product facts available)"
     system = (
         f"You are ShopMart, an in-store shopping assistant talking to a '{persona}'. Answer in 2-4 short sentences using ONLY the "
-        "facts below. Use ₹, never '$'. Do not mention any product, price or aisle that is not in the facts.\n\nFacts:\n" + facts
+        "facts below. Use ₹, never '$'. Do not mention any product, price or aisle that is not in the facts."
+        + (" If the shopper asks for a recommendation, mention EVERY product below with its price and aisle, then say which one you would pick and why."
+           if len(products) > 1 else "")
+        + "\n\nFacts:\n" + facts
     )
     note = "Your previous answer contained errors: " + "; ".join(issues) + ". Answer again correctly."
     return llm.chat([{"role": "system", "content": system}, {"role": "user", "content": f"{question.strip()}\n\n{note}"}],
@@ -89,7 +92,8 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
             kind = ev.pop("event")
             if kind == "token":
                 parts.append(ev["text"])
-                yield "token", ev
+                if not guard:
+                    yield "token", ev
             elif kind == "tool":
                 yield "tool", ev
             elif kind == "done":
@@ -100,13 +104,15 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
         for kind, payload in _stream_single(used_mode, product, persona, history, question, model):
             if kind == "token":
                 parts.append(payload)
-                yield "token", {"text": payload}
+                if not guard:
+                    yield "token", {"text": payload}
             else:
                 info["sources"] = payload
 
     if debug_append and guardrails.TEST_HOOKS:         # test hook: pretend the model made a wrong claim
         parts.append(debug_append)
-        yield "token", {"text": debug_append}
+        if not guard:
+            yield "token", {"text": debug_append}
 
     text = "".join(parts).strip()
     info["mode"] = used_mode
@@ -127,8 +133,9 @@ def run(question, persona="General Buyer", history=None, product=None, mode="aut
             except llm.LLMError:
                 retry, retry_issues = "", ["retry failed"]
             final = retry if retry and not retry_issues else guardrails.safe_answer(allowed["products"])
-            yield "replace", {"text": final, "reason": "; ".join(issues)}
             text, verified = final, True               # the replacement is verified or built straight from the database
+    if guard and text:                                 # the shopper only ever sees the checked answer, never a draft that gets swapped
+        yield "token", {"text": text}
 
     info.update(blocked=None, verified=verified, corrected=corrected, issues=issues, facts_checked=checked, answer=text)
     yield "done", finish(info)

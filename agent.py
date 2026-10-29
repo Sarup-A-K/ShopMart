@@ -70,14 +70,21 @@ def _num(x):
     return int(round(x)) if isinstance(x, (int, float)) else x
 
 
+def _inr(x):
+    """A ready-written price ('₹45,599'): a small model copies a formatted string more faithfully than a bare number."""
+    return f"₹{int(round(x)):,}" if isinstance(x, (int, float)) else x
+
+
 def _brief(p):
     loc = p.get("location") or {}
     online = [c for c in (p.get("competitors") or []) if isinstance(c.get("price"), (int, float))]
     return {
         "qr_code": p["qrCode"], "name": p["name"], "brand": p.get("brand"), "category": p.get("category"),
-        "price_rupees": _num(p["price"]), "mrp_rupees": _num(p.get("originalPrice")),
-        "online_prices_rupees": {c["name"]: _num(c["price"]) for c in online},
+        "our_price": _inr(p["price"]), "mrp": _inr(p.get("originalPrice")),
+        "online_prices": {c["name"]: _inr(c["price"]) for c in online},
         "aisle": loc.get("aisle"), "section": loc.get("section"),
+        "quality_score": (p.get("specifications") or {}).get("qualityScore"),
+        "key_specs": (p.get("specifications") or {}).get("keySpecs"),
     }
 
 
@@ -136,9 +143,12 @@ def tool_search_products(query="", max_price=None, category=None):
     found = rag.search_products(str(query), limit=4, max_price=max_price, category=category)
     results = [{**_brief(r["product"]), "relevance": r["score"]} for r in found["results"]]
     out = {"results": results, "exact_match": found["confident"]}
+    if re.search(r"\b(best|top|recommend\w*|suggest\w*|good|better)\b", str(query).lower()) and len(results) > 1:
+        out["note"] = ("The shopper wants a recommendation. Mention every product in the results with its price and aisle, "
+                       "say which one you would pick and why (specs, quality score, value), and do not simply pick the cheapest.")
     if not results:
         out["note"] = "No matching products in this store."
-    elif not found["confident"]:
+    elif not found["confident"] and "note" not in out:
         out["note"] = "Nothing matches exactly; these are the closest items."
     return out, f"Searched products for “{query}”", [r["qr_code"] for r in results], []
 

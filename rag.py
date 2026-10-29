@@ -242,6 +242,20 @@ def search_chunks(query, k=4, source_types=None, source_id=None):
     return results
 
 
+SECTION_WORDS = {"Mobiles": {"phone", "phones", "smartphone", "smartphones", "mobile", "mobiles"}}
+
+
+def _section_in_query(query, products):
+    """The store section a query names ('best mobiles' -> 'Mobiles'), or None."""
+    words = set(tokens(query))
+    sections = {(p.get("location") or {}).get("section") for p in products} - {None}
+    for section in sections:
+        names = {w for w in tokens(section)} | SECTION_WORDS.get(section, set())
+        if words & names:
+            return section
+    return None
+
+
 def search_products(query, limit=6, max_price=None, category=None):
     """
     Semantic product search: embed the query, score product and review chunks, take each
@@ -267,6 +281,10 @@ def search_products(query, limit=6, max_price=None, category=None):
         return True
 
     candidates = {qr for qr, p in products.items() if keep(p)}
+    section = _section_in_query(query, products.values())
+    if section:                         # "best mobiles" should only compare the Mobiles shelf, not every electronic item
+        in_section = {qr for qr in candidates if (products[qr].get("location") or {}).get("section") == section}
+        candidates = in_section or candidates
     if not candidates:
         return {"query": query, "filters": filters, "results": [], "confident": False}
 
