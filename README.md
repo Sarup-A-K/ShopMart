@@ -4,7 +4,7 @@ ShopMart (code name OmniTag) turns static paper price tags in a store into QR-li
 
 Instead of fighting "showrooming" (shoppers checking online prices in the aisle), OmniTag embraces it. Staff manage store prices and the Amazon / Flipkart / Croma prices from an admin page or an Excel sheet. A shopper scans a shelf QR code with their phone, sees the price against online prices (the store undercuts the lowest by about 5%), gets directions to the aisle, and can ask an AI assistant that looks facts up in the store's own data instead of guessing.
 
-**Quick links:** [Set it up on your computer](docs/SETUP.md) · [Screenshots](#-screenshots) · [Results](#-results) · [How it works](docs/HOW_IT_WORKS.md) · [Try it in 10 minutes](docs/TRY_IT.md) · [Problems met while building](docs/FINDINGS.md)
+**Quick links:** [Demo video](https://www.linkedin.com/posts/sarup-arumugam-kumar_generativeai-rag-llm-ugcPost-7521817508392402944-viFF/) · [Set it up on your computer](docs/SETUP.md) · [Screenshots](#-screenshots) · [Results](#-results) · [How it works](docs/HOW_IT_WORKS.md) · [Try it in 10 minutes](docs/TRY_IT.md) · [Problems met while building](docs/FINDINGS.md)
 
 **In one picture**
 
@@ -151,6 +151,8 @@ The chart shows first drafts: the full system's first drafts contain a wrong fac
 * Test sets are small (42 answer cases, 23 attack prompts), so treat the percentages as indicative.
 
 ## 🎬 Try it
+
+**Demo video (phone and laptop side by side):** [watch it on LinkedIn](https://www.linkedin.com/posts/sarup-arumugam-kumar_generativeai-rag-llm-ugcPost-7521817508392402944-viFF/).
 
 `docs/TRY_IT.md` is a 10-minute tour: what to click and ask as a shopper and as the store owner, what you should see, and where the assistant is still weak.
 
