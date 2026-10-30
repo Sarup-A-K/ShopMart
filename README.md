@@ -57,7 +57,7 @@ seed_products.json   Initial products
 eval/                Golden set, evaluation harness, results (CSV, summary, charts)
 tests/               Unit tests for the guardrails
 tools/               make_product_cards.py: generated fallback product cards
-docs/                HOW_IT_WORKS.md (learning guide), FINDINGS.md (problems and fixes), DEMO_GUIDE.md (how to record a demo), PHOTO_CREDITS.md
+docs/                SETUP.md (install and run guide), HOW_IT_WORKS.md (learning guide), FINDINGS.md (problems and fixes), DEMO_GUIDE.md (how to record a demo), PHOTO_CREDITS.md
 web/                 Catalogue, product page, admin page (HTML, JS, CSS)
 start.sh             Starts everything and sets the network address used in QR codes
 ```
@@ -67,6 +67,10 @@ start.sh             Starts everything and sets the network address used in QR c
 ## 🚀 How to Run the Project
 
 You need [Docker](https://www.docker.com/) installed. The site runs on your laptop and is opened by phones on the same network, for example your phone's hotspot with the laptop connected to it.
+
+> **First time on a new computer?** Follow the step-by-step guide in [`docs/SETUP.md`](docs/SETUP.md): installing Docker, NVIDIA GPU or CPU-only, Windows and macOS, running without Docker, the first-start model download, and a troubleshooting table. The short version below assumes Docker (with an NVIDIA GPU) is already working and that you are on Linux.
+
+**Needs:** about 8 GB of free disk and 8 GB of RAM; the first start downloads about 2.5 GB of models. A GPU is optional (see the guide).
 
 ### 1. Start
 ```bash
