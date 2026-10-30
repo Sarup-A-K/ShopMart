@@ -31,7 +31,7 @@ docker run --rm --gpus all ubuntu nvidia-smi
 ## 3. Get the code and start it
 
 ```bash
-git clone https://github.com/Robotics-AVV/ShopMart.git
+git clone https://github.com/Sarup-A-K/ShopMart.git
 cd ShopMart
 ```
 
