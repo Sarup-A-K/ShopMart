@@ -4,6 +4,8 @@ ShopMart (code name OmniTag) turns static paper price tags in a store into QR-li
 
 Instead of fighting "showrooming" (shoppers checking online prices in the aisle), OmniTag embraces it. Staff manage store prices and the Amazon / Flipkart / Croma prices from an admin page or an Excel sheet. A shopper scans a shelf QR code with their phone, sees the price against online prices (the store undercuts the lowest by about 5%), gets directions to the aisle, and can ask an AI assistant that looks facts up in the store's own data instead of guessing.
 
+**Quick links:** [Set it up on your computer](docs/SETUP.md) · [Results](#-results) · [How it works](docs/HOW_IT_WORKS.md) · [Record a demo](docs/DEMO_GUIDE.md) · [Problems met while building](docs/FINDINGS.md)
+
 **In one picture**
 
 ```
