@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Campus NORIKA Women&#x27;s Running Shoes (Black)">
 <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7f6ef"/><stop offset="1" stop-color="#c9ebdb"/></linearGradient></defs>
 <rect width="600" height="600" fill="url(#g)"/>
-<g transform="translate(130 40) scale(3.4)"><path d="M34 12 L10 34 L16 80 L27 78 L29 44 L30 90 L70 90 L71 44 L73 78 L84 80 L90 34 L66 12 L50 26 Z" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
-      <path d="M34 12 L50 32 L66 12" fill="none" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><line x1="50" y1="32" x2="50" y2="90" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
-      <circle cx="50" cy="46" r="2.4" fill="#ffc233" stroke="none"/><circle cx="50" cy="60" r="2.4" fill="#ffc233" stroke="none"/><circle cx="50" cy="74" r="2.4" fill="#ffc233" stroke="none"/></g>
+<g transform="translate(130 40) scale(3.4)"><path d="M8 66 C8 54 16 50 24 48 L34 30 C42 32 48 42 58 46 C74 48 92 54 94 68 L94 72 L8 72 Z" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <rect x="6" y="72" width="90" height="11" rx="5.5" fill="#ffc233" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="38" y1="38" x2="44" y2="46" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><line x1="46" y1="44" x2="52" y2="52" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><line x1="30" y1="46" x2="38" y2="52" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/></g>
 <text x="300" y="424" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="#10243a" opacity=".6">CAMPUS</text>
-<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Printed Casual Shirt</text>
+<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">NORIKA Running Shoes</text>
 <text x="300" y="556" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" fill="#10243a" opacity=".72">Running  ·  Mesh  ·  Segmented EVA</text>
 </svg>

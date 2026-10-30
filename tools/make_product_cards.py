@@ -17,20 +17,36 @@ OUT = os.path.join(ROOT, "web", "img", "products")
 INK, ACCENT, SOFT = "#10243a", "#ffc233", "#dbe9fb"
 BACKGROUND = {"Electronics": ("#e9f2fd", "#cfe2f8"), "Fashion": ("#fdeee7", "#f8d9cb"), "Footwear": ("#e7f6ef", "#c9ebdb")}
 
-# Short model names for the card title (the full names are long marketing titles)
-TITLE = {
-    "item-1": "Galaxy M34 5G", "item-2": "Airdopes 141", "item-3": "Regular Fit T-Shirt", "item-4": "Cotton Straight Kurta",
-    "item-5": "Revolution 6 Running Shoes", "item-6": "Fashion Sandals", "item-7": "Note 13 5G", "item-8": "iPhone 13",
-    "item-9": "Rockerz 450 Headphones", "item-10": "WH-CH520 Headphones", "item-11": "Flip 6 Speaker", "item-12": "511 Slim Fit Jeans",
-    "item-13": "Slim Fit Formal Shirt", "item-14": "Graphic Print T-Shirt", "item-15": "Flared Maxi Dress", "item-16": "Printed Casual Shirt",
-    "item-17": "SuperRep Go 3 Training Shoes", "item-18": "Maxico Running Shoes", "item-19": "Printed Stiletto Heels", "item-20": "Old Skool Sneakers",
-}
-ICON = {
-    "item-1": "phone", "item-7": "phone", "item-8": "phone", "item-2": "earbuds", "item-9": "headphones", "item-10": "headphones",
-    "item-11": "speaker", "item-3": "tshirt", "item-14": "tshirt", "item-13": "shirt", "item-16": "shirt", "item-12": "jeans",
-    "item-15": "dress", "item-4": "kurta", "item-5": "shoe", "item-17": "shoe", "item-18": "shoe", "item-20": "shoe",
-    "item-6": "sandal", "item-19": "heel",
-}
+# Short card titles and drawings are chosen from words in the product's own name, so the cards stay correct when the
+# catalogue changes (a card is never matched by item number).
+SHORT_TITLES = [
+    ("Galaxy M34", "Galaxy M34 5G"), ("Airdopes", "Airdopes 141"), ("Redmi Note 13", "Note 13 5G"), ("iPhone 13", "iPhone 13"),
+    ("Rockerz", "Rockerz 450 Headphones"), ("WH-CH520", "WH-CH520 Headphones"), ("Flip 6", "Flip 6 Speaker"),
+    ("Textured Slim Fit Shirt", "Textured Slim Fit Shirt"), ("Washed Jeans", "Washed Regular Fit Jeans"),
+    ("Stretch Printed T-Shirt", "Printed Slim Fit T-Shirt"), ("Co-Ord", "Embellished Co-Ord Set"), ("Salwar", "Embellished Salwar Suit"),
+    ("V-Neck", "Printed V-Neck T-Shirt"), ("PROVE", "PROVE Running Shoes"), ("RAKE", "RAKE Running Shoes"),
+    ("NORIKA", "NORIKA Running Shoes"), ("LUCK", "LUCK Sneakers"), ("SCALE", "SCALE CS Sneakers"), ("AZURA", "AZURA Sneakers"),
+]
+# First matching word wins, so more specific words come first
+ICON_WORDS = [
+    ("earbuds", "earbuds"), ("headphones", "headphones"), ("speaker", "speaker"), ("t-shirt", "tshirt"), ("jeans", "jeans"),
+    ("co-ord", "dress"), ("dress", "dress"), ("salwar", "kurta"), ("kurta", "kurta"), ("shirt", "shirt"), ("sandal", "sandal"),
+    ("heel", "heel"), ("shoes", "shoe"), ("sneakers", "shoe"),
+]
+
+
+def title_for(product):
+    name = product["name"]
+    return next((short for key, short in SHORT_TITLES if key.lower() in name.lower()), name)
+
+
+def icon_for(product):
+    name = product["name"].lower()
+    for word, icon in ICON_WORDS:
+        if word in name:
+            return icon
+    return "phone" if product.get("category") == "Electronics" else "shirt"
+
 
 S = f'stroke="{INK}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"'
 ICONS = {
@@ -96,13 +112,13 @@ def chips(product):
 def card(product):
     qr = product["qrCode"]
     top, bottom = BACKGROUND.get(product.get("category"), ("#eef1f4", "#dde3ea"))
-    title = wrap(TITLE.get(qr) or product["name"], 22)[:2]
+    title = wrap(title_for(product), 22)[:2]
     e = lambda t: html.escape(str(t), quote=True)
     out = [
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="%s">' % e(product["name"]),
         f'<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{top}"/><stop offset="1" stop-color="{bottom}"/></linearGradient></defs>',
         '<rect width="600" height="600" fill="url(#g)"/>',
-        f'<g transform="translate(130 40) scale(3.4)">{ICONS[ICON[qr]]}</g>',
+        f'<g transform="translate(130 40) scale(3.4)">{ICONS[icon_for(product)]}</g>',
         f'<text x="300" y="424" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="{INK}" opacity=".6">{e(product["brand"].upper())}</text>',
     ]
     y = 466

@@ -233,7 +233,7 @@ Same 19-product catalogue and the same 42 answer cases as the run below; what ch
 
 ### Earlier run on the 19-product catalogue with real photos (`20261028-172320`)
 
-The catalogue was rebuilt so every product has a real, downloadable photo (6 -> 20 -> 19 products; 3-4 per aisle). The golden set was rewritten for the new products (42 answer cases, 17 search queries). **These numbers are not directly comparable with the 20-product run below**, because the questions and products differ. Run: `eval/results/20261028-172320`.
+The catalogue was rebuilt so every product has a real, downloadable photo (6 -> 20 -> 19 products; 3-4 per aisle). The golden set was rewritten for the new products (42 answer cases, 17 search queries). **These numbers are not directly comparable with the 20-product run below**, because the questions and products differ. Run: `eval/results/archive/20261028-172320`.
 
 | Configuration | Correct answers | Hallucinated facts (final) | Median latency |
 |---|---|---|---|

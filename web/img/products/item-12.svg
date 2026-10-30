@@ -1,10 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Libas Rust Brown Embellished Tissue Salwar Suit Set">
 <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdeee7"/><stop offset="1" stop-color="#f8d9cb"/></linearGradient></defs>
 <rect width="600" height="600" fill="url(#g)"/>
-<g transform="translate(130 40) scale(3.4)"><path d="M26 8 H74 V22 L80 92 H54 L50 44 L46 92 H20 L26 22 Z" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
-      <line x1="26" y1="22" x2="74" y2="22" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M30 28 C34 34 38 34 42 28" fill="none" stroke="#ffc233" stroke-width="3" stroke-linecap="round"/>
-      <path d="M70 28 C66 34 62 34 58 28" fill="none" stroke="#ffc233" stroke-width="3" stroke-linecap="round"/></g>
+<g transform="translate(130 40) scale(3.4)"><path d="M34 8 C42 16 58 16 66 8 L86 24 L78 42 L72 36 L74 94 L26 94 L28 36 L22 42 L14 24 Z" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M42 11 L50 32 L58 11" fill="none" stroke="#ffc233" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="26" y1="84" x2="74" y2="84" stroke="#ffc233" stroke-width="3.6" stroke-linecap="round"/></g>
 <text x="300" y="424" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="#10243a" opacity=".6">LIBAS</text>
-<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">511 Slim Fit Jeans</text>
+<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Embellished Salwar</text>
+<text x="300" y="508" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Suit</text>
 <text x="300" y="556" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" fill="#10243a" opacity=".72">Kurta+salwar  ·  Tissue  ·  Rust brown</text>
 </svg>

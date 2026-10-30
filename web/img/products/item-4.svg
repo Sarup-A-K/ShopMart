@@ -1,10 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Apple iPhone 13 (Blue, 128GB)">
 <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9f2fd"/><stop offset="1" stop-color="#cfe2f8"/></linearGradient></defs>
 <rect width="600" height="600" fill="url(#g)"/>
-<g transform="translate(130 40) scale(3.4)"><path d="M34 8 C42 16 58 16 66 8 L86 24 L78 42 L72 36 L74 94 L26 94 L28 36 L22 42 L14 24 Z" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
-      <path d="M42 11 L50 32 L58 11" fill="none" stroke="#ffc233" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
-      <line x1="26" y1="84" x2="74" y2="84" stroke="#ffc233" stroke-width="3.6" stroke-linecap="round"/></g>
+<g transform="translate(130 40) scale(3.4)"><rect x="30" y="6" width="40" height="88" rx="9" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <rect x="35" y="16" width="30" height="64" rx="3" fill="#dbe9fb"/>
+      <rect x="44" y="10" width="12" height="3" rx="1.5" fill="#10243a"/>
+      <rect x="38" y="20" width="10" height="10" rx="3" fill="#ffc233"/><rect x="52" y="20" width="10" height="10" rx="3" fill="#10243a" opacity=".75"/>
+      <rect x="38" y="34" width="10" height="10" rx="3" fill="#10243a" opacity=".75"/><rect x="52" y="34" width="10" height="10" rx="3" fill="#ffc233"/>
+      <line x1="42" y1="87" x2="58" y2="87" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/></g>
 <text x="300" y="424" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="#10243a" opacity=".6">APPLE</text>
-<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Cotton Straight Kurta</text>
+<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">iPhone 13</text>
 <text x="300" y="556" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" fill="#10243a" opacity=".72">128GB  ·  A15 Bionic</text>
 </svg>

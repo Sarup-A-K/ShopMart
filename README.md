@@ -4,7 +4,7 @@ ShopMart (code name OmniTag) turns static paper price tags in a store into QR-li
 
 Instead of fighting "showrooming" (shoppers checking online prices in the aisle), OmniTag embraces it. Staff manage store prices and the Amazon / Flipkart / Croma prices from an admin page or an Excel sheet. A shopper scans a shelf QR code with their phone, sees the price against online prices (the store undercuts the lowest by about 5%), gets directions to the aisle, and can ask an AI assistant that looks facts up in the store's own data instead of guessing.
 
-**Quick links:** [Set it up on your computer](docs/SETUP.md) · [Results](#-results) · [How it works](docs/HOW_IT_WORKS.md) · [Record a demo](docs/DEMO_GUIDE.md) · [Problems met while building](docs/FINDINGS.md)
+**Quick links:** [Set it up on your computer](docs/SETUP.md) · [Screenshots](#-screenshots) · [Results](#-results) · [How it works](docs/HOW_IT_WORKS.md) · [Record a demo](docs/DEMO_GUIDE.md) · [Problems met while building](docs/FINDINGS.md)
 
 **In one picture**
 
@@ -14,6 +14,19 @@ shelf QR tag ──► product page ──► question ──► guardrails ─�
                  vs Amazon /                     attacks)      store policies)  product names   checked one
                  Flipkart / Croma                                               vs database)    is shown)
 ```
+
+## 📸 Screenshots
+
+| Search from the entrance | Today's price vs online | Checked AI answer |
+|:---:|:---:|:---:|
+| <img src="docs/images/phone-1-search.png" width="260"> | <img src="docs/images/phone-2-price-comparison.png" width="260"> | <img src="docs/images/phone-3-checked-answer.png" width="260"> |
+| Every result shows how far it is from where the shopper scanned. | Store price against Amazon, Flipkart and Croma, with directions from the scanned aisle. | The answer is shown only after every price and aisle is checked against the database. |
+
+| Store admin: prices | Store admin: QR tags (no prices on them) |
+|:---:|:---:|
+| <img src="docs/images/admin-prices.png" width="440"> | <img src="docs/images/admin-qr-tags.png" width="440"> |
+
+The cards in the screenshots are the generated placeholders that appear when no product photo is installed. The real demo uses official product photos, which are not included in this repository.
 
 > **Learning the project?** Read [`docs/HOW_IT_WORKS.md`](docs/HOW_IT_WORKS.md): architecture, every GenAI technique explained with the code that implements it, how each part is tested, and the limits. Real problems met while building are logged in [`docs/FINDINGS.md`](docs/FINDINGS.md).
 
@@ -128,6 +141,10 @@ Measured on 42 answer questions with local `llama3.2` (3B) on a GTX 1650 (run of
 | + tool-calling agent | 90.5% | 19.0% |
 | + guardrails and fact-check (full system) | **92.9%** | **2.4%** |
 
+<img src="docs/images/results-accuracy.png" alt="Correct answers and hallucinated facts for each configuration" width="760">
+
+The chart shows first drafts: the full system's first drafts contain a wrong fact 11.9% of the time, and after the fact-check corrects them the final rate is 2.4% (table above).
+
 * Semantic search finds the right product in the top 3 for 95.6% of queries; keyword search 77.8%.
 * Held-out attack prompts blocked: 11 of 11, with no legitimate question refused.
 * "Correct" is an automatic check that every expected fact appears in the answer. It is lenient: reading the answers by hand gives about 82%. Known weak spots (competitor comparisons, price kind: MRP vs selling price) are in `docs/FINDINGS.md`.
@@ -172,7 +189,7 @@ docker exec -w /workspace local_web_app python eval/run_eval.py --configs v4_ful
 docker compose up -d web-app                               # back to normal (switches off)
 ```
 
-Results are written to `eval/results/<timestamp>/` (also `eval/results/latest/`): `results.csv` (every answer, with an empty `human_rating` column for your own 1-5 scores), `summary.md` (the tables), `summary.json` and charts (`*.png`). Questions asked during evaluation are removed from the admin shopper log afterwards.
+Results are written to `eval/results/<timestamp>/` (also `eval/results/latest/`): `results.csv` (every answer, with an empty `human_rating` column for your own 1-5 scores), `summary.md` (the tables), `summary.json` and charts (`*.png`). Questions asked during evaluation are removed from the admin shopper log afterwards. `eval/results/archive/` keeps the earlier runs that `docs/FINDINGS.md` and `docs/HOW_IT_WORKS.md` refer to; `latest-final` is the run quoted in the Results section.
 
 Tune or check the input guardrails on any labelled prompt file (reports attacks blocked and legitimate questions wrongly blocked, rules alone vs rules + LLM guard):
 ```bash

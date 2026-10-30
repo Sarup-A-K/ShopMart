@@ -1,11 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Libas Lavender Embellished Silk Blend Co-Ord Set">
 <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdeee7"/><stop offset="1" stop-color="#f8d9cb"/></linearGradient></defs>
 <rect width="600" height="600" fill="url(#g)"/>
-<g transform="translate(130 40) scale(3.4)"><rect x="10" y="34" width="80" height="38" rx="19" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
-      <path d="M38 34 C42 18 58 18 62 34" fill="none" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
-      <line x1="30" y1="44" x2="30" y2="62" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><line x1="40" y1="42" x2="40" y2="64" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><line x1="50" y1="42" x2="50" y2="64" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
-      <line x1="60" y1="42" x2="60" y2="64" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><line x1="70" y1="44" x2="70" y2="62" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="82" cy="53" r="2.4" fill="#ffc233" stroke="none"/></g>
+<g transform="translate(130 40) scale(3.4)"><path d="M40 6 L44 24 L50 30 L56 24 L60 6 L66 8 L62 40 L84 92 H16 L38 40 L34 8 Z" fill="#fff" stroke="#10243a" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="38" y1="40" x2="62" y2="40" stroke="#ffc233" stroke-width="5" stroke-linecap="round"/></g>
 <text x="300" y="424" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="4" fill="#10243a" opacity=".6">LIBAS</text>
-<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Flip 6 Speaker</text>
+<text x="300" y="466" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#10243a">Embellished Co-Ord Set</text>
 <text x="300" y="556" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" fill="#10243a" opacity=".72">Tunic + palazzo  ·  Silk blend  ·  V-neck</text>
 </svg>
