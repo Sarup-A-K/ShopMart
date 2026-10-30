@@ -2,7 +2,7 @@
 
 Read this top to bottom once, then use it as a reference. Every GenAI idea is explained with: **what it is**, **why we used it**, **where the code is**, and **how to see it working**.
 
-Contents: [1. The idea](#1-the-idea-in-one-minute) · [2. Architecture](#2-architecture) · [3. A question's journey](#3-the-journey-of-one-question) · [4. Techniques explained](#4-the-genai-techniques-one-by-one) · [5. Traditional vs GenAI](#5-traditional-workflow-vs-genai-workflow) · [6. Tools used](#6-tools-used) · [7. Challenges](#7-challenges-and-how-they-were-handled) · [8. Evaluation](#8-evaluation-how-we-know-it-works) · [12. Code map](#12-code-map) · [13. Limits and next steps](#13-honest-limitations-and-next-steps)
+Contents: [1. The idea](#1-the-idea-in-one-minute) · [2. Architecture](#2-architecture) · [3. A question's journey](#3-the-journey-of-one-question) · [4. Techniques explained](#4-the-genai-techniques-one-by-one) · [5. Traditional vs GenAI](#5-traditional-workflow-vs-genai-workflow) · [6. Tools used](#6-tools-used) · [7. Challenges](#7-challenges-and-how-they-were-handled) · [8. Evaluation](#8-evaluation-how-we-know-it-works) · [10. Code map](#10-code-map) · [11. Limits and next steps](#11-honest-limitations-and-next-steps)
 
 ---
 
@@ -266,7 +266,7 @@ The catalogue was rebuilt so every product has a real, downloadable photo (6 -> 
 - **Manual audit of that run:** 30 agent, deal and policy answers, no wrong claim found (author's reading).
 <!-- RESULTS:END -->
 
-## 12. Code map
+## 10. Code map
 
 | File | Read it for |
 |---|---|
@@ -283,7 +283,7 @@ The catalogue was rebuilt so every product has a real, downloadable photo (6 -> 
 | `eval/run_eval.py`, `eval/golden_set.json` | Evaluation |
 | `tests/test_guardrails.py` | Unit tests |
 
-## 13. Honest limitations and next steps
+## 11. Honest limitations and next steps
 
 - The model is small. It is the reason for most of the extra machinery, and the evaluation shows where it still fails.
 - Guardrails are pattern-based and the fact-checker is heuristic. They are a strong safety net for the failures seen, not a proof.
