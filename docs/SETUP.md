@@ -95,7 +95,7 @@ Notes:
 3. The tags contain the computer's address. If the address changes (new Wi-Fi, new hotspot), run `./start.sh` again and reprint the tags.
 4. The **in-page camera scanner** needs an `https://` address. On Linux, `./start.sh --tunnel` opens a free public https address through Cloudflare and prints it. While it runs, anyone with the link can use the site, so close it when you are done: `docker rm -f omnitag_tunnel`. The README explains how to get a fixed address on your own domain.
 
-For a recorded demo, follow [`DEMO_GUIDE.md`](DEMO_GUIDE.md) (every question in it has been run on this system).
+For a guided tour of what to click and ask, follow [`TRY_IT.md`](TRY_IT.md).
 
 ## 6. Without Docker (Linux or macOS)
 

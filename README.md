@@ -4,7 +4,7 @@ ShopMart (code name OmniTag) turns static paper price tags in a store into QR-li
 
 Instead of fighting "showrooming" (shoppers checking online prices in the aisle), OmniTag embraces it. Staff manage store prices and the Amazon / Flipkart / Croma prices from an admin page or an Excel sheet. A shopper scans a shelf QR code with their phone, sees the price against online prices (the store undercuts the lowest by about 5%), gets directions to the aisle, and can ask an AI assistant that looks facts up in the store's own data instead of guessing.
 
-**Quick links:** [Set it up on your computer](docs/SETUP.md) · [Screenshots](#-screenshots) · [Results](#-results) · [How it works](docs/HOW_IT_WORKS.md) · [Record a demo](docs/DEMO_GUIDE.md) · [Problems met while building](docs/FINDINGS.md)
+**Quick links:** [Set it up on your computer](docs/SETUP.md) · [Screenshots](#-screenshots) · [Results](#-results) · [How it works](docs/HOW_IT_WORKS.md) · [Try it in 10 minutes](docs/TRY_IT.md) · [Problems met while building](docs/FINDINGS.md)
 
 **In one picture**
 
@@ -72,7 +72,7 @@ seed_products.json   Initial products
 eval/                Golden set, evaluation harness, results (CSV, summary, charts)
 tests/               Unit tests for the guardrails
 tools/               make_product_cards.py: generated fallback product cards
-docs/                SETUP.md (install and run guide), HOW_IT_WORKS.md (learning guide), FINDINGS.md (problems and fixes), DEMO_GUIDE.md (how to record a demo), PHOTO_CREDITS.md
+docs/                SETUP.md (install and run guide), HOW_IT_WORKS.md (learning guide), FINDINGS.md (problems and fixes), TRY_IT.md (a 10-minute tour), PHOTO_CREDITS.md
 web/                 Catalogue, product page, admin page (HTML, JS, CSS)
 start.sh             Starts everything and sets the network address used in QR codes
 ```
@@ -150,9 +150,9 @@ The chart shows first drafts: the full system's first drafts contain a wrong fac
 * "Correct" is an automatic check that every expected fact appears in the answer. It is lenient: reading the answers by hand gives about 82%. Known weak spots (competitor comparisons, price kind: MRP vs selling price) are in `docs/FINDINGS.md`.
 * Test sets are small (42 answer cases, 23 attack prompts), so treat the percentages as indicative.
 
-## 🎬 Demo
+## 🎬 Try it
 
-`docs/DEMO_GUIDE.md` is a tested, step-by-step script for recording the shopper (phone) and store-owner (laptop) sides, with the questions to ask and the ones to avoid.
+`docs/TRY_IT.md` is a 10-minute tour: what to click and ask as a shopper and as the store owner, what you should see, and where the assistant is still weak.
 
 ---
 
